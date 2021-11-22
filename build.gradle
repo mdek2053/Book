@@ -1,0 +1,78 @@
+allprojects {
+	repositories {
+		mavenCentral()
+	}
+
+	group = 'nl.tudelft.sem11b'
+	version = '0.1.0'
+}
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'jacoco'
+	apply plugin: 'checkstyle'
+
+	configurations {
+		developmentOnly
+		runtimeClasspath { extendsFrom developmentOnly }
+	}
+	
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(11) // Could've been 17, just saying. With goodies like:
+			                                             //   - Pattern matching
+			                                             //   - Text blocks
+			                                             //   - Records
+			                                             //   - Better NullPointerException
+			                                             //   - Sealed classes/iterfaces
+		}
+	}
+
+	jacoco {
+		toolVersion = '0.8.7'
+	}
+
+	jacocoTestReport {
+		reports {
+			xml.required = false
+			csv.required = false
+			html.outputLocation = file("${buildDir}/reports/jacoco/html")
+		}
+	}
+
+	jacocoTestCoverageVerification {
+		violationRules {
+			rule {
+				enabled = true
+				element = 'CLASS'
+				includes = ['nl.tudelft.*']
+				
+				limit {
+					counter = 'LINE'
+					value = 'COVEREDRATIO'
+					minimum = 0.4
+				}
+			}
+		}
+	}
+
+	checkstyle {
+		toolVersion = '9.1'		
+
+		configFile = rootProject.file('config/checkstyle.xml')
+
+		ignoreFailures = false
+		maxErrors = 0
+		maxWarnings = 0
+	}
+
+	test {
+		useJUnitPlatform()
+
+		jacoco {
+			enabled = true
+			includes = ['nl.tudelft.*']
+			excludes = []
+		}
+	}
+}
