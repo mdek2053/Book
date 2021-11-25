@@ -407,6 +407,186 @@ paths:
         '404':
           description: Room not found
 
+  /rooms/{id}/faults:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      description: Lists fault reports for this room
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of faults
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the fault
+                        reporter:
+                          type: integer
+                          required: true
+                        description:
+                          type: string
+                          required: true
+
+    post:
+      description: Submits a new fault report
+      tags:
+        - Rooms
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                reservation:
+                  type: integer
+                  required: true
+                description:
+                  type: string
+                  required: true
+
+      responses:
+        '204':
+          description: Fault report has been submitted
+
+  /faults:
+    get:
+      description: Lists fault reports for all rooms
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of faults
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the fault
+                        reporter:
+                          type: integer
+                          required: true
+                        description:
+                          type: string
+                          required: true
+                        room:
+                          type: integer
+                          required: true
+
+  /faults/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      description: Gets information about a fault report
+      tags:
+        - Rooms
+
+      responses:
+        '200':
+          description: Fault report
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    required: true
+                  room:
+                    type: object
+                    required: true
+                    properties:
+                      id:
+                        type: integer
+                        required: true
+                      suffix:
+                        type: string
+                        pattern: '[0-9a-zA-Z]+'
+                        required: true
+                        description: Alphanumeric suffix that uniquely identifies the room within a building
+                      name:
+                        type: string
+                        required: false
+                        description: Name of the room (not necessarily unique)
+                      building:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            required: true
+                            description: Unique numberc identifier of the building the room is in
+                          prefix:
+                            type: string
+                            pattern: '[0-9a-zA-Z]+'
+                            required: true
+                            description: Alphanumeric prefix that uniquely identifies the building
+                          name:
+                            type: string
+                            required: false
+                            description: Name of the building (not necessarily unique)
+                      closure:
+                        $ref: '#/components/schemas/closureObject'
+
+    delete:
+      description: Resolves a fault report
+      tags:
+        - Rooms
+
+      responses:
+        '204':
+          description: Report has been resolved
+
   /reservations/mine:
     get:
       description: Lists reservations of the current user
