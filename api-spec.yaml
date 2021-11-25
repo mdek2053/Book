@@ -11,7 +11,7 @@ paths:
         Authenticates a user and issues an identity token. Token is only issued if the user is authorized to access the
         sytem
       tags:
-        - Authentication
+        - Users
 
       requestBody:
         content:
@@ -45,6 +45,90 @@ paths:
           description: Provided login credentials are not valid
         '403':
           description: User is not authorized to access the system
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      description: Gets information about a user
+      tags:
+        - Users
+
+      responses:
+        '200':
+          description: User data
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  login:
+                    type: string
+
+        '404':
+          description: User not found
+
+  /users/query:
+    post:
+      description: Looks up users based on their NetID
+      tags:
+        - Users
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  required: true
+                match_left:
+                  type: boolean
+                  required: false
+                  default: false
+                match_right:
+                  type: boolean
+                  required: false
+                  default: false
+
+      responses:
+        '200':
+          description: List of users that match the query
+
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match the given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the user
+                        login:
+                          type: string
+                          required: true
+                          description: User's NetID
 
   /buildings:
     get:
@@ -397,6 +481,9 @@ paths:
                   type: string
                   pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9]):(0?[0-9]|[1-5][0-9])Z'
                   required: true
+                for:
+                  type: integer
+                  required: false
 
       responses:
         '200':
@@ -433,17 +520,17 @@ paths:
           description: Reservations cancelled
 
   /reservations/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+
     get:
       description: Gets reservation information
       tags:
         - Reservations
-
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
 
       responses:
         '200':
@@ -489,21 +576,160 @@ paths:
                             type: string
                             required: true
 
+
+    post:
+      description: Update reservation
+      tags:
+        - Reservations
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  required: true
+                since:
+                  type: string
+                  pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9]):(0?[0-9]|[1-5][0-9])Z'
+                  required: true
+                until:
+                  type: string
+                  pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9]):(0?[0-9]|[1-5][0-9])Z'
+                  required: true
+
+      responses:
+        '204':
+          description: Reservation has been updated
+
     delete:
       description: Deletes a reservation
       tags:
         - Reservations
 
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
 
       responses:
         '204':
           description: Reservation has been deleted
+
+  /groups:
+    post:
+      description: Creates a new reserach group
+      tags:
+        - Groups
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/groupObject'
+
+      responses:
+        '200':
+          description: Reserach group has been created
+
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+
+  /groups/mine:
+    get:
+      description: Gets groups the user is a member of
+      tags:
+        - Groups
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: A page of groups
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the group
+                        name:
+                          type: string
+                          required: true
+                        secretary:
+                          type: integer
+                          required: true
+
+  /groups/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      description: Gets group data
+      tags:
+        - Groups
+
+      responses:
+        '200':
+          description: Group data
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/groupObject'
+
+    post:
+      description: Updates a group
+      tags:
+        - Groups
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/groupObject'
+
+      responses:
+        '204':
+          description: Group has been updated
+
+    delete:
+      description: Deletes a group
+      tags:
+        - Groups
+
+      responses:
+        '204':
+          description: Group has been deleted
 
 components:
   schemas:
@@ -526,6 +752,16 @@ components:
           pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])'
           required: false
           description: Date at which the closure will end
+
+    groupObject:
+      type: object
+      properties:
+        name:
+          type: string
+        members:
+          type: array
+          items:
+            type: integer
 
   parameters:
     pageParam:
