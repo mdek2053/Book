@@ -1,0 +1,544 @@
+openapi: 3.0.3
+info:
+  title: SEM-11b
+  description: API specification for room booking system developed by group 11b
+  version: 1.0.0
+
+paths:
+  /login:
+    post:
+      description:
+        Authenticates a user and issues an identity token. Token is only issued if the user is authorized to access the
+        sytem
+      tags:
+        - Authentication
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  required: true
+                  description: NetID of the user (without domain)
+                password:
+                  type: string
+                  required: true
+                  description: User's password in plain-text
+
+      responses:
+        '200':
+          description: User has been successfully authenticated and authorized
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    required: true
+                    description: Identity token
+
+        '401':
+          description: Provided login credentials are not valid
+        '403':
+          description: User is not authorized to access the system
+
+  /buildings:
+    get:
+      description: Lists all buildings in the system. This enpoint uses paging
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of buildings
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numeric identifier of the building
+                        prefix:
+                          type: string
+                          required: true
+                          pattern: '[0-9a-zA-Z]+'
+                          description: Alphanumeric prefix that uniquely identifies the building
+                        name:
+                          type: string
+                          required: false
+                          description: Name of the building (not necessarily unique)
+
+  /buildings/{id}:
+    get:
+      description: Gets information about a building with the given `id`
+      tags:
+        - Rooms
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Numeric identifier of the building to fetch
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Building data
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  prefix:
+                    type: string
+                    pattern: '[0-9a-zA-Z]+'
+                    required: true
+                    description: Alphanumeric prefix that uniquely identifies the building
+                  name:
+                    type: string
+                    required: false
+                    description: Name of the building (not necessarily unique)
+
+        '404':
+          description: Building not found
+
+  /buildings/{id}/rooms:
+    get:
+      description: Lists all rooms within the building of the given `id`. This endpoint uses paging
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - name: id
+          in: path
+          required: true
+          description: Numeric identifier of the building to list the rooms of
+          schema:
+            type: integer
+        - name: closed
+          in: query
+          required: false
+          description: When set to `true`, closed rooms will be included in the listing
+          schema:
+            type: boolean
+            default: false
+
+      responses:
+        '200':
+          description: Room listing
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Rooms located inside of the building
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the room
+                        suffix:
+                          type: string
+                          pattern: '[0-9a-zA-Z]+'
+                          required: true
+                          description: Alphanumeric suffix that uniquely identifies the room within a building
+                        name:
+                          type: string
+                          required: false
+                          description: Name of the room (not necessarily unique)
+                        closure:
+                          $ref: '#/components/schemas/closureObject'
+
+        '404':
+          description: Building not found
+
+  /rooms:
+    get:
+      description: Lists all rooms in the system. This enpoint uses paging
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - name: closed
+          in: query
+          required: false
+          description: When set to `true`, closed rooms will be included in the listing
+          schema:
+            type: boolean
+            default: false
+
+      responses:
+        '200':
+          description: Requested page of rooms
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the room
+                        suffix:
+                          type: string
+                          pattern: '[0-9a-zA-Z]+'
+                          required: true
+                          description: Alphanumeric suffix that uniquely identifies the room within a building
+                        name:
+                          type: string
+                          required: false
+                          description: Name of the room (not necessarily unique)
+                        building:
+                          type: integer
+                          required: true
+                          description: ID of the building the room is in
+                        closure:
+                          $ref: '#/components/schemas/closureObject'
+
+  /rooms/{id}:
+    get:
+      description: Gets information about a room with the given `id`
+      tags:
+        - Rooms
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique numberc identifier of the room
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Room information
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  suffix:
+                    type: string
+                    pattern: '[0-9a-zA-Z]+'
+                    required: true
+                    description: Alphanumeric suffix that uniquely identifies the room within a building
+                  name:
+                    type: string
+                    required: false
+                    description: Name of the room (not necessarily unique)
+                  building:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        required: true
+                        description: Unique numberc identifier of the building the room is in
+                      prefix:
+                        type: string
+                        pattern: '[0-9a-zA-Z]+'
+                        required: true
+                        description: Alphanumeric prefix that uniquely identifies the building
+                      name:
+                        type: string
+                        required: false
+                        description: Name of the building (not necessarily unique)
+                  closure:
+                    $ref: '#/components/schemas/closureObject'
+
+        '404':
+          description: Room not found
+
+  /rooms/{id}/closure:
+    post:
+      description: Sets or updates closure on a room
+      tags:
+        - Rooms
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/closureObject'
+
+      responses:
+        '200':
+          description: Room closure has been set or updated
+        '404':
+          description: Room not found
+
+    delete:
+      description: Removes a closure from a room
+      tags:
+        - Rooms
+
+      responses:
+        '204':
+          description: Room closure has been removed
+        '404':
+          description: Room not found
+
+  /reservations/mine:
+    get:
+      description: Lists reservations of the current user
+      tags:
+        - Reservations
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of reservations
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the reservation
+                        title:
+                          type: string
+                          required: true
+                          description: Title of reservation
+                        room:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the room the reservation is for
+                        since:
+                          type: string
+                          description: Time at which the reservation begins
+                        until:
+                          type: string
+                          description: Time at which the reservation ends
+
+  /reservations:
+    post:
+      description: Creates a new reservation
+      tags:
+        - Reservations
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                room:
+                  type: integer
+                  required: true
+                title:
+                  type: string
+                  required: true
+                since:
+                  type: string
+                  pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9]):(0?[0-9]|[1-5][0-9])Z'
+                  required: true
+                until:
+                  type: string
+                  pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9]):(0?[0-9]|[1-5][0-9])Z'
+                  required: true
+
+      responses:
+        '200':
+          description: Reservation has been created
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    required: true
+
+    delete:
+      description: Cancels all reservations of a given `room` after and including a given day in `since`
+      tags:
+        - Reservations
+
+      parameters:
+        - name: room
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: since
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])'
+
+      responses:
+        '204':
+          description: Reservations cancelled
+
+  /reservations/{id}:
+    get:
+      description: Gets reservation information
+      tags:
+        - Reservations
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Reservation information
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    required: true
+                  since:
+                    type: string
+                    required: true
+                  until:
+                    type: string
+                    required: true
+                  room:
+                    type: object
+                    required: true
+                    properties:
+                      id:
+                        type: integer
+                        required: true
+                      suffix:
+                        type: string
+                        required: true
+                      name:
+                        type: string
+                        required: false
+                      building:
+                        type: object
+                        required: true
+                        properties:
+                          id:
+                            type: integer
+                            required: true
+                          prefix:
+                            type: string
+                            required: true
+                          name:
+                            type: string
+                            required: true
+
+    delete:
+      description: Deletes a reservation
+      tags:
+        - Reservations
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '204':
+          description: Reservation has been deleted
+
+components:
+  schemas:
+    closureObject:
+      type: object
+      required: false
+      description: Room closure information
+      properties:
+        reason:
+          type: string
+          required: true
+          description: Reason why room is not available
+        since:
+          type: string
+          pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])'
+          required: true
+          description: Date at which the closure will begin
+        until:
+          type: string
+          pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])'
+          required: false
+          description: Date at which the closure will end
+
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      description: Zero based index of page to fetch
+      required: false
+      schema:
+        type: integer
+    limitParam:
+      name: limit
+      in: query
+      description: Maximal number of elements a page can have
+      required: false
+      schema:
+        type: integer
