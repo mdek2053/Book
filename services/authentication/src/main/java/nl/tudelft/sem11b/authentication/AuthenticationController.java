@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthenticationController {
 
-    @GetMapping("/")
+    @GetMapping("/test")
     public String test(){
         return "<h1> TEST </h1>";
     }
