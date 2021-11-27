@@ -1,5 +1,2 @@
 mainClassName = 'main.java.nl.tudelft.sem11b.authentication.MainApplication'
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-}
