@@ -46,6 +46,34 @@ paths:
         '403':
           description: User is not authorized to access the system
 
+  /users/me:
+    get:
+      description: Gets information about current user
+      tags:
+        - Users
+
+      responses:
+        '200':
+          description: User information
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    required: true
+                  login:
+                    type: string
+                    required: true
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - secretary
+                        - admin
+
   /users/{id}:
     parameters:
       - name: id
@@ -230,6 +258,18 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: min_capacity
+          in: query
+          description: Minimal required room capacity
+          schema:
+            type: integer
+        - name: equipment
+          in: query
+          description: Minimal required room equipment
+          schema:
+            type: array
+            items:
+              type: integer
 
       responses:
         '200':
@@ -263,6 +303,9 @@ paths:
                           type: string
                           required: false
                           description: Name of the room (not necessarily unique)
+                        capacity:
+                          type: integer
+                          required: true
                         closure:
                           $ref: '#/components/schemas/closureObject'
 
@@ -285,6 +328,18 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: min_capacity
+          in: query
+          description: Minimal required room capacity
+          schema:
+            type: integer
+        - name: equipment
+          in: query
+          description: Minimal required room equipment
+          schema:
+            type: array
+            items:
+              type: integer
 
       responses:
         '200':
@@ -322,6 +377,8 @@ paths:
                           type: integer
                           required: true
                           description: ID of the building the room is in
+                        capacity:
+                          type: integer
                         closure:
                           $ref: '#/components/schemas/closureObject'
 
@@ -372,11 +429,59 @@ paths:
                         type: string
                         required: false
                         description: Name of the building (not necessarily unique)
+                  capacity:
+                    type: integer
+                  equipment:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
                   closure:
                     $ref: '#/components/schemas/closureObject'
 
         '404':
           description: Room not found
+
+  /rooms/equipment:
+    get:
+      description: Lists all possible room equipment
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of equipment descriptors
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the equipment
+                        name:
+                          type: string
+                          required: true
 
   /rooms/{id}/closure:
     post:
