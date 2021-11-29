@@ -1,3 +1,6 @@
 plugins {
 	id 'java-library'
 }
+dependencies{
+	implementation 'com.auth0:java-jwt:3.13.0'                                // jwt tokens
+}
