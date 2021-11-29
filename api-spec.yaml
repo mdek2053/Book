@@ -1,0 +1,1389 @@
+openapi: 3.0.3
+info:
+  title: SEM-11b
+  description: API specification for room booking system developed by group 11b
+  version: 1.0.0
+
+paths:
+  /login:
+    post:
+      description:
+        Authenticates a user and issues an identity token. Token is only issued if the user is authorized to access the
+        sytem
+      tags:
+        - Users
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  required: true
+                  description: NetID of the user (without domain)
+                password:
+                  type: string
+                  required: true
+                  description: User's password in plain-text
+
+            example:
+              login: jsmith
+              password: SmightyJohn!
+
+      responses:
+        '200':
+          description: User has been successfully authenticated and authorized
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    required: true
+                    description: Identity token
+
+              example:
+                token: 4UWx7Eh5m.PCsVW3In6KO3.1tl9krGmj8aG6HP
+
+        '401':
+          description: Provided login credentials are not valid
+        '403':
+          description: User is not authorized to access the system
+
+  /users/me:
+    get:
+      description: Gets information about current user
+      tags:
+        - Users
+
+      responses:
+        '200':
+          description: User information
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    required: true
+                    description: Unique numeric identifier of the user
+                  login:
+                    type: string
+                    required: true
+                    description: User's NetID
+                  roles:
+                    $ref: '#/components/schemas/rolesArray'
+
+              example:
+                id: 42
+                login: jsmith
+                roles:
+                  - secretary
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID of the user to fetch
+        schema:
+          type: integer
+
+    get:
+      description: Gets information about a user
+      tags:
+        - Users
+
+      responses:
+        '200':
+          description: User data
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  login:
+                    type: string
+                    required: true
+                    description: User's NetID
+                  roles:
+                    $ref: '#/components/schemas/rolesArray'
+
+        '404':
+          description: User not found
+
+  /users/query:
+    post:
+      description: Looks up users based on their NetID
+      tags:
+        - Users
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      requestBody:
+        description: |-
+          User NetID matching criteria. When both `match_left` and `match_right` are set to `false`, the user's NetID is
+          fuzzy matched (as though there was a wildcard before and after the given string: `*login*`). Setting
+          `match_left` to `true` will require that the user's NetID *begins* with the given string. Similarly, setting
+          `match_right` to `true` will require that the user's NetID *concludes* with the given string. Setting both
+          will force an exact match. In such a case, query can only return *at most* one record, as NetID is a unique user
+          identifier.
+
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  required: true
+                  description: A NetID matching (sub-)string
+                match_left:
+                  type: boolean
+                  required: false
+                  default: false
+                  description: When set to `true`, requires that the user's NetID *begins* with the given string
+                match_right:
+                  type: boolean
+                  required: false
+                  default: false
+                  description: When set to `true`, requires that the user's NetID *ends* with the given string
+
+            example:
+              login: jsm
+              match_left: true
+
+      responses:
+        '200':
+          description: List of users that match the query
+
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match the given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the user
+                        login:
+                          type: string
+                          required: true
+                          description: User's NetID
+                        roles:
+                          $ref: '#/components/schemas/rolesArray'
+
+              example:
+                total: 3
+                data:
+                  - id: 42
+                    login: jsmith
+                    roles:
+                      - secretary
+                  - id: 1
+                    login: jsmall
+                    roles:
+                      - admin
+                  - id: 69
+                    login: jsmnice
+
+
+  /buildings:
+    get:
+      description: Lists all buildings in the system. This enpoint uses paging
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of buildings
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numeric identifier of the building
+                        prefix:
+                          type: string
+                          required: true
+                          pattern: '[0-9a-zA-Z]+'
+                          description: Alphanumeric prefix that uniquely identifies the building
+                        name:
+                          type: string
+                          required: false
+                          description: Name of the building (not necessarily unique)
+
+              example:
+                total: 2
+                data:
+                  - id: 16
+                    prefix: FelS
+                    name: The Fellowship
+                  - id: 64
+                    prefix: EWI
+                    name: Faculty building of Electronic Engineering, Mathematics and Computer Science
+
+
+  /buildings/{id}:
+    get:
+      description: Gets information about a building with the given `id`
+      tags:
+        - Rooms
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Numeric identifier of the building to fetch
+          example: 16
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Building data
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  prefix:
+                    type: string
+                    pattern: '[0-9a-zA-Z]+'
+                    required: true
+                    description: Alphanumeric prefix that uniquely identifies the building
+                  name:
+                    type: string
+                    required: false
+                    description: Name of the building (not necessarily unique)
+
+              example:
+                prefix: FelS
+                name: The Fellowship
+
+        '404':
+          description: Building not found
+
+  /buildings/{id}/rooms:
+    get:
+      description: Lists all rooms within the building of the given `id`. This endpoint uses paging
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - name: id
+          in: path
+          required: true
+          description: Numeric identifier of the building to list the rooms of
+          example: 64
+          schema:
+            type: integer
+        - name: closed
+          in: query
+          required: false
+          description: When set to `true`, closed rooms will be included in the listing
+          example: true
+          schema:
+            type: boolean
+            default: false
+        - name: min_capacity
+          in: query
+          description: Minimal required room capacity
+          schema:
+            type: integer
+        - name: equipment
+          in: query
+          description: Minimal required room equipment
+          schema:
+            type: array
+            items:
+              type: integer
+
+      responses:
+        '200':
+          description: Room listing
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Rooms located inside of the building
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the room
+                        suffix:
+                          type: string
+                          pattern: '[0-9a-zA-Z]+'
+                          required: true
+                          description: Alphanumeric suffix that uniquely identifies the room within a building
+                        name:
+                          type: string
+                          required: false
+                          description: Name of the room (not necessarily unique)
+                        capacity:
+                          type: integer
+                          required: true
+                          description: Maximal capacity of the room
+                        closure:
+                          $ref: '#/components/schemas/closureObject'
+
+              example:
+                total: 2
+                data:
+                  - id: 85
+                    suffix: LH-BOOLE
+                    name: Lecture Hall Boole
+                    capacity: 197
+                  - id: 84
+                    suffix: LH-AMP
+                    name: Lecture Hall Ampére
+                    capacity: 329
+                    closure:
+                      reason: Maintenance
+                      since: 2022-06-12
+                      until: 2022-06-20
+
+        '404':
+          description: Building not found
+
+  /rooms:
+    get:
+      description: Lists all rooms in the system. This enpoint uses paging
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - name: closed
+          in: query
+          required: false
+          description: When set to `true`, closed rooms will be included in the listing
+          example: true
+          schema:
+            type: boolean
+            default: false
+        - name: min_capacity
+          in: query
+          description: Minimal required room capacity
+          example: 300
+          schema:
+            type: integer
+        - name: equipment
+          in: query
+          description: Minimal required room equipment
+          schema:
+            type: array
+            items:
+              type: integer
+
+      responses:
+        '200':
+          description: Requested page of rooms
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the room
+                        suffix:
+                          type: string
+                          pattern: '[0-9a-zA-Z]+'
+                          required: true
+                          description: Alphanumeric suffix that uniquely identifies the room within a building
+                        name:
+                          type: string
+                          required: false
+                          description: Name of the room (not necessarily unique)
+                        building:
+                          type: integer
+                          required: true
+                          description: ID of the building the room is in
+                        capacity:
+                          type: integer
+                        closure:
+                          $ref: '#/components/schemas/closureObject'
+
+              example:
+                total: 1
+                data:
+                  - id: 84
+                    suffix: LH-AMP
+                    name: Lecture Hall Ampére
+                    building: 64
+                    capacity: 329
+                    closure:
+                      reason: Maintenance
+                      since: 2022-06-12
+                      until: 2022-06-20
+
+  /rooms/{id}:
+    get:
+      description: Gets information about a room with the given `id`
+      tags:
+        - Rooms
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique numberc identifier of the room
+          example: 84
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Room information
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  suffix:
+                    type: string
+                    pattern: '[0-9a-zA-Z]+'
+                    required: true
+                    description: Alphanumeric suffix that uniquely identifies the room within a building
+                  name:
+                    type: string
+                    required: false
+                    description: Name of the room (not necessarily unique)
+                  building:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        required: true
+                        description: Unique numberc identifier of the building the room is in
+                      prefix:
+                        type: string
+                        pattern: '[0-9a-zA-Z]+'
+                        required: true
+                        description: Alphanumeric prefix that uniquely identifies the building
+                      name:
+                        type: string
+                        required: false
+                        description: Name of the building (not necessarily unique)
+                  capacity:
+                    type: integer
+                    description: Maximal room capacity
+                  equipment:
+                    $ref: '#/components/schemas/equipmentArray'
+                  closure:
+                    $ref: '#/components/schemas/closureObject'
+
+              example:
+                suffix: LH-AMP
+                name: Lecture Hall Ampére
+                building:
+                  id: 64
+                  prefix: EWI
+                  name: Faculty building of Electronic Engineering, Mathematics and Computer Science
+                capacity: 329
+                equipment:
+                  - id: 35
+                    name: Desktop PC
+                  - id: 78
+                    name: Smartboard
+                closure:
+                  reason: Maintenance
+                  since: 2022-06-12
+                  until: 2022-06-20
+
+        '404':
+          description: Room not found
+
+  /rooms/equipment:
+    get:
+      description: Lists all possible room equipment
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of equipment descriptors
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the equipment
+                        name:
+                          type: string
+                          required: true
+                          description: Name of equipment
+
+              example:
+                total: 3
+                data:
+                  - id: 35
+                    name: Desktop PC
+                  - id: 78
+                    name: Smartboard
+                  - id: 12
+                    name: Chalkboard
+
+  /rooms/{id}/closure:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Numeric identifier of a room
+        example: 84
+        schema:
+          type: integer
+
+    post:
+      description: Sets or updates closure on a room
+      tags:
+        - Rooms
+
+      requestBody:
+        description: Closure data
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/closureObject'
+
+            example:
+              reason: Maintenance
+              since: 2022-06-12
+              until: 2022-06-20
+
+      responses:
+        '200':
+          description: Room closure has been set or updated
+        '404':
+          description: Room not found
+
+    delete:
+      description: Removes a closure from a room
+      tags:
+        - Rooms
+
+      responses:
+        '204':
+          description: Room closure has been removed
+        '404':
+          description: Room not found
+
+  /rooms/{id}/faults:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Numeric identifier of a room
+        example: 84
+        schema:
+          type: integer
+
+    get:
+      description: Lists fault reports for room given by `id`
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of faults
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the fault
+                        reporter:
+                          type: integer
+                          required: true
+                          description: Unique numeric identifier of the user who reported the fault
+                        description:
+                          type: string
+                          required: true
+                          description: Description of the fault
+
+              example:
+                total: 1
+                data:
+                  - id: 15
+                    reporter: 42
+                    description: Room lights are broken
+
+    post:
+      description: Submits a new fault report
+      tags:
+        - Rooms
+
+      requestBody:
+        description: Information about the fault
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                reservation:
+                  type: integer
+                  required: true
+                  description: Reservation at which the fault was discovered
+                description:
+                  type: string
+                  required: true
+                  description: Description of the fault
+
+      responses:
+        '204':
+          description: Fault report has been submitted
+
+  /faults:
+    get:
+      description: Lists fault reports for all rooms
+      tags:
+        - Rooms
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of faults
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the fault
+                        reporter:
+                          type: integer
+                          required: true
+                          description: Unique numeric identifier of the user who reported the fault
+                        description:
+                          type: string
+                          required: true
+                          description: Description of the fault
+                        room:
+                          type: integer
+                          required: true
+                          description: Numeric identifier of the room where the fault has been reported
+
+              example:
+                total: 2
+                data:
+                  - id: 15
+                    reporter: 42
+                    description: Room lights are broken
+                    room: 84
+                  - id: 31
+                    reporter: 1
+                    description: The floor is lava
+                    room: 192
+
+  /faults/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Numeric identifier of a fault report
+        example: 15
+        schema:
+          type: integer
+
+    get:
+      description: Gets information about a fault report
+      tags:
+        - Rooms
+
+      responses:
+        '200':
+          description: Fault report
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    required: true
+                    description: Description of a fault
+                  room:
+                    $ref: '#/components/schemas/roomObject'
+
+              example:
+                description: Room lights are broken
+                room:
+                  id: 84
+                  suffix: LH-AMP
+                  name: Lecture Hall Ampére
+                  building:
+                    id: 64
+                    prefix: EWI
+                    name: Faculty building of Electronic Engineering, Mathematics and Computer Science
+                  capacity: 329
+                  equipment:
+                    - id: 35
+                      name: Desktop PC
+                    - id: 78
+                      name: Smartboard
+                  closure:
+                    reason: Maintenance
+                    since: 2022-06-12
+                    until: 2022-06-20
+
+    delete:
+      description: Resolves a fault report
+      tags:
+        - Rooms
+
+      responses:
+        '204':
+          description: Report has been resolved
+
+  /reservations/mine:
+    get:
+      description: Lists reservations of the current user
+      tags:
+        - Reservations
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: Requested page of reservations
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the reservation
+                        title:
+                          type: string
+                          required: true
+                          description: Title of reservation
+                        room:
+                          type: integer
+                          required: true
+                          description: Unique numberc identifier of the room the reservation is for
+                        since:
+                          type: string
+                          pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])'
+                          description: Time at which the reservation begins
+                        until:
+                          type: string
+                          pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])'
+                          description: Time at which the reservation ends
+
+              example:
+                total: 2
+                data:
+                  - id: 45
+                    title: Hardcore Maths
+                    room: 84
+                    since: 2022-03-18T13:45
+                    until: 2022-03-18T15:45
+                  - id: 46
+                    title: Computer networks
+                    room: 85
+                    since: 2022-03-18T15:45
+                    until: 2022-03-18T17:45
+
+  /reservations:
+    post:
+      description:
+        Creates a new reservation. Secretaries may use the `for` field to reserve a room on behalf of a research group
+        member
+
+      tags:
+        - Reservations
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                room:
+                  type: integer
+                  required: true
+                  description: Numeric identifier of a room
+                title:
+                  type: string
+                  required: true
+                  description: Purpose of the reservation
+                since:
+                  type: string
+                  pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])'
+                  required: true
+                  description: Beginning date and time (with minute resolution) of the reservation
+                until:
+                  type: string
+                  pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])'
+                  required: true
+                  description: Ending date and time (with minute resolution) of the reservation
+                for:
+                  type: integer
+                  required: false
+                  description:
+                    Numeric identifier of a user on who's behalf the reservation is being made (by a secretary)
+
+            example:
+              room: 84
+              title: Research party
+              since: 2022-01-15T13:00
+              until: 2022-01-15T17:00
+              for: 1
+
+      responses:
+        '200':
+          description: Reservation has been created
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    required: true
+                    description: Unique numeric identifier of the created reservation
+
+              example:
+                id: 751
+
+    delete:
+      description:
+        Cancels all reservations of a given `room` after and including a given day `since`. Endpoint is designed to
+        be used internally, specifically to cancel reservations when a room is closed
+
+      tags:
+        - Reservations
+
+      parameters:
+        - name: room
+          in: query
+          required: true
+          description: Numeric identifier of a room
+          example: 84
+          schema:
+            type: integer
+        - name: since
+          in: query
+          required: true
+          description: Date since which (inclusive) reservations should be cancelled
+          example: 2021-11-28
+          schema:
+            type: string
+            pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])'
+
+      responses:
+        '204':
+          description: Reservations cancelled
+
+  /reservations/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Numeric identifier of a reservation
+        example: 45
+        schema:
+          type: integer
+
+    get:
+      description: Gets reservation information
+      tags:
+        - Reservations
+
+      responses:
+        '200':
+          description: Reservation information
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    required: true
+                  since:
+                    type: string
+                    required: true
+                  until:
+                    type: string
+                    required: true
+                  room:
+                    $ref: '#/components/schemas/roomObject'
+
+              example:
+                title: Hardcore Maths
+                since: 2022-03-18T13:45
+                until: 2022-03-18T15:45
+                room:
+                  id: 84
+                  suffix: LH-AMP
+                  name: Lecture Hall Ampére
+                  building:
+                    id: 64
+                    prefix: EWI
+                    name: Faculty building of Electronic Engineering, Mathematics and Computer Science
+                  capacity: 329
+                  equipment:
+                    - id: 35
+                      name: Desktop PC
+                    - id: 78
+                      name: Smartboard
+                  closure:
+                    reason: Maintenance
+                    since: 2022-06-12
+                    until: 2022-06-20
+
+    post:
+      description: Updates a reservation. Note that room of reservation cannot be changed
+      tags:
+        - Reservations
+
+      requestBody:
+        description: New reservation data
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  required: true
+                  description: Purpose of reservation
+                since:
+                  type: string
+                  pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])'
+                  required: true
+                  description: Starting date and time (with minute resolution) of the reservation
+                until:
+                  type: string
+                  pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])T(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])'
+                  required: true
+                  description: Ending date and time (with minute resolution) of the reservation
+
+            example:
+              title: Hardcore Maths
+              since: 2022-03-18T13:45
+              until: 2022-03-18T15:30
+
+      responses:
+        '204':
+          description: Reservation has been updated
+
+    delete:
+      description: Deletes a reservation
+      tags:
+        - Reservations
+
+      requestBody:
+        description: Cancels a reservation. Administrators must supply a reason for canceling the reservation
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  required: false
+                  description: Reason for cancelation (when canceled by an admin)
+
+      responses:
+        '204':
+          description: Reservation has been deleted
+
+  /groups:
+    post:
+      description:
+        Creates a new reserach group. Administrator may use the `secretary` field to assign a secretary to the group,
+        otherwise the secretary will be the current user.
+
+      tags:
+        - Groups
+
+      requestBody:
+        description: Research group data
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/groupObject'
+
+            example:
+              name: Yet another Riemann research group
+              secretary: 33
+              members:
+                - 17
+                - 32
+                - 98
+
+      responses:
+        '200':
+          description: Reserach group has been created
+
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Unique numeric identifier of the newly created research group
+
+  /groups/mine:
+    get:
+      description: Gets groups the user is a member of
+      tags:
+        - Groups
+
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+
+      responses:
+        '200':
+          description: A page of groups
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    required: true
+                    description: Total number of elements which match given search criteria
+                  data:
+                    type: array
+                    required: true
+                    description: Elements of this page
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          required: true
+                          description: Unique numeric identifier of the group
+                        name:
+                          type: string
+                          required: true
+                          description: Name of the group
+                        secretary:
+                          type: integer
+                          required: true
+                          description: Numeric identifier of the user who is this group's secretary
+
+
+              example:
+                total: 1
+                data:
+                  - id: 13
+                    name: Quaternions and Fibonacci
+                    secretary: 5
+
+  /groups/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Numeric identifier of a group
+        example: 5
+        schema:
+          type: integer
+
+    get:
+      description: Gets group data
+      tags:
+        - Groups
+
+      responses:
+        '200':
+          description: Group data
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/groupObject'
+
+              example:
+                name: Quaternions and Fibonacci
+                secretary: 5
+                members:
+                  - 55
+                  - 89
+                  - 144
+
+    post:
+      description: Updates a group. Only administrators may change the secretary of a group.
+      tags:
+        - Groups
+
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/groupObject'
+
+            example:
+              name: Quaternions and Fibonacci
+              members:
+                - 55
+                - 89
+                - 144
+                - 233
+
+      responses:
+        '204':
+          description: Group has been updated
+
+    delete:
+      description: Deletes a group
+      tags:
+        - Groups
+
+      responses:
+        '204':
+          description: Group has been deleted
+
+components:
+  schemas:
+    closureObject:
+      type: object
+      required: false
+      description: Room closure information
+      properties:
+        reason:
+          type: string
+          required: true
+          description: Reason why room is not available
+        since:
+          type: string
+          pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])'
+          required: true
+          description: Date at which the closure will begin
+        until:
+          type: string
+          pattern: '(\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])'
+          required: false
+          description: Date at which the closure will end
+
+    groupObject:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of research group
+        secretary:
+          type: integer
+          description: Numeric identifier of the user who is this group's secretary
+        members:
+          type: array
+          description: Numeric identifiers of users who are in this group
+          items:
+            type: integer
+
+    rolesArray:
+      type: array
+      description: All roles held by the user
+      items:
+        type: string
+        enum:
+          - secretary
+          - admin
+
+    equipmentArray:
+      type: array
+      description: Equipment of the room
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: Unique numeric identifier of the equipment
+          name:
+            type: string
+            description: Name of the equipment
+
+    roomObject:
+      type: object
+      required: true
+      properties:
+        id:
+          type: integer
+          required: true
+          description: Unique numeric identifier of a room
+        suffix:
+          type: string
+          pattern: '[0-9a-zA-Z]+'
+          required: true
+          description: Alphanumeric suffix that uniquely identifies the room within a building
+        name:
+          type: string
+          required: false
+          description: Name of the room (not necessarily unique)
+        capacity:
+          type: integer
+          required: true
+          description: Maximal capacity of the room
+        equipment:
+          $ref: '#/components/schemas/equipmentArray'
+        building:
+          type: object
+          properties:
+            id:
+              type: integer
+              required: true
+              description: Unique numberc identifier of the building the room is in
+            prefix:
+              type: string
+              pattern: '[0-9a-zA-Z]+'
+              required: true
+              description: Alphanumeric prefix that uniquely identifies the building
+            name:
+              type: string
+              required: false
+              description: Name of the building (not necessarily unique)
+        closure:
+          $ref: '#/components/schemas/closureObject'
+
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      description: Zero based index of page to fetch
+      required: false
+      schema:
+        type: integer
+        default: 0
+    limitParam:
+      name: limit
+      in: query
+      description: Maximal number of elements a page can have
+      required: false
+      schema:
+        type: integer
+        default: 32
