@@ -33,7 +33,7 @@ service-identity-checkstyle:
 
 service-identity-test:
   stage: test
-  when: never
+  when: manual
   script:
     - ./gradlew :services:identity:test :services:identity:jacocoTestReport
     - cat services/identity/build/reports/jacoco/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
