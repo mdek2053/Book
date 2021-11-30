@@ -9,7 +9,7 @@ variables:
   # Disable the Gradle daemon to ensure isolated runs of the CI pipeline.
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
-service-admin-build:
+service-core-build:
   stage: build
   script:
     ./gradlew --build-cache :services:core:assemble
@@ -20,7 +20,7 @@ service-admin-build:
       - build/
       - .gradle/
 
-service-admin-checkstyle:
+service-core-checkstyle:
   stage: validate
   script: ./gradlew :services:core:checkstyleMain :services:core:checkstyleTest
   cache:
@@ -31,7 +31,7 @@ service-admin-checkstyle:
       - .gradle/
   allow_failure: true
 
-service-admin-test:
+service-core-test:
   stage: test
   script:
     - ./gradlew :services:core:test :services:core:jacocoTestReport
