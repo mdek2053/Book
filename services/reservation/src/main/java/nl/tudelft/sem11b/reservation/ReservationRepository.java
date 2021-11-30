@@ -3,10 +3,12 @@ package nl.tudelft.sem11b.reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.sql.Date;
 
+@Repository("ReservationRepository")
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     @Modifying
     @Transactional
