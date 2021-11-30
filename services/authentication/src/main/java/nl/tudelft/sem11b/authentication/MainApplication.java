@@ -9,7 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 //This exclude line is here temporarily, so we dont have to set up a database yet
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
+@SpringBootApplication//(exclude = {DataSourceAutoConfiguration.class })
 public class MainApplication {
     public static void main(String[] args) {
         var service = new Service("authentication");

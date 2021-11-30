@@ -1,12 +1,14 @@
 package nl.tudelft.sem11b.authentication;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
-
+@Entity
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String netId;
     private String role;
     private int groupNr;

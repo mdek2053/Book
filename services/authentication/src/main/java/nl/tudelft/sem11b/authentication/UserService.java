@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.authentication;
 
+import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +21,8 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -34,6 +37,11 @@ public class UserService implements UserDetailsService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getPrincipal().toString();
         String role = auth.getAuthorities().toArray()[0].toString();
-        return new User(username, role, 1);
+        saveUser(new User(username, role, 34));
+        return userRepository.findUserByNetId(username);
+    }
+
+    public void saveUser(User user){
+        userRepository.save(user);
     }
 }
