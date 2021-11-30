@@ -26,5 +26,10 @@ subprojects {
 
 		// https://mvnrepository.com/artifact/org.postgresql/postgresql
 		implementation 'org.postgresql:postgresql:42.3.1'
+
+		// https://mvnrepository.com/artifact/org.json/json
+		implementation 'org.json:json:20210307'
+
+		implementation 'org.springframework.boot:spring-boot-starter-test'
 	}
 }
