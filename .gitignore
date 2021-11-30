@@ -6,3 +6,6 @@
 
 # Artifacts
 build/
+
+# Runtime DB files
+*.db
