@@ -1,0 +1,5 @@
+include:
+  - lib/common/.gitlab-ci.yml
+  - services/admin/.gitlab-ci.yml
+  - services/core/.gitlab-ci.yml
+  - services/identity/.gitlab-ci.yml
