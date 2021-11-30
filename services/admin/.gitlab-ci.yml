@@ -33,6 +33,7 @@ service-admin-checkstyle:
 
 service-admin-test:
   stage: test
+  when: never
   script:
     - ./gradlew :services:admin:test :services:admin:jacocoTestReport
     - cat services/admin/build/reports/jacoco/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"

@@ -33,6 +33,7 @@ lib-common-checkstyle:
 
 lib-common-test:
   stage: test
+  when: never
   script:
     - ./gradlew :lib:common:test :lib:common:jacocoTestReport
     - cat lib/common/build/reports/jacoco/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
