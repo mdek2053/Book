@@ -1,15 +1,11 @@
 package nl.tudelft.sem11b.reservation;
 
-import nl.tudelft.sem11b.reservation.HttpHelper;
-import nl.tudelft.sem11b.reservation.ServerInteractionHelper;
-import nl.tudelft.sem11b.reservation.exceptions.BadTokenException;
+import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
+import nl.tudelft.sem11b.reservation.services.HttpHelper;
+import nl.tudelft.sem11b.reservation.services.ServerInteractionHelper;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,6 +43,6 @@ class ServerInteractionHelperTest {
         ServerInteractionHelper serverInteractionHelper = new ServerInteractionHelper();
         serverInteractionHelper.setHelper(helper);
 
-        assertThrows(BadTokenException.class, () -> serverInteractionHelper.getUserId("asd"));
+        assertThrows(UnauthorizedException.class, () -> serverInteractionHelper.getUserId("asd"));
     }
 }
