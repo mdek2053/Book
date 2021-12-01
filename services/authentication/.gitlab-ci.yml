@@ -9,10 +9,10 @@ variables:
   # Disable the Gradle daemon to ensure isolated runs of the CI pipeline.
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
-lib-common-build:
+service-authentication-build:
   stage: build
   script:
-    ./gradlew --build-cache :lib:common:assemble
+    ./gradlew --build-cache :services:authentication:assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -20,9 +20,9 @@ lib-common-build:
       - build/
       - .gradle/
 
-lib-common-checkstyle:
+service-authentication-checkstyle:
   stage: validate
-  script: ./gradlew :lib:common:checkstyleMain :lib:common:checkstyleTest
+  script: ./gradlew :services:authentication:checkstyleMain :services:authentication:checkstyleTest
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
@@ -31,9 +31,9 @@ lib-common-checkstyle:
       - .gradle/
   allow_failure: true
 
-lib-common-test:
+service-authentication-test:
   stage: test
   script:
-    - ./gradlew :lib:common:test :lib:common:jacocoTestReport
-    - cat lib/common/build/reports/jacoco/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
+    - ./gradlew :services:authentication:test :services:authentication:jacocoTestReport
+    - cat services/authentication/build/reports/jacoco/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
