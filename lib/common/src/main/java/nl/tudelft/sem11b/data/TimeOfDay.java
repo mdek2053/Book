@@ -2,7 +2,6 @@ package nl.tudelft.sem11b.data;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -36,14 +35,14 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
     private static final Pattern RGX_FORMAT =
         Pattern.compile("(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])");
 
-    @Column(name = "hour", nullable = false)
-    private final byte hour;
-    @Column(name = "minute", nullable = false)
-    private final byte minute;
+    // TODO: Into a single timestamp
+    @Column(name = "timestamp", nullable = false)
+    private final short timestamp;
 
     /**
-     * Instantiates the {TimeOfDay} class
-     * @param hour Hour of the day
+     * Instantiates the {@link TimeOfDay} class
+     *
+     * @param hour   Hour of the day
      * @param minute Minute of the hour
      */
     public TimeOfDay(long hour, long minute) {
@@ -56,8 +55,7 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
                 "Minute must be a non-negative integer less than 60!");
         }
 
-        this.hour = (byte) hour;
-        this.minute = (byte) minute;
+        this.timestamp = (short) (minute + 60 * hour);
     }
 
     /**
@@ -65,33 +63,26 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
      *
      * @return Hour of the day
      */
-    public byte getHour() {
-        return hour;
+    public int getHour() {
+        return timestamp / 60;
     }
 
     /**
      * Gets the minute of the hour.
+     *
      * @return Minute of the hour
      */
-    public byte getMinute() {
-        return minute;
+    public int getMinute() {
+        return timestamp % 60;
     }
 
     @Override
     public int compareTo(TimeOfDay other) {
-        if (hour != other.hour) {
-            return hour < other.hour ? -1 : 1;
-        }
-
-        if (minute != other.minute) {
-            return minute < other.minute ? -1 : 1;
-        }
-
-        return 0;
+        return Short.compare(timestamp, other.timestamp);
     }
 
     @Override public String toString() {
-        return String.format("%02d:%02d", hour, minute);
+        return String.format("%02d:%02d", getHour(), getMinute());
     }
 
     @Override
@@ -109,7 +100,7 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(hour, minute);
+        return timestamp;
     }
 
     /**
@@ -134,7 +125,7 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
     }
 
     /**
-     * JSON serializer for {TimeOfDay}.
+     * JSON serializer for {@link TimeOfDay}.
      */
     public static class Serializer extends JsonSerializer<TimeOfDay> {
         @Override
@@ -145,7 +136,7 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
     }
 
     /**
-     * JSON deserializer for {TimeOfDay}.
+     * JSON deserializer for {@link TimeOfDay}.
      */
     public static class Deserializer extends JsonDeserializer<TimeOfDay> {
 

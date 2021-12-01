@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 
@@ -41,5 +42,16 @@ public class TimeOfDayTests {
 
         assertThrows(ParseException.class, () -> TimeOfDay.parse("00:-1"));
         assertThrows(IllegalArgumentException.class, () -> new TimeOfDay(0, -1));
+    }
+
+    @Test
+    public void limitTest() {
+        for (int i = 0; i < 24; i++) {
+            for (int j = 0; j < 60; j++) {
+                var time = new TimeOfDay(i, j);
+                assertTrue(TimeOfDay.MINIMUM.compareTo(time) <= 0);
+                assertTrue(TimeOfDay.MAXIMUM.compareTo(time) >= 0);
+            }
+        }
     }
 }
