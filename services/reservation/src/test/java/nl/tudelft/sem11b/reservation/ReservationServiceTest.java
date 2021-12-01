@@ -4,6 +4,7 @@ import nl.tudelft.sem11b.reservation.exception.ForbiddenException;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.reservation.services.ReservationService;
 import nl.tudelft.sem11b.reservation.services.ServerInteractionHelper;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -55,6 +57,7 @@ class ReservationServiceTest {
 
         ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
         when(helper.checkRoomExists(anyLong())).thenReturn(true);
+        when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
         reservationService.setServ(helper);
 
         Timestamp since = new Timestamp(1642248000000L);
@@ -91,6 +94,61 @@ class ReservationServiceTest {
 
         assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "Title",
                 "2022-01-29T13:00", "2022-01-29T17:00"));
+    }
+
+    @Test
+    void makeReservationTestDateTwoDays() throws Exception {
+        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
+        reservationService.setClock(clock);
+
+        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
+        when(helper.checkRoomExists(anyLong())).thenReturn(true);
+        when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
+        reservationService.setServ(helper);
+
+        assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "Title",
+                "2022-01-15T13:00", "2022-01-16T17:00"));
+    }
+
+    @Test
+    void makeReservationTestDateOutsideHours() throws Exception {
+        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
+        reservationService.setClock(clock);
+
+        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
+        when(helper.checkRoomExists(anyLong())).thenReturn(true);
+        when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
+        reservationService.setServ(helper);
+
+        assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "Title",
+                "2022-01-15T06:00", "2022-01-15T06:30"));
+
+        assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "Title",
+                "2022-01-15T06:00", "2022-01-15T10:30"));
+
+        assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "Title",
+                "2022-01-15T19:30", "2022-01-15T20:30"));
+
+        assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "Title",
+                "2022-01-15T21:30", "2022-01-15T23:30"));
+
+        assertDoesNotThrow(() -> reservationService.makeReservation(1, 1, "Title",
+                "2022-01-15T16:30", "2022-01-15T16:45"));
+    }
+
+    @Test
+    void makeReservationTestMaintenance() throws Exception {
+        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
+        reservationService.setClock(clock);
+
+        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
+        when(helper.checkRoomExists(anyLong())).thenReturn(true);
+        when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
+        when(helper.getMaintenance(anyLong())).thenReturn("Some bad reason");
+        reservationService.setServ(helper);
+
+        assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "Title",
+                "2022-01-15T16:30", "2022-01-15T16:45"));
     }
 
 }

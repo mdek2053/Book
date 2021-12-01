@@ -45,7 +45,7 @@ public class ReservationService {
         // must have non-empty title
         if (title == null || title.length() == 0)
             throw new ForbiddenException("Reservation must have title");
-        
+
         // T O D O horrendous time handling, should fix
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         Timestamp sinceDate, untilDate;
@@ -75,7 +75,37 @@ public class ReservationService {
             throw new ForbiddenException("Reservation conflicts with existing reservations");
 
         // check room actually available
+        SimpleDateFormat openingTimeFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat onlyDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<String> openingTimesStrings = serv.getOpeningHours(room_id);
 
+        Timestamp opening, closing;
+        Timestamp sinceDateMidnight, untilDateMidnight;
+        try {
+            opening = new Timestamp(openingTimeFormat.parse(openingTimesStrings.get(0)).getTime());
+            closing = new Timestamp(openingTimeFormat.parse(openingTimesStrings.get(1)).getTime());
+            sinceDateMidnight = new Timestamp(onlyDateFormat.parse(onlyDateFormat.format(sinceDate)).getTime());
+            untilDateMidnight = new Timestamp(onlyDateFormat.parse(onlyDateFormat.format(untilDate)).getTime());
+        }
+        catch (ParseException c) {
+            throw new CommunicationException(); // something went horribly wrong
+        }
+
+        // assuming it can't span across days
+        if (sinceDateMidnight.getTime() != untilDateMidnight.getTime())
+            throw new ForbiddenException("Reservation spans multiple days");
+
+        opening = new Timestamp(opening.getTime() + sinceDateMidnight.getTime());
+        closing = new Timestamp(closing.getTime() + sinceDateMidnight.getTime());
+
+        // now, actually check if in business hours
+        if (opening.after(sinceDate) || closing.before(untilDate))
+            throw new ForbiddenException("Reservation not between room opening hours");
+
+        // room should also NOT be under maintenance
+        String maintenanceEnding = serv.getMaintenance(room_id);
+        if (maintenanceEnding != null) // change this to show the ETA when implemented
+            throw new ForbiddenException("Room is under maintenance: " + maintenanceEnding);
 
         reservationRepository.makeReservation(room_id, user_id, title, sinceDate, untilDate, null);
     }

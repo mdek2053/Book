@@ -1,11 +1,15 @@
 package nl.tudelft.sem11b.reservation.services;
 
 import nl.tudelft.sem11b.reservation.exception.CommunicationException;
+import nl.tudelft.sem11b.reservation.exception.NotFoundException;
 import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
+import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.sql.Timestamp;
+import java.util.List;
 
 public class ServerInteractionHelper {
     private static final HttpClient client = HttpClient.newBuilder().build();
@@ -47,11 +51,45 @@ public class ServerInteractionHelper {
      * @throws CommunicationException if there is any sort of communication error with the server
      */
     public boolean checkRoomExists(long room_id) throws CommunicationException {
-        String path = domainRoomMicroservice + "/room/" + room_id;
+        String path = domainRoomMicroservice + "/rooms/" + room_id;
 
         HttpResponse<String> response = helper.getResponse(client, path, null);
 
         return response.statusCode() != 404;
     }
 
+    /**
+     * Gets the opening hours for a room.
+     * @param room_id the room's id
+     * @return a List with two elements: the opening hour and the closing hour
+     * @throws CommunicationException if there is any sort of communication error with the server
+     */
+    public List<String> getOpeningHours(long room_id) throws CommunicationException {
+        String path = domainRoomMicroservice + "/rooms/" + room_id;
+
+        HttpResponse<String> response = helper.getResponse(client, path, null);
+
+        JSONObject obj = new JSONObject(response.body());
+        JSONObject building = obj.getJSONObject("building");
+        return Lists.list(building.getString("open"), building.getString("close"));
+    }
+
+    /**
+     * Checks if a room is under maintenance and gets the reason.
+     * @param room_id the room's id
+     * @return a String with the maintenance reason if under maintenance, null otherwise
+     * @throws CommunicationException if there is any sort of communication error with the server
+     */
+    public String getMaintenance(long room_id) throws CommunicationException {
+        String path = domainRoomMicroservice + "/rooms/" + room_id;
+
+        HttpResponse<String> response = helper.getResponse(client, path, null);
+
+        JSONObject obj = new JSONObject(response.body());
+        if (!obj.has("closure") || obj.isNull("closure"))
+            return null;
+
+        JSONObject closure = obj.getJSONObject("closure");
+        return closure.getString("reason");
+    }
 }

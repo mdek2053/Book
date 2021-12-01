@@ -3,6 +3,7 @@ package nl.tudelft.sem11b.reservation;
 import nl.tudelft.sem11b.reservation.exception.ForbiddenException;
 import nl.tudelft.sem11b.reservation.services.ReservationService;
 import nl.tudelft.sem11b.reservation.services.ServerInteractionHelper;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -31,6 +32,7 @@ class ReservationServiceDBTest {
 
         ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
         when(helper.checkRoomExists(anyLong())).thenReturn(true);
+        when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
         reservationService.setServ(helper);
 
         reservationService.makeReservation(1, 1, "Title",
