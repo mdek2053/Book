@@ -1,6 +1,6 @@
 package nl.tudelft.sem11b.authentication.repositories;
 
-import nl.tudelft.sem11b.authentication.User;
+import nl.tudelft.sem11b.authentication.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

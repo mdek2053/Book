@@ -1,22 +1,19 @@
 package nl.tudelft.sem11b.authentication;
 
+import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -28,6 +25,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        //TODO use repository to look up users
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("admin"));
         String password = passwordEncoder.encode("password");
@@ -38,8 +36,7 @@ public class UserService implements UserDetailsService {
     public User getCurrentUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String netId = auth.getPrincipal().toString();
-        String role = auth.getAuthorities().toArray()[0].toString();
-        saveUser(new User(netId, role, 34));
+
         return userRepository.findUserByNetId(netId).get();
     }
 
@@ -47,18 +44,16 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public Map<String, Object> addUser(String netId, String password, String role) {
-        if(userRepository.findUserByNetId(netId).isPresent()){
-            Map<String, Object> toBeReturned = new HashMap<>();
-            toBeReturned.put("success", false);
-            toBeReturned.put("message", "netId already exists");
-            return toBeReturned;
+    public User addUser(User user) throws InvalidCredentialsException{
+        if(user.getNetId() == null || user.getPassword() == null || user.getRole() == null){
+            throw new InvalidCredentialsException("Expected netId, password and role to be provided");
+        }
+        if(userRepository.findUserByNetId(user.getNetId()).isPresent()){
+            throw new InvalidCredentialsException("User with this netId already exists.");
         }
 
-        saveUser(new User(netId, role, 1));
-        Map<String, Object> toBeReturned = new HashMap<>();
-        toBeReturned.put("success", true);
-        toBeReturned.put("message", "user has been added");
-        return toBeReturned;
+        User newUser = new User(user.getNetId(), user.getRole(), passwordEncoder.encode(user.getPassword()));
+        saveUser(newUser);
+        return newUser;
     }
 }

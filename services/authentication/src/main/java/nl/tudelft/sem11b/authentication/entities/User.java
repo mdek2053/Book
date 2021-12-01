@@ -1,4 +1,6 @@
-package nl.tudelft.sem11b.authentication;
+package nl.tudelft.sem11b.authentication.entities;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -11,20 +13,23 @@ public class User {
     private Long id;
     private String netId;
     private String role;
-    private int groupNr;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
 
-    public User(String netId, String role, int groupNr) {
+    public User(){}
+
+    public User(String netId, String role, String password) {
         this.netId = netId;
         this.role = role;
-        this.groupNr = groupNr;
+        this.password = password;
     }
 
     public String getNetId() {
         return netId;
     }
 
-    public void setNetId(String netId) {
-        this.netId = netId;
+    public String getPassword() {
+        return password;
     }
 
     public String getRole() {
@@ -35,26 +40,18 @@ public class User {
         this.role = role;
     }
 
-    public int getGroupNr() {
-        return groupNr;
-    }
-
-    public void setGroupNr(int groupNr) {
-        this.groupNr = groupNr;
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return getGroupNr() == user.getGroupNr() &&
-                getNetId().equals(user.getNetId()) &&
+        return getNetId().equals(user.getNetId()) &&
                 getRole().equals(user.getRole());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getNetId(), getRole(), getGroupNr());
+        return Objects.hash(getNetId(), getRole());
     }
 }
