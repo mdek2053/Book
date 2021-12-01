@@ -45,7 +45,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findUserByNetId(netId).get();
     }
 
-    public void saveUser(User user){
+    private void saveUser(User user){
         userRepository.save(user);
     }
 

@@ -26,6 +26,8 @@ subprojects {
 		testImplementation('org.springframework.boot:spring-boot-starter-test') { // Spring Boot test harness
 			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 		}
+		implementation 'junit:junit:4.13.1'										  // JUnit
+
 		testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc' // Spring Boot MVC mocking
 		testImplementation 'org.springframework.security:spring-security-test'    // Spring Boot Security mocking
 
