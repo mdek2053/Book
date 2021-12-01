@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -24,13 +25,17 @@ public class UserService implements UserDetailsService {
     UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //TODO use repository to look up users
+    public UserDetails loadUserByUsername(String netId) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findUserByNetId(netId);
+        if(user.isEmpty()){
+            throw new UsernameNotFoundException("No such user exists.");
+        }
+
+        String password = user.get().getPassword();
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("admin"));
-        String password = passwordEncoder.encode("password");
-        System.out.println("password = " + password + " " + username);
-        return new org.springframework.security.core.userdetails.User(username, password, authorities);
+        authorities.add(new SimpleGrantedAuthority(user.get().getRole()));
+
+        return new org.springframework.security.core.userdetails.User(netId, password, authorities);
     }
 
     public User getCurrentUser(){
