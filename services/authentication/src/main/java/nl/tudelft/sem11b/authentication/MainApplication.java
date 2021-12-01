@@ -10,6 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Contains the main application of this microservice which is run when the system is started.
+ */
 @SpringBootApplication
 public class MainApplication {
     public static void main(String[] args) {
@@ -18,12 +21,13 @@ public class MainApplication {
     }
 
     @Bean
-    CommandLineRunner run(UserService userService){
+    CommandLineRunner run(UserService userService) {
         return args -> {
             User admin = new User("SystemAdmin", "admin", "password");
-            try{
+            try {
                 userService.addUser(admin);     // add admin if it doesn't exist in system already
-            } catch (Exception e){
+            } catch (Exception e) {
+                e.printStackTrace();    // to prevent checkstyle error, can be changed if needed
             }
         };
     }

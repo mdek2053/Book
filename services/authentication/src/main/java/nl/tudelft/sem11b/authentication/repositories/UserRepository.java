@@ -1,11 +1,14 @@
 package nl.tudelft.sem11b.authentication.repositories;
 
+import java.util.Optional;
 import nl.tudelft.sem11b.authentication.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 
+/**
+ * Provides a userRepository which stores the users of the system.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
