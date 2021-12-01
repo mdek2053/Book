@@ -3,6 +3,7 @@ package nl.tudelft.sem11b.authentication;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class UserService implements UserDetailsService {
      * @param user contains data from a specific user of the system.
      * @return object of type User which contains the data after it is saved in the userRepository.
      * @throws InvalidCredentialsException when the credentials are not valid or
-     * when the user already exists in the system.
+     *      when the user already exists in the system.
      */
     public User addUser(User user) throws InvalidCredentialsException {
         if (user.getNetId() == null || user.getPassword() == null || user.getRole() == null) {

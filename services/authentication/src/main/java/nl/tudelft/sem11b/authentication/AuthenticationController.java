@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.authentication;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import nl.tudelft.sem11b.authentication.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

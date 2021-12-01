@@ -1,11 +1,11 @@
 package nl.tudelft.sem11b.authentication.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /**
@@ -22,7 +22,9 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    public User() {}
+    public User() {
+
+    }
 
 
     /**
