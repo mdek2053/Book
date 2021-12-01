@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -35,13 +37,28 @@ public class UserService implements UserDetailsService {
 
     public User getCurrentUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getPrincipal().toString();
+        String netId = auth.getPrincipal().toString();
         String role = auth.getAuthorities().toArray()[0].toString();
-        saveUser(new User(username, role, 34));
-        return userRepository.findUserByNetId(username);
+        saveUser(new User(netId, role, 34));
+        return userRepository.findUserByNetId(netId).get();
     }
 
     public void saveUser(User user){
         userRepository.save(user);
+    }
+
+    public Map<String, Object> addUser(String netId, String password, String role) {
+        if(userRepository.findUserByNetId(netId).isPresent()){
+            Map<String, Object> toBeReturned = new HashMap<>();
+            toBeReturned.put("success", false);
+            toBeReturned.put("message", "netId already exists");
+            return toBeReturned;
+        }
+
+        saveUser(new User(netId, role, 1));
+        Map<String, Object> toBeReturned = new HashMap<>();
+        toBeReturned.put("success", true);
+        toBeReturned.put("message", "user has been added");
+        return toBeReturned;
     }
 }
