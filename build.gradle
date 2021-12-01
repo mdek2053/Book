@@ -16,7 +16,16 @@ subprojects {
 		developmentOnly
 		runtimeClasspath { extendsFrom developmentOnly }
 	}
-	
+
+	dependencies {
+		// Jackson JSON serialization/deserialization API bindings
+		implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+
+		// JUnit5 unit testing framework
+		testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+		testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	}
+
 	java {
 		toolchain {
 			languageVersion = JavaLanguageVersion.of(11) // Could've been 17, just saying. With goodies like:
