@@ -18,14 +18,21 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             + "VALUES (?1, ?2, ?3, ?4, ?5, ?6)", nativeQuery = true)
     void makeReservation(long room_id, long user_id, String title, Timestamp since, Timestamp until, String cancel_reason);
 
+    // two intervals A and B overlap iff
+    // StartA < EndB or StartB < EndA
     @Transactional
     @Query(value = "SELECT * \n" +
             "FROM reservation\n" +
             "WHERE user_id = ?1\n" +
-            "  AND (((since > ?2 AND since < ?3)\n" +
-            "      OR (until > ?2 AND until < ?3))\n" +
-            "    OR (since = ?2 AND until = ?3))", nativeQuery = true)
-    List<Reservation> getConflicts(long user_id, Timestamp since, Timestamp until);
+            "  AND (((?2 < until) AND (since < ?3)) OR ((since = ?2) AND (until = ?3)))", nativeQuery = true)
+    List<Reservation> getUserConflicts(long user_id, Timestamp since, Timestamp until);
+
+    @Transactional
+    @Query(value = "SELECT * \n" +
+            "FROM reservation\n" +
+            "WHERE room_id = ?1\n" +
+            "  AND (((?2 < until) AND (since < ?3)) OR ((since = ?2) AND (until = ?3)))", nativeQuery = true)
+    List<Reservation> getRoomConflicts(long room_id, Timestamp since, Timestamp until);
 
     // debug testing method
     @Transactional

@@ -72,10 +72,15 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
         if (sinceDate.getTime() < currentDate.getTime())
             throw new ForbiddenException("Reservation is in the past");
 
-        // check no conflicting reservations
-        List<Reservation> conflicts = reservationRepository.getConflicts(user_id, sinceDate, untilDate);
-        if (conflicts != null && conflicts.size() > 0)
-            throw new ForbiddenException("Reservation conflicts with existing reservations");
+        // check if it doesn't conflict with user's other reservations
+        List<Reservation> conflictsUser = reservationRepository.getUserConflicts(user_id, sinceDate, untilDate);
+        if (conflictsUser != null && conflictsUser.size() > 0)
+            throw new ForbiddenException("Reservation conflicts with user's existing reservations");
+
+        // check if it doesn't conflict with room's other reservations
+        List<Reservation> conflictsRoom = reservationRepository.getRoomConflicts(room_id, sinceDate, untilDate);
+        if (conflictsRoom != null && conflictsRoom.size() > 0)
+            throw new ForbiddenException("Reservation conflicts with room's existing reservations");
 
         // check room actually available
         List<String> openingTimesStrings = serv.getOpeningHours(room_id);
