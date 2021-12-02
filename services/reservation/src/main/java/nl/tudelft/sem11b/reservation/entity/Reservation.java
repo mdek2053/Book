@@ -1,13 +1,13 @@
-package nl.tudelft.sem11b.reservation;
+package nl.tudelft.sem11b.reservation.entity;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "reservation")
 public class Reservation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private long id;
 
@@ -21,10 +21,10 @@ public class Reservation {
     private String title;
 
     @Column(name = "since")
-    private Date since;
+    private Timestamp since;
 
     @Column(name = "until")
-    private Date until;
+    private Timestamp until;
 
     @Column(name = "cancel")
     private String cancel_reason;
@@ -32,7 +32,7 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(long id, long room_id, long user_id, String title, Date since, Date until, String cancel_reason) {
+    public Reservation(long id, long room_id, long user_id, String title, Timestamp since, Timestamp until, String cancel_reason) {
         this.id = id;
         this.room_id = room_id;
         this.user_id = user_id;
@@ -40,6 +40,15 @@ public class Reservation {
         this.since = since;
         this.until = until;
         this.cancel_reason = cancel_reason;
+    }
+
+    public Reservation(long room_id, long user_id, String title, Timestamp since, Timestamp until) {
+        this.room_id = room_id;
+        this.user_id = user_id;
+        this.title = title;
+        this.since = since;
+        this.until = until;
+        this.cancel_reason = null;
     }
 
     @Override
@@ -56,5 +65,22 @@ public class Reservation {
         if (!since.equals(that.since)) return false;
         if (!until.equals(that.until)) return false;
         return cancel_reason != null ? cancel_reason.equals(that.cancel_reason) : that.cancel_reason == null;
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", room_id=" + room_id +
+                ", user_id=" + user_id +
+                ", title='" + title + '\'' +
+                ", since=" + since +
+                ", until=" + until +
+                ", cancel_reason='" + cancel_reason + '\'' +
+                '}';
+    }
+
+    public long getId() {
+        return id;
     }
 }
