@@ -15,11 +15,14 @@ import nl.tudelft.sem11b.reservation.services.HttpHelper;
 import nl.tudelft.sem11b.reservation.services.ServerInteractionHelper;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SuppressWarnings("unchecked")
 
 @SpringBootTest
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 class ServerInteractionHelperTest {
     @Test
     void getUserIdTestOkay() throws Exception {
