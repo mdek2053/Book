@@ -20,6 +20,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+/**
+ * Represents a specific date in time. Implementation is using the Gregorian calendar.
+ */
 @Embeddable
 @JsonSerialize(using = Day.Serializer.class)
 @JsonDeserialize(using = Day.Deserializer.class)
@@ -34,6 +37,12 @@ public class Day implements Comparable<Day> {
     @Column(name = "day")
     private short day;
 
+    /**
+     * Instantiates the {@link Day} class.
+     *
+     * @param year Year component of the date
+     * @param dayOfYear Day of the year (indexed from 1)
+     */
     public Day(long year, long dayOfYear) {
         var leap = isLeap(year);
         if (dayOfYear < 1 || (!leap && dayOfYear >= 365) || (leap && dayOfYear >= 366)) {
@@ -44,6 +53,13 @@ public class Day implements Comparable<Day> {
         this.day = (short) (dayOfYear - 1);
     }
 
+    /**
+     * Instantiates the {@link Day} class.
+     *
+     * @param year Year component of the date
+     * @param month Month component of the date
+     * @param day Day component of the date
+     */
     public Day(long year, long month, long day) {
         if (month < 1 || month > 12) {
             throw new IllegalArgumentException(
@@ -63,10 +79,20 @@ public class Day implements Comparable<Day> {
         // default constructor for entity materialization
     }
 
+    /**
+     * Gets the year component of the date.
+     *
+     * @return Year component of the date
+     */
     public int getYear() {
         return year;
     }
 
+    /**
+     * Gets the month component of the date (indexed from 1).
+     *
+     * @return Month component of the date
+     */
     public int getMonth() {
         var schema = isLeap(year) ? LSCHEMA : NSCHEMA;
         var day = this.day;
@@ -81,6 +107,11 @@ public class Day implements Comparable<Day> {
         throw new RuntimeException("Unreachable code reached!");
     }
 
+    /**
+     * Gets the day component of the date (indexed from 1).
+     *
+     * @return Day component of the date
+     */
     public int getDay() {
         var schema = isLeap(year) ? LSCHEMA : NSCHEMA;
         var day = this.day;
@@ -95,6 +126,11 @@ public class Day implements Comparable<Day> {
         throw new RuntimeException("Unreachable code reached!");
     }
 
+    /**
+     * Gets the day number of the year (indexed from 1).
+     *
+     * @return Day of the year
+     */
     public int getDayOfYear() {
         return day + 1;
     }
@@ -129,6 +165,15 @@ public class Day implements Comparable<Day> {
         return Objects.hash(year, day);
     }
 
+    /**
+     * Attempts to parse the date from its string representation. Note that surrounding
+     * whitespace and leading zeros are permitted.
+     *
+     * @param str String to parse
+     * @return Parsed date
+     * @throws ParseException When string is in invalid format or the component values are outside
+     *                        their respective bounds
+     */
     public static Day parse(String str) throws ParseException {
         var matches = RGX_FORMAT.matcher(str.trim());
         if (!matches.matches()) {
@@ -146,10 +191,19 @@ public class Day implements Comparable<Day> {
         }
     }
 
+    /**
+     * Checks whether a year is a leap year according to the Gregorian calendar.
+     *
+     * @param year Year to check
+     * @return true if the year is a leap year; false otherwise
+     */
     private static boolean isLeap(long year) {
         return year % 400 == 0 || (year % 4 == 0 && year % 100 == 0);
     }
 
+    /**
+     * JSON serializer for {@link Day}.
+     */
     public static class Serializer extends JsonSerializer<Day> {
         @Override
         public void serialize(Day value, JsonGenerator gen, SerializerProvider serializers)
@@ -158,6 +212,9 @@ public class Day implements Comparable<Day> {
         }
     }
 
+    /**
+     * JSON deserializer for {@link Day}.
+     */
     public static class Deserializer extends JsonDeserializer<Day> {
         @Override
         public Day deserialize(JsonParser p, DeserializationContext ctxt)

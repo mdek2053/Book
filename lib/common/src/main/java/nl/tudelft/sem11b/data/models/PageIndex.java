@@ -9,6 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * Represents a zero-based page index.
+ */
 public class PageIndex {
     private final int index;
     private final int limit;
@@ -28,22 +31,48 @@ public class PageIndex {
         limit = lim;
     }
 
+    /**
+     * Gets the zero-based page index.
+     *
+     * @return Page index
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * Gets the maximal size of a page.
+     *
+     * @return Maximal size of a page
+     */
     public int getLimit() {
         return limit;
     }
 
+    /**
+     * Gets the total zero-based offset in the whole collection of items.
+     *
+     * @return Total offset
+     */
     public int getOffset() {
         return index * limit;
     }
 
+    /**
+     * Creates a JPA paging object equivalent to this page index.
+     *
+     * @return JPA paging object
+     */
     public Pageable getPage() {
         return PageRequest.of(index, limit);
     }
 
+    /**
+     * Creates a JPA paging object equivalent to this page index.
+     *
+     * @param sort Order of items
+     * @return JPA paging object
+     */
     public Pageable getPage(Sort sort) {
         return PageRequest.of(index, limit, sort);
     }

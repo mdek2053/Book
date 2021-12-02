@@ -10,6 +10,8 @@ import nl.tudelft.sem11b.data.models.RoomStudModel;
 
 public interface RoomsService {
     PageData<RoomStudModel> listRooms(PageIndex page);
+
     PageData<RoomStudModel> listRooms(PageIndex page, int building) throws EntityNotFound;
+
     Optional<RoomModel> getRoom(int id);
 }

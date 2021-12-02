@@ -8,5 +8,6 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 
 public interface BuildingService {
     PageData<BuildingModel> listBuildings(PageIndex page);
+
     Optional<BuildingModel> getBuilding(int id);
 }

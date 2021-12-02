@@ -40,7 +40,7 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
     private short timestamp;
 
     /**
-     * Instantiates the {@link TimeOfDay} class
+     * Instantiates the {@link TimeOfDay} class.
      *
      * @param hour   Hour of the day
      * @param minute Minute of the hour
