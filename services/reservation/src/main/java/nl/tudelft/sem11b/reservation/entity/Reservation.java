@@ -1,14 +1,13 @@
-package nl.tudelft.sem11b.reservation;
+package nl.tudelft.sem11b.reservation.entity;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "reservation")
 public class Reservation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private long id;
 
@@ -43,6 +42,15 @@ public class Reservation {
         this.cancel_reason = cancel_reason;
     }
 
+    public Reservation(long room_id, long user_id, String title, Timestamp since, Timestamp until) {
+        this.room_id = room_id;
+        this.user_id = user_id;
+        this.title = title;
+        this.since = since;
+        this.until = until;
+        this.cancel_reason = null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,5 +78,9 @@ public class Reservation {
                 ", until=" + until +
                 ", cancel_reason='" + cancel_reason + '\'' +
                 '}';
+    }
+
+    public long getId() {
+        return id;
     }
 }

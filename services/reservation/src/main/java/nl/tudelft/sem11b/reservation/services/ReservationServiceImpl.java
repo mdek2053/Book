@@ -1,10 +1,10 @@
 package nl.tudelft.sem11b.reservation.services;
 
-import nl.tudelft.sem11b.reservation.Reservation;
-import nl.tudelft.sem11b.reservation.exception.CommunicationException;
-import nl.tudelft.sem11b.reservation.exception.ForbiddenException;
-import nl.tudelft.sem11b.reservation.exception.NotFoundException;
-import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
+import nl.tudelft.sem11b.reservation.entity.Reservation;
+import nl.tudelft.sem11b.data.exception.CommunicationException;
+import nl.tudelft.sem11b.data.exception.ForbiddenException;
+import nl.tudelft.sem11b.data.exception.NotFoundException;
+import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,13 +17,17 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
-public class ReservationService {
+public class ReservationServiceImpl implements nl.tudelft.sem11b.services.ReservationService {
     private final ReservationRepository reservationRepository;
     private ServerInteractionHelper serv = new ServerInteractionHelper();
     private Clock clock = Clock.systemUTC();
 
+    static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+    static final SimpleDateFormat openingTimeFormat = new SimpleDateFormat("HH:mm");
+    static final SimpleDateFormat onlyDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 
@@ -36,7 +40,7 @@ public class ReservationService {
     }
 
     // Method for creating a reservation in the database
-    public void makeReservation(long room_id, long user_id, String title, String since, String until)
+    public long makeReservation(long room_id, long user_id, String title, String since, String until)
             throws ForbiddenException, CommunicationException, NotFoundException {
 
         if (!serv.checkRoomExists(room_id))
@@ -47,7 +51,6 @@ public class ReservationService {
             throw new ForbiddenException("Reservation must have title");
 
         // T O D O horrendous time handling, should fix
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         Timestamp sinceDate, untilDate;
 
         try {
@@ -69,14 +72,17 @@ public class ReservationService {
         if (sinceDate.getTime() < currentDate.getTime())
             throw new ForbiddenException("Reservation is in the past");
 
-        // check no conflicting reservations
-        List<Reservation> conflicts = reservationRepository.getConflicts(user_id, sinceDate, untilDate);
-        if (conflicts != null && conflicts.size() > 0)
-            throw new ForbiddenException("Reservation conflicts with existing reservations");
+        // check if it doesn't conflict with user's other reservations
+        List<Reservation> conflictsUser = reservationRepository.getUserConflicts(user_id, sinceDate, untilDate);
+        if (conflictsUser != null && conflictsUser.size() > 0)
+            throw new ForbiddenException("Reservation conflicts with user's existing reservations");
+
+        // check if it doesn't conflict with room's other reservations
+        List<Reservation> conflictsRoom = reservationRepository.getRoomConflicts(room_id, sinceDate, untilDate);
+        if (conflictsRoom != null && conflictsRoom.size() > 0)
+            throw new ForbiddenException("Reservation conflicts with room's existing reservations");
 
         // check room actually available
-        SimpleDateFormat openingTimeFormat = new SimpleDateFormat("HH:mm");
-        SimpleDateFormat onlyDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         List<String> openingTimesStrings = serv.getOpeningHours(room_id);
 
         Timestamp opening, closing;
@@ -107,7 +113,7 @@ public class ReservationService {
         if (maintenanceEnding != null) // change this to show the ETA when implemented
             throw new ForbiddenException("Room is under maintenance: " + maintenanceEnding);
 
-        reservationRepository.makeReservation(room_id, user_id, title, sinceDate, untilDate, null);
+        return reservationRepository.saveAndFlush(new Reservation(room_id, user_id, title, sinceDate, untilDate)).getId();
     }
 
     /**
@@ -122,10 +128,10 @@ public class ReservationService {
      * @throws NotFoundException if the room does not exist
      * @throws UnauthorizedException if the token is invalid
      */
-    public void makeOwnReservation(long room_id, String user_token, String title, String since, String until)
+    public long makeOwnReservation(long room_id, String user_token, String title, String since, String until)
             throws ForbiddenException, CommunicationException, NotFoundException, UnauthorizedException {
         long user_id = serv.getUserId(user_token);
-        makeReservation(room_id, user_id, title, since, until);
+        return makeReservation(room_id, user_id, title, since, until);
     }
 
     // debug testing method

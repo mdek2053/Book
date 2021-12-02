@@ -1,6 +1,6 @@
 package nl.tudelft.sem11b.reservation.services;
 
-import nl.tudelft.sem11b.reservation.exception.CommunicationException;
+import nl.tudelft.sem11b.data.exception.CommunicationException;
 
 import java.net.URI;
 import java.net.http.HttpClient;

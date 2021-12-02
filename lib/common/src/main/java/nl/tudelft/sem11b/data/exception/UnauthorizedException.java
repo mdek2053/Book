@@ -1,4 +1,4 @@
-package nl.tudelft.sem11b.reservation.exception;
+package nl.tudelft.sem11b.data.exception;
 
 public class UnauthorizedException extends Exception {
     public String reason;
