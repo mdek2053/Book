@@ -198,7 +198,7 @@ public class Day implements Comparable<Day> {
      * @return true if the year is a leap year; false otherwise
      */
     private static boolean isLeap(long year) {
-        return year % 400 == 0 || (year % 4 == 0 && year % 100 == 0);
+        return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);
     }
 
     /**
