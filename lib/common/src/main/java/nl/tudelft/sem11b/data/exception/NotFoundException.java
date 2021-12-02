@@ -1,4 +1,4 @@
-package nl.tudelft.sem11b.reservation.exception;
+package nl.tudelft.sem11b.data.exception;
 
 public class NotFoundException extends Exception {
     public String reason;

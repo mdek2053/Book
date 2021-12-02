@@ -1,11 +1,12 @@
 package nl.tudelft.sem11b.reservation;
 
 import nl.tudelft.sem11b.reservation.entity.ReservationRequest;
-import nl.tudelft.sem11b.reservation.exception.ForbiddenException;
-import nl.tudelft.sem11b.reservation.exception.NotFoundException;
-import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
-import nl.tudelft.sem11b.reservation.exception.CommunicationException;
-import nl.tudelft.sem11b.reservation.services.ReservationService;
+import nl.tudelft.sem11b.data.exception.ForbiddenException;
+import nl.tudelft.sem11b.data.exception.NotFoundException;
+import nl.tudelft.sem11b.data.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.exception.CommunicationException;
+import nl.tudelft.sem11b.reservation.entity.ReservationResponse;
+import nl.tudelft.sem11b.services.ReservationService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,8 @@ public class ReservationController {
     ReservationService reservationService;
 
     @PostMapping("/reservations")
-    JSONObject makeReservation(@RequestHeader("Authorization") String token, @RequestBody ReservationRequest req) {
+    ReservationResponse makeReservation(@RequestHeader("Authorization") String token,
+                                        @RequestBody ReservationRequest req) {
         if (req == null || !req.validate())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Request body empty or doesn't contain all required fields");
@@ -31,7 +33,7 @@ public class ReservationController {
                 reservationId = reservationService.makeOwnReservation(req.getRoom_id(), token,
                         req.getTitle(), req.getSince(), req.getUntil());
             }
-            return new JSONObject().put("id", reservationId);
+            return new ReservationResponse(reservationId);
         }
         catch (CommunicationException c) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,

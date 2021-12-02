@@ -1,10 +1,10 @@
 package nl.tudelft.sem11b.reservation.services;
 
 import nl.tudelft.sem11b.reservation.entity.Reservation;
-import nl.tudelft.sem11b.reservation.exception.CommunicationException;
-import nl.tudelft.sem11b.reservation.exception.ForbiddenException;
-import nl.tudelft.sem11b.reservation.exception.NotFoundException;
-import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.exception.CommunicationException;
+import nl.tudelft.sem11b.data.exception.ForbiddenException;
+import nl.tudelft.sem11b.data.exception.NotFoundException;
+import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
-public class ReservationService {
+public class ReservationServiceImpl implements nl.tudelft.sem11b.services.ReservationService {
     private final ReservationRepository reservationRepository;
     private ServerInteractionHelper serv = new ServerInteractionHelper();
     private Clock clock = Clock.systemUTC();
@@ -27,7 +27,7 @@ public class ReservationService {
     static final SimpleDateFormat onlyDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 

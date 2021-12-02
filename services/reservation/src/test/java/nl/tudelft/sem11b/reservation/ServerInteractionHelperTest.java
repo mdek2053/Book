@@ -1,7 +1,7 @@
 package nl.tudelft.sem11b.reservation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 import nl.tudelft.sem11b.reservation.services.HttpHelper;
 import nl.tudelft.sem11b.reservation.services.ServerInteractionHelper;
 import org.assertj.core.util.Lists;

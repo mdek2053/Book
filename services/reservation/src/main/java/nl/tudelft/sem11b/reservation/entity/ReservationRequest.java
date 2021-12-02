@@ -34,6 +34,9 @@ public class ReservationRequest {
                 until != null && !until.isBlank();
     }
 
+    public ReservationRequest() {
+    }
+
     public ReservationRequest(Long room_id, String title, String since, String until, Long for_user) {
         this.room_id = room_id;
         this.title = title;

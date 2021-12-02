@@ -4,15 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem11b.data.models.BuildingObject;
 import nl.tudelft.sem11b.data.models.RoomObject;
-import nl.tudelft.sem11b.reservation.exception.CommunicationException;
-import nl.tudelft.sem11b.reservation.exception.NotFoundException;
-import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.exception.CommunicationException;
+import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.sql.Timestamp;
 import java.util.List;
 
 public class ServerInteractionHelper {
