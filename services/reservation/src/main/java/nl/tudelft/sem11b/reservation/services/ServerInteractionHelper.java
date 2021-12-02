@@ -1,5 +1,9 @@
 package nl.tudelft.sem11b.reservation.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.tudelft.sem11b.data.models.BuildingObject;
+import nl.tudelft.sem11b.data.models.RoomObject;
 import nl.tudelft.sem11b.reservation.exception.CommunicationException;
 import nl.tudelft.sem11b.reservation.exception.NotFoundException;
 import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
@@ -37,6 +41,7 @@ public class ServerInteractionHelper {
         HttpResponse<String> response = helper.getResponse(client, path, token);
 
         String responseBody = response.body();
+
         if (response.statusCode() == 403) // 403 means token is invalid
             throw new UnauthorizedException("Token is invalid");
 
@@ -68,10 +73,15 @@ public class ServerInteractionHelper {
         String path = domainRoomMicroservice + "/rooms/" + room_id;
 
         HttpResponse<String> response = helper.getResponse(client, path, null);
+        RoomObject room;
+        try {
+            room = new ObjectMapper().readValue(response.body(), RoomObject.class);
+        } catch (JsonProcessingException e) {
+            throw new CommunicationException();
+        }
 
-        JSONObject obj = new JSONObject(response.body());
-        JSONObject building = obj.getJSONObject("building");
-        return Lists.list(building.getString("open"), building.getString("close"));
+        BuildingObject building = room.getBuilding();
+        return Lists.list(building.getOpen(), building.getClose());
     }
 
     /**
@@ -84,12 +94,16 @@ public class ServerInteractionHelper {
         String path = domainRoomMicroservice + "/rooms/" + room_id;
 
         HttpResponse<String> response = helper.getResponse(client, path, null);
+        RoomObject room;
+        try {
+            room = new ObjectMapper().readValue(response.body(), RoomObject.class);
+        } catch (JsonProcessingException e) {
+            throw new CommunicationException();
+        }
 
-        JSONObject obj = new JSONObject(response.body());
-        if (!obj.has("closure") || obj.isNull("closure"))
+        if (room.getClosure() == null)
             return null;
 
-        JSONObject closure = obj.getJSONObject("closure");
-        return closure.getString("reason");
+        return room.getClosure().getDescription();
     }
 }

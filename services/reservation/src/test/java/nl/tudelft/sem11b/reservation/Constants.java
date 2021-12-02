@@ -1,78 +1,34 @@
 package nl.tudelft.sem11b.reservation;
 
+import nl.tudelft.sem11b.data.models.BuildingObject;
+import nl.tudelft.sem11b.data.models.ClosureObject;
+import nl.tudelft.sem11b.data.models.EquipmentObject;
+import nl.tudelft.sem11b.data.models.RoomObject;
+
 public class Constants {
-    public static String jsonResponse = "{\n" +
-            "  \"suffix\": \"LH-AMP\",\n" +
-            "  \"name\": \"Lecture Hall Ampére\",\n" +
-            "  \"building\": {\n" +
-            "    \"id\": 64,\n" +
-            "    \"prefix\": \"EWI\",\n" +
-            "    \"name\": \"Faculty building of Electronic Engineering, Mathematics and Computer Science\",\n" +
-            "    \"open\": \"07:00\",\n" +
-            "    \"close\": \"20:00\"\n" +
-            "  },\n" +
-            "  \"capacity\": 329,\n" +
-            "  \"equipment\": [\n" +
-            "    {\n" +
-            "      \"id\": 35,\n" +
-            "      \"name\": \"Desktop PC\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"id\": 78,\n" +
-            "      \"name\": \"Smartboard\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"closure\": {\n" +
-            "    \"reason\": \"Maintenance\",\n" +
-            "    \"since\": \"2022-06-12\",\n" +
-            "    \"until\": \"2022-06-20\"\n" +
-            "  }\n" +
-            "}";
+    public static RoomObject full = new RoomObject(1L,
+            "LH-AMP",
+            "Lecture Hall Ampére",
+            new BuildingObject(64L, "EWI",
+                    "Faculty building of Electronic Engineering, Mathematics and Computer Science",
+                    "07:00", "20:00"),
+            329,
+            new EquipmentObject[]{
+                    new EquipmentObject(35L, "Desktop PC"),
+                    new EquipmentObject(78L, "Smartboard")
+            },
+            new ClosureObject("Maintenance", "2022-06-12", "2022-06-20"));
 
-    public static String jsonResponseNoClosure = "{\n" +
-            "  \"suffix\": \"LH-AMP\",\n" +
-            "  \"name\": \"Lecture Hall Ampére\",\n" +
-            "  \"building\": {\n" +
-            "    \"id\": 64,\n" +
-            "    \"prefix\": \"EWI\",\n" +
-            "    \"name\": \"Faculty building of Electronic Engineering, Mathematics and Computer Science\",\n" +
-            "    \"open\": \"07:00\",\n" +
-            "    \"close\": \"20:00\"\n" +
-            "  },\n" +
-            "  \"capacity\": 329,\n" +
-            "  \"equipment\": [\n" +
-            "    {\n" +
-            "      \"id\": 35,\n" +
-            "      \"name\": \"Desktop PC\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"id\": 78,\n" +
-            "      \"name\": \"Smartboard\"\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
-
-    public static String jsonResponseNullClosure = "{\n" +
-            "  \"suffix\": \"LH-AMP\",\n" +
-            "  \"name\": \"Lecture Hall Ampére\",\n" +
-            "  \"building\": {\n" +
-            "    \"id\": 64,\n" +
-            "    \"prefix\": \"EWI\",\n" +
-            "    \"name\": \"Faculty building of Electronic Engineering, Mathematics and Computer Science\",\n" +
-            "    \"open\": \"07:00\",\n" +
-            "    \"close\": \"20:00\"\n" +
-            "  },\n" +
-            "  \"capacity\": 329,\n" +
-            "  \"equipment\": [\n" +
-            "    {\n" +
-            "      \"id\": 35,\n" +
-            "      \"name\": \"Desktop PC\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"id\": 78,\n" +
-            "      \"name\": \"Smartboard\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"closure\": null\n" +
-            "}";
+    public static RoomObject noClosure = new RoomObject(1L,
+            "LH-AMP",
+            "Lecture Hall Ampére",
+            new BuildingObject(64L, "EWI",
+                    "Faculty building of Electronic Engineering, Mathematics and Computer Science",
+                    "07:00", "20:00"),
+            329,
+            new EquipmentObject[]{
+                    new EquipmentObject(35L, "Desktop PC"),
+                    new EquipmentObject(78L, "Smartboard")
+            },
+            null);
 }

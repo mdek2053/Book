@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.reservation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem11b.reservation.exception.UnauthorizedException;
 import nl.tudelft.sem11b.reservation.services.HttpHelper;
 import nl.tudelft.sem11b.reservation.services.ServerInteractionHelper;
@@ -49,7 +50,7 @@ class ServerInteractionHelperTest {
     @Test
     void getOpeningHoursRoomOkay() throws Exception {
         HttpResponse<String> response = mock(HttpResponse.class);
-        when(response.body()).thenReturn(Constants.jsonResponse);
+        when(response.body()).thenReturn(new ObjectMapper().writeValueAsString(Constants.full));
 
         HttpHelper helper = mock(HttpHelper.class);
         when(helper.getResponse(any(), any(), any())).thenReturn(response);
@@ -63,21 +64,7 @@ class ServerInteractionHelperTest {
     @Test
     void getMaintenanceNoClosure() throws Exception {
         HttpResponse<String> response = mock(HttpResponse.class);
-        when(response.body()).thenReturn(Constants.jsonResponseNoClosure);
-
-        HttpHelper helper = mock(HttpHelper.class);
-        when(helper.getResponse(any(), any(), any())).thenReturn(response);
-
-        ServerInteractionHelper serverInteractionHelper = new ServerInteractionHelper();
-        serverInteractionHelper.setHelper(helper);
-
-        assertNull(serverInteractionHelper.getMaintenance(1));
-    }
-
-    @Test
-    void getMaintenanceNullClosure() throws Exception {
-        HttpResponse<String> response = mock(HttpResponse.class);
-        when(response.body()).thenReturn(Constants.jsonResponseNullClosure);
+        when(response.body()).thenReturn(new ObjectMapper().writeValueAsString(Constants.noClosure));
 
         HttpHelper helper = mock(HttpHelper.class);
         when(helper.getResponse(any(), any(), any())).thenReturn(response);
@@ -91,7 +78,7 @@ class ServerInteractionHelperTest {
     @Test
     void getMaintenanceHasClosure() throws Exception {
         HttpResponse<String> response = mock(HttpResponse.class);
-        when(response.body()).thenReturn(Constants.jsonResponse);
+        when(response.body()).thenReturn(new ObjectMapper().writeValueAsString(Constants.full));
 
         HttpHelper helper = mock(HttpHelper.class);
         when(helper.getResponse(any(), any(), any())).thenReturn(response);

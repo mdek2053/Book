@@ -1,6 +1,6 @@
 package nl.tudelft.sem11b.reservation.repository;
 
-import nl.tudelft.sem11b.reservation.Reservation;
+import nl.tudelft.sem11b.reservation.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

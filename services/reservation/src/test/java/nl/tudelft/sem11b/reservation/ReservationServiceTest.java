@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.reservation;
 
+import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.exception.ForbiddenException;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.reservation.services.ReservationService;
@@ -28,6 +29,18 @@ class ReservationServiceTest {
     @MockBean
     ReservationRepository reservationRepository;
 
+    @Test
+    void makeReservationTestChecksRoom() throws Exception {
+        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
+        when(helper.checkRoomExists(anyLong())).thenReturn(true);
+
+        reservationService.setServ(helper);
+
+        assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "",
+                "2022-01-15T13:00", "2022-01-15T17:00"));
+
+        verify(helper, times(1)).checkRoomExists(1);
+    }
     @Test
     void makeReservationTestInvalidTitle() throws Exception {
         ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
@@ -60,14 +73,16 @@ class ReservationServiceTest {
         when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
         reservationService.setServ(helper);
 
+        when(reservationRepository.saveAndFlush(any())).thenReturn(new Reservation());
+
         Timestamp since = new Timestamp(1642248000000L);
         Timestamp until = new Timestamp(1642262400000L);
 
         reservationService.makeReservation(1, 1, "Title",
                 "2022-01-15T13:00", "2022-01-15T17:00");
 
-        verify(reservationRepository, times(1)).makeReservation(1, 1, "Title",
-                since, until, null);
+        verify(reservationRepository, times(1)).saveAndFlush(new Reservation(1, 1, "Title",
+                since, until));
     }
 
     @Test
@@ -119,6 +134,8 @@ class ReservationServiceTest {
         when(helper.checkRoomExists(anyLong())).thenReturn(true);
         when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
         reservationService.setServ(helper);
+
+        when(reservationRepository.saveAndFlush(any())).thenReturn(new Reservation());
 
         assertThrows(ForbiddenException.class, () -> reservationService.makeReservation(1, 1, "Title",
                 "2022-01-15T06:00", "2022-01-15T06:30"));
