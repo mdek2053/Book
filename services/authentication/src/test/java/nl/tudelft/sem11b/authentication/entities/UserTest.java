@@ -9,49 +9,44 @@ import org.junit.jupiter.api.Test;
 
 class UserTest {
 
+    private User user1 = new User("username", "employee", "abc123");
+    private User user2 = new User("Username", "employee", "abc123");
+
     @Test
     void getNetId() {
-        User user = new User("username", "employee", "abc123");
-        assertEquals("username", user.getNetId());
+        assertEquals("username", user1.getNetId());
     }
 
     @Test
     void getPassword() {
-        User user = new User("username", "employee", "abc123");
-        assertEquals("abc123", user.getPassword());
+        assertEquals("abc123", user1.getPassword());
     }
 
     @Test
     void getRole() {
-        User user = new User("username", "employee", "abc123");
-        assertEquals("employee", user.getRole());
+        assertEquals("employee", user1.getRole());
     }
 
     @Test
     void setRole() {
-        User user = new User("username", "employee", "abc123");
-        user.setRole("admin");
-        assertEquals("admin", user.getRole());
+        user1.setRole("admin");
+        assertEquals("admin", user1.getRole());
     }
 
     @Test
     void setInvalidRole() {
-        User user = new User("username", "employee", "abc123");
-        assertThrows(IllegalArgumentException.class, () -> user.setRole("Random"));
-        assertEquals("employee", user.getRole());
+        assertThrows(IllegalArgumentException.class, () -> user1.setRole("Random"));
+        assertEquals("employee", user1.getRole());
     }
 
     @Test
     void testEquals() {
-        User user = new User("username", "employee", "abc123");
-        User user1 = new User("username", "employee", "abc123");
-        assertTrue(user.equals(user1));
+        User user3 = new User("username", "employee", "abc123");
+        assertTrue(user1.equals(user3));
     }
 
     @Test
     void testNotEquals() {
-        User user = new User("username", "employee", "abc123");
-        User user1 = new User("Username", "employee", "abc123");
-        assertFalse(user.equals(user1));
+        assertFalse(user1.equals(user2));
     }
 }
