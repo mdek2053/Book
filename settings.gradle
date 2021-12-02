@@ -1,4 +1,4 @@
 rootProject.name = 'sem-11b'
 
 include 'lib:common'
-include 'services:core', 'services:identity', 'services:admin', 'services:reservation'
+include 'services:core', 'services:identity', 'services:admin', 'services:reservation', 'services:authentication'
