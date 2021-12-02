@@ -22,10 +22,6 @@ public class AuthenticationController {
     @Autowired
     UserService service;
 
-    @GetMapping("/test")
-    public String test() {
-        return "<h1> TEST </h1>";
-    }
 
     @GetMapping("/me")
     public User me() {
