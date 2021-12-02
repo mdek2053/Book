@@ -1,5 +1,16 @@
 package nl.tudelft.sem11b.authentication;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -15,12 +26,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -48,7 +53,7 @@ public class UserServiceTest {
     private User encodedPasswordUser = new User("Bob", "employee", "encoded");
 
     @Test
-    public void loadUserNonExistentTest(){
+    public void loadUserNonExistentTest() {
         when(userRepositoryMock.findUserByNetId(netId1)).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class, () -> {
@@ -57,69 +62,74 @@ public class UserServiceTest {
     }
 
     @Test
-    public void loadUserSuccessfulTest(){
+    public void loadUserSuccessfulTest() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(plainTextPasswordUser.getRole()));
         org.springframework.security.core.userdetails.User expected =
-                new org.springframework.security.core.userdetails.User(plainTextPasswordUser.getNetId(), plainTextPasswordUser.getPassword(), authorities);
+                new org.springframework.security.core.userdetails
+                        .User(plainTextPasswordUser.getNetId(), plainTextPasswordUser
+                        .getPassword(), authorities);
 
-        when(userRepositoryMock.findUserByNetId(netId2)).thenReturn(Optional.of(plainTextPasswordUser));
+        when(userRepositoryMock.findUserByNetId(netId2))
+                .thenReturn(Optional.of(plainTextPasswordUser));
 
         assertEquals(expected, userService.loadUserByUsername(netId2));
     }
 
     @Test
-    public void getCurrentUserTest(){
-        User expected = plainTextPasswordUser;
-
+    public void getCurrentUserTest() {
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(netId2);
-        when(userRepositoryMock.findUserByNetId(netId2)).thenReturn(Optional.of(plainTextPasswordUser));
+        when(userRepositoryMock.findUserByNetId(netId2))
+                .thenReturn(Optional.of(plainTextPasswordUser));
 
+        User expected = plainTextPasswordUser;
         assertEquals(expected, userService.getCurrentUser());
     }
 
     @Test
-    public void addUserInvalidNetIdTest(){
-        assertThrows(InvalidCredentialsException.class, () ->{
+    public void addUserInvalidNetIdTest() {
+        assertThrows(InvalidCredentialsException.class, () -> {
             userService.addUser(new User(null, "employee", "banana"));
         });
     }
 
     @Test
-    public void addUserInvalidRoleTest(){
-        assertThrows(InvalidCredentialsException.class, () ->{
+    public void addUserInvalidRoleTest() {
+        assertThrows(InvalidCredentialsException.class, () -> {
             userService.addUser(new User("Stefan", null, "banana"));
         });
     }
 
     @Test
-    public void addUserInvalidPasswordTest(){
-        assertThrows(InvalidCredentialsException.class, () ->{
+    public void addUserInvalidPasswordTest() {
+        assertThrows(InvalidCredentialsException.class, () -> {
             userService.addUser(new User("Stefan", "employee", null));
         });
     }
 
     @Test
-    public void addUserAlreadyExistsTest(){
-        when(userRepositoryMock.findUserByNetId(netId2)).thenReturn(Optional.of(plainTextPasswordUser));
+    public void addUserAlreadyExistsTest() {
+        when(userRepositoryMock.findUserByNetId(netId2))
+                .thenReturn(Optional.of(plainTextPasswordUser));
 
-        assertThrows(InvalidCredentialsException.class, () ->{
+        assertThrows(InvalidCredentialsException.class, () -> {
             userService.addUser(plainTextPasswordUser);
         });
     }
 
     @Test
-    public void addUserSuccessfulTest(){
+    public void addUserSuccessfulTest() {
         User expected = encodedPasswordUser;
 
         when(userRepositoryMock.findUserByNetId(netId2)).thenReturn(Optional.empty());
-        when(encoder.encode(plainTextPasswordUser.getPassword())).thenReturn(encodedPasswordUser.getPassword());
+        when(encoder.encode(plainTextPasswordUser.getPassword()))
+                .thenReturn(encodedPasswordUser.getPassword());
 
-        try{
+        try {
             assertEquals(expected, userService.addUser(plainTextPasswordUser));
-        } catch(Exception e){
+        } catch (Exception e) {
             fail();
         }
 
