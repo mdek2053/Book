@@ -1,4 +1,4 @@
-package nl.tudelft.sem11b.authentication;
+package nl.tudelft.sem11b.authentication.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,11 +52,15 @@ public class UserService implements UserDetailsService {
      * Gets the data of the user which currently uses the system.
      * @return an object of type User of the current user.
      */
-    public User getCurrentUser() {
+    public User getCurrentUser() throws InvalidCredentialsException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String netId = auth.getPrincipal().toString();
-
-        return userRepository.findUserByNetId(netId).get();
+        Optional<User> user = userRepository.findUserByNetId(netId);
+        if (user.isPresent()) {
+            return user.get();
+        } else {
+            throw new InvalidCredentialsException("No user exists with this netId");
+        }
     }
 
     /**

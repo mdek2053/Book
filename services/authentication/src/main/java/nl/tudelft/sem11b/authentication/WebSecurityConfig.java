@@ -1,8 +1,8 @@
 package nl.tudelft.sem11b.authentication;
 
-import nl.tudelft.sem11b.authentication.UserService;
 import nl.tudelft.sem11b.authentication.filters.CustomAuthenticationFilter;
 import nl.tudelft.sem11b.authentication.filters.CustomAuthorizationFilter;
+import nl.tudelft.sem11b.authentication.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authProvider());
     }
 
@@ -52,6 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * Provides a DaoAuthenticationProvider which contains a UserService and PasswordEncoder.
+     *
      * @return an object of type DaoAuthenticationProvider.
      */
     @Bean
@@ -64,6 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * Provides a PasswordEncoder.
+     *
      * @return a BCryptPasswordEncoder of type PasswordEncoder.
      */
     @Bean
