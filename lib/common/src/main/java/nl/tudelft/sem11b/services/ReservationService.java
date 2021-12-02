@@ -6,6 +6,8 @@ import nl.tudelft.sem11b.data.exception.NotFoundException;
 import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 
 public interface ReservationService {
-    long makeOwnReservation(long room_id, String user_token, String title, String since, String until)
-            throws ForbiddenException, CommunicationException, NotFoundException, UnauthorizedException;
+    long makeOwnReservation(long roomId, String userToken,
+                            String title, String since, String until)
+            throws ForbiddenException, CommunicationException,
+            NotFoundException, UnauthorizedException;
 }

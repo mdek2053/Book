@@ -52,6 +52,14 @@ public class BuildingObject implements Serializable {
     public BuildingObject() {
     }
 
+    /**
+     * Creates a Building object.
+     * @param id Unique numeric identifier of the building
+     * @param prefix Alphanumeric prefix that uniquely identifies the building
+     * @param name Name of the building (not necessarily unique)
+     * @param open Opening hours of the building
+     * @param close Closing hours of the building
+     */
     public BuildingObject(Long id, String prefix, String name, String open, String close) {
         this.id = id;
         this.prefix = prefix;

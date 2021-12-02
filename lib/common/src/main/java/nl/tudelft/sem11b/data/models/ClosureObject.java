@@ -34,6 +34,12 @@ public class ClosureObject implements Serializable {
     public ClosureObject() {
     }
 
+    /**
+     * Creates a Closure object.
+     * @param description Reason why room is not available
+     * @param since Date at which the closure will begin
+     * @param until Date at which the closure will end
+     */
     public ClosureObject(String description, String since, String until) {
         this.description = description;
         this.since = since;

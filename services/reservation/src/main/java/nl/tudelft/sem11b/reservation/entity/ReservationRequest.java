@@ -1,14 +1,14 @@
 package nl.tudelft.sem11b.reservation.entity;
 
 public class ReservationRequest {
-    Long room_id;
+    Long roomId;
     String title;
     String since;
     String until;
-    Long for_user;
+    Long forUser;
 
-    public Long getRoom_id() {
-        return room_id;
+    public Long getRoomId() {
+        return roomId;
     }
 
     public String getTitle() {
@@ -23,25 +23,37 @@ public class ReservationRequest {
         return until;
     }
 
-    public Long getFor_user() {
-        return for_user;
+    public Long getForUser() {
+        return forUser;
     }
 
+    /**
+     * Checks if a reservation entity has all mandatory fields filled in.
+     * @return true if valid entity, false otherwise
+     */
     public boolean validate() {
-        return room_id != null &&
-                title != null && !title.isBlank() &&
-                since != null && !since.isBlank() &&
-                until != null && !until.isBlank();
+        return roomId != null
+                && title != null && !title.isBlank()
+                && since != null && !since.isBlank()
+                && until != null && !until.isBlank();
     }
 
     public ReservationRequest() {
     }
 
-    public ReservationRequest(Long room_id, String title, String since, String until, Long for_user) {
-        this.room_id = room_id;
+    /**
+     * Creates a ReservationRequest object.
+     * @param roomId id of the room the reservation is for
+     * @param title title of the reservation
+     * @param since start time of the reservation
+     * @param until end time of the reservation
+     * @param forUser optinally, can specify for which user the reservation is made
+     */
+    public ReservationRequest(Long roomId, String title, String since, String until, Long forUser) {
+        this.roomId = roomId;
         this.title = title;
         this.since = since;
         this.until = until;
-        this.for_user = for_user;
+        this.forUser = forUser;
     }
 }

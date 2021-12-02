@@ -1,20 +1,20 @@
 package nl.tudelft.sem11b.reservation.services;
 
-import nl.tudelft.sem11b.reservation.entity.Reservation;
-import nl.tudelft.sem11b.data.exception.CommunicationException;
-import nl.tudelft.sem11b.data.exception.ForbiddenException;
-import nl.tudelft.sem11b.data.exception.NotFoundException;
-import nl.tudelft.sem11b.data.exception.UnauthorizedException;
-import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
+
+import nl.tudelft.sem11b.data.exception.CommunicationException;
+import nl.tudelft.sem11b.data.exception.ForbiddenException;
+import nl.tudelft.sem11b.data.exception.NotFoundException;
+import nl.tudelft.sem11b.data.exception.UnauthorizedException;
+import nl.tudelft.sem11b.reservation.entity.Reservation;
+import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ReservationServiceImpl implements nl.tudelft.sem11b.services.ReservationService {
@@ -40,24 +40,40 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
     }
 
     // Method for creating a reservation in the database
-    public long makeReservation(long room_id, long user_id, String title, String since, String until)
+
+    /**
+     * Creates a reservation in the database.
+     * @param roomId the id of the room
+     * @param userId the user's id
+     * @param title title of the meeting
+     * @param since start date of the meeting
+     * @param until end date of the meeting
+     * @return created reservation's id
+     * @throws ForbiddenException if there is anything illegal with the meeting
+     * @throws CommunicationException if there is any communication problem with the server
+     * @throws NotFoundException if the room does not exist
+     */
+    public long makeReservation(long roomId, long userId,
+                                String title, String since, String until)
             throws ForbiddenException, CommunicationException, NotFoundException {
 
-        if (!serv.checkRoomExists(room_id))
+        if (!serv.checkRoomExists(roomId)) {
             throw new NotFoundException("Room does not exist");
+        }
 
         // must have non-empty title
-        if (title == null || title.length() == 0)
+        if (title == null || title.length() == 0) {
             throw new ForbiddenException("Reservation must have title");
+        }
 
         // T O D O horrendous time handling, should fix
-        Timestamp sinceDate, untilDate;
+        Timestamp sinceDate;
+        Timestamp untilDate;
 
         try {
             sinceDate = new Timestamp(dateFormat.parse(since).getTime());
             untilDate = new Timestamp(dateFormat.parse(until).getTime());
-        }
-        catch (ParseException c) {
+        } catch (ParseException c) {
             throw new ForbiddenException("Date format invalid");
         }
 
@@ -65,61 +81,74 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
         long week = 1209600000; // two weeks in ms
 
         // check if the reservation is not too far in the future
-        if (sinceDate.getTime() - currentDate.getTime() > week)
+        if (sinceDate.getTime() - currentDate.getTime() > week) {
             throw new ForbiddenException("Reservation is more than two weeks away");
+        }
 
         // check if the reservation is not in the past
-        if (sinceDate.getTime() < currentDate.getTime())
+        if (sinceDate.getTime() < currentDate.getTime()) {
             throw new ForbiddenException("Reservation is in the past");
+        }
 
         // check if it doesn't conflict with user's other reservations
-        List<Reservation> conflictsUser = reservationRepository.getUserConflicts(user_id, sinceDate, untilDate);
-        if (conflictsUser != null && conflictsUser.size() > 0)
+        List<Reservation> conflictsUser = reservationRepository
+                .getUserConflicts(userId, sinceDate, untilDate);
+        if (conflictsUser != null && conflictsUser.size() > 0) {
             throw new ForbiddenException("Reservation conflicts with user's existing reservations");
+        }
 
         // check if it doesn't conflict with room's other reservations
-        List<Reservation> conflictsRoom = reservationRepository.getRoomConflicts(room_id, sinceDate, untilDate);
-        if (conflictsRoom != null && conflictsRoom.size() > 0)
+        List<Reservation> conflictsRoom = reservationRepository
+                .getRoomConflicts(roomId, sinceDate, untilDate);
+        if (conflictsRoom != null && conflictsRoom.size() > 0) {
             throw new ForbiddenException("Reservation conflicts with room's existing reservations");
+        }
 
         // check room actually available
-        List<String> openingTimesStrings = serv.getOpeningHours(room_id);
+        List<String> openingTimesStrings = serv.getOpeningHours(roomId);
 
-        Timestamp opening, closing;
-        Timestamp sinceDateMidnight, untilDateMidnight;
+        Timestamp opening;
+        Timestamp closing;
+        Timestamp sinceDateMidnight;
+        Timestamp untilDateMidnight;
         try {
             opening = new Timestamp(openingTimeFormat.parse(openingTimesStrings.get(0)).getTime());
             closing = new Timestamp(openingTimeFormat.parse(openingTimesStrings.get(1)).getTime());
-            sinceDateMidnight = new Timestamp(onlyDateFormat.parse(onlyDateFormat.format(sinceDate)).getTime());
-            untilDateMidnight = new Timestamp(onlyDateFormat.parse(onlyDateFormat.format(untilDate)).getTime());
-        }
-        catch (ParseException c) {
+            sinceDateMidnight = new Timestamp(onlyDateFormat.parse(onlyDateFormat.format(sinceDate))
+                    .getTime());
+            untilDateMidnight = new Timestamp(onlyDateFormat.parse(onlyDateFormat.format(untilDate))
+                    .getTime());
+        } catch (ParseException c) {
             throw new CommunicationException(); // something went horribly wrong
         }
 
         // assuming it can't span across days
-        if (sinceDateMidnight.getTime() != untilDateMidnight.getTime())
+        if (sinceDateMidnight.getTime() != untilDateMidnight.getTime()) {
             throw new ForbiddenException("Reservation spans multiple days");
+        }
 
         opening = new Timestamp(opening.getTime() + sinceDateMidnight.getTime());
         closing = new Timestamp(closing.getTime() + sinceDateMidnight.getTime());
 
         // now, actually check if in business hours
-        if (opening.after(sinceDate) || closing.before(untilDate))
+        if (opening.after(sinceDate) || closing.before(untilDate)) {
             throw new ForbiddenException("Reservation not between room opening hours");
+        }
 
         // room should also NOT be under maintenance
-        String maintenanceEnding = serv.getMaintenance(room_id);
-        if (maintenanceEnding != null) // change this to show the ETA when implemented
+        String maintenanceEnding = serv.getMaintenance(roomId);
+        if (maintenanceEnding != null) { // change this to show the ETA when implemented
             throw new ForbiddenException("Room is under maintenance: " + maintenanceEnding);
+        }
 
-        return reservationRepository.saveAndFlush(new Reservation(room_id, user_id, title, sinceDate, untilDate)).getId();
+        return reservationRepository.saveAndFlush(
+                new Reservation(roomId, userId, title, sinceDate, untilDate)).getId();
     }
 
     /**
      * Creates a new reservation in the database for a user.
-     * @param room_id the id of the room
-     * @param user_token the user's authorization token
+     * @param roomId the id of the room
+     * @param userToken the user's authorization token
      * @param title title of the meeting
      * @param since start date of the meeting
      * @param until end date of the meeting
@@ -128,10 +157,12 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
      * @throws NotFoundException if the room does not exist
      * @throws UnauthorizedException if the token is invalid
      */
-    public long makeOwnReservation(long room_id, String user_token, String title, String since, String until)
-            throws ForbiddenException, CommunicationException, NotFoundException, UnauthorizedException {
-        long user_id = serv.getUserId(user_token);
-        return makeReservation(room_id, user_id, title, since, until);
+    public long makeOwnReservation(long roomId, String userToken, String title,
+                                   String since, String until)
+            throws ForbiddenException, CommunicationException,
+            NotFoundException, UnauthorizedException {
+        long userId = serv.getUserId(userToken);
+        return makeReservation(roomId, userId, title, since, until);
     }
 
     // debug testing method

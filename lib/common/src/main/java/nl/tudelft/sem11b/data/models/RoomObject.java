@@ -70,7 +70,19 @@ public class RoomObject implements Serializable {
     public RoomObject() {
     }
 
-    public RoomObject(Long id, String suffix, String name, BuildingObject building, Integer capacity, EquipmentObject[] equipment, ClosureObject closure) {
+    /**
+     * Creates a Room object.
+     * @param id Unique numeric identifier of a room
+     * @param suffix Alphanumeric suffix that uniquely identifies the room within a building
+     * @param name Name of the room (not necessarily unique)
+     * @param building Building the room is part of
+     * @param capacity Maximal capacity of the room
+     * @param equipment Room's equipment
+     * @param closure null if room is not closed, otherwise holds info about closure
+     */
+    public RoomObject(Long id, String suffix, String name, BuildingObject building,
+                      Integer capacity, EquipmentObject[] equipment,
+                      ClosureObject closure) {
         this.id = id;
         this.suffix = suffix;
         this.name = name;

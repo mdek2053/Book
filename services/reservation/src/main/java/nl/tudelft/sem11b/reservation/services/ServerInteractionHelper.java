@@ -1,17 +1,17 @@
 package nl.tudelft.sem11b.reservation.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.tudelft.sem11b.data.models.BuildingObject;
-import nl.tudelft.sem11b.data.models.RoomObject;
-import nl.tudelft.sem11b.data.exception.CommunicationException;
-import nl.tudelft.sem11b.data.exception.UnauthorizedException;
-import org.assertj.core.util.Lists;
-import org.json.JSONObject;
-
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.tudelft.sem11b.data.exception.CommunicationException;
+import nl.tudelft.sem11b.data.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.models.BuildingObject;
+import nl.tudelft.sem11b.data.models.RoomObject;
+import org.assertj.core.util.Lists;
+import org.json.JSONObject;
 
 public class ServerInteractionHelper {
     private static final HttpClient client = HttpClient.newBuilder().build();
@@ -40,8 +40,9 @@ public class ServerInteractionHelper {
 
         String responseBody = response.body();
 
-        if (response.statusCode() == 403) // 403 means token is invalid
+        if (response.statusCode() == 403) { // 403 means token is invalid
             throw new UnauthorizedException("Token is invalid");
+        }
 
         JSONObject obj = new JSONObject(responseBody);
         return obj.getInt("id");
@@ -49,12 +50,12 @@ public class ServerInteractionHelper {
 
     /**
      * Checks if a room id is valid.
-     * @param room_id the room's id
+     * @param roomId the room's id
      * @return TRUE if a room with that id exists, FALSE otherwise
      * @throws CommunicationException if there is any sort of communication error with the server
      */
-    public boolean checkRoomExists(long room_id) throws CommunicationException {
-        String path = domainRoomMicroservice + "/rooms/" + room_id;
+    public boolean checkRoomExists(long roomId) throws CommunicationException {
+        String path = domainRoomMicroservice + "/rooms/" + roomId;
 
         HttpResponse<String> response = helper.getResponse(client, path, null);
 
@@ -63,12 +64,12 @@ public class ServerInteractionHelper {
 
     /**
      * Gets the opening hours for a room.
-     * @param room_id the room's id
+     * @param roomId the room's id
      * @return a List with two elements: the opening hour and the closing hour
      * @throws CommunicationException if there is any sort of communication error with the server
      */
-    public List<String> getOpeningHours(long room_id) throws CommunicationException {
-        String path = domainRoomMicroservice + "/rooms/" + room_id;
+    public List<String> getOpeningHours(long roomId) throws CommunicationException {
+        String path = domainRoomMicroservice + "/rooms/" + roomId;
 
         HttpResponse<String> response = helper.getResponse(client, path, null);
         RoomObject room;
@@ -84,12 +85,12 @@ public class ServerInteractionHelper {
 
     /**
      * Checks if a room is under maintenance and gets the reason.
-     * @param room_id the room's id
+     * @param roomId the room's id
      * @return a String with the maintenance reason if under maintenance, null otherwise
      * @throws CommunicationException if there is any sort of communication error with the server
      */
-    public String getMaintenance(long room_id) throws CommunicationException {
-        String path = domainRoomMicroservice + "/rooms/" + room_id;
+    public String getMaintenance(long roomId) throws CommunicationException {
+        String path = domainRoomMicroservice + "/rooms/" + roomId;
 
         HttpResponse<String> response = helper.getResponse(client, path, null);
         RoomObject room;
@@ -99,8 +100,9 @@ public class ServerInteractionHelper {
             throw new CommunicationException();
         }
 
-        if (room.getClosure() == null)
+        if (room.getClosure() == null) {
             return null;
+        }
 
         return room.getClosure().getDescription();
     }
