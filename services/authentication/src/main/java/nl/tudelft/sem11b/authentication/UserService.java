@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.User;
+import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

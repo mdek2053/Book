@@ -27,7 +27,8 @@ public class MainApplication {
             try {
                 userService.addUser(admin);     // add admin if it doesn't exist in system already
             } catch (Exception e) {
-                e.printStackTrace();    // to prevent checkstyle error, can be changed if needed
+                System.out.println("Admin already exists.");
+                // to prevent checkstyle error, can be changed if needed
             }
         };
     }

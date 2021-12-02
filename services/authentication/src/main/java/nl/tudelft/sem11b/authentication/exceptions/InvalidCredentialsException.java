@@ -1,4 +1,4 @@
-package nl.tudelft.sem11b.authentication;
+package nl.tudelft.sem11b.authentication.exceptions;
 
 /**
  * Provides an exception which can be used when the provided credentials are invalid.
