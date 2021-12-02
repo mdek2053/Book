@@ -14,8 +14,8 @@ public class Constants {
                     "07:00", "20:00"),
             329,
             new EquipmentObject[]{
-                    new EquipmentObject(35L, "Desktop PC"),
-                    new EquipmentObject(78L, "Smartboard")
+                new EquipmentObject(35L, "Desktop PC"),
+                new EquipmentObject(78L, "Smartboard")
             },
             new ClosureObject("Maintenance", "2022-06-12", "2022-06-20"));
 
@@ -27,8 +27,8 @@ public class Constants {
                     "07:00", "20:00"),
             329,
             new EquipmentObject[]{
-                    new EquipmentObject(35L, "Desktop PC"),
-                    new EquipmentObject(78L, "Smartboard")
+                new EquipmentObject(35L, "Desktop PC"),
+                new EquipmentObject(78L, "Smartboard")
             },
             null);
 }

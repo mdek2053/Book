@@ -1,5 +1,14 @@
 package nl.tudelft.sem11b.reservation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.net.http.HttpResponse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 import nl.tudelft.sem11b.reservation.services.HttpHelper;
@@ -7,12 +16,6 @@ import nl.tudelft.sem11b.reservation.services.ServerInteractionHelper;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.net.http.HttpResponse;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 
@@ -64,7 +67,8 @@ class ServerInteractionHelperTest {
     @Test
     void getMaintenanceNoClosure() throws Exception {
         HttpResponse<String> response = mock(HttpResponse.class);
-        when(response.body()).thenReturn(new ObjectMapper().writeValueAsString(Constants.noClosure));
+        when(response.body()).thenReturn(new ObjectMapper()
+                .writeValueAsString(Constants.noClosure));
 
         HttpHelper helper = mock(HttpHelper.class);
         when(helper.getResponse(any(), any(), any())).thenReturn(response);
