@@ -9,6 +9,9 @@ import javax.persistence.Embedded;
 import nl.tudelft.sem11b.data.Day;
 import nl.tudelft.sem11b.data.models.ClosureModel;
 
+/**
+ * Represents a room closure.
+ */
 @Embeddable
 public class Closure {
     @Column(name = "reason")
@@ -26,10 +29,23 @@ public class Closure {
     })
     private Day until;
 
+    /**
+     * Instantiates the {@link Closure} class.
+     *
+     * @param reason Reason for closure
+     * @param since Beginning date of closure
+     */
     public Closure(String reason, Day since) {
         this(reason, since, null);
     }
 
+    /**
+     * Instantiates the {@link Closure} class.
+     *
+     * @param reason Reason for closure
+     * @param since Beginning date of closure
+     * @param until Ending date of closure
+     */
     public Closure(String reason, Day since, Day until) {
         if (reason == null || reason.trim().isEmpty()) {
             throw new IllegalArgumentException("Reason must be given!");
@@ -47,18 +63,38 @@ public class Closure {
         // default constructor for entity materialization
     }
 
+    /**
+     * Gets the reason for room closure.
+     *
+     * @return Reason for closure
+     */
     public String getReason() {
         return reason;
     }
 
+    /**
+     * Gets the beginning date of the closure.
+     *
+     * @return Beginning date of closure
+     */
     public Day getSince() {
         return since;
     }
 
+    /**
+     * Gets the ending date of the closure.
+     *
+     * @return Ending date of closure
+     */
     public Day getUntil() {
         return until;
     }
 
+    /**
+     * Converts the closure entity into its equivalent model.
+     *
+     * @return Closure model
+     */
     public ClosureModel toModel() {
         // TODO: unify this class and the model class (so move this class into common lib)
         return new ClosureModel(reason, since, until);

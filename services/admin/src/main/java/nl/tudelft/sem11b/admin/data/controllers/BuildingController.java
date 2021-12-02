@@ -13,14 +13,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * REST API proxy for {@link BuildingService}.
+ */
 @RestController
 public class BuildingController {
     private final BuildingService buildings;
 
+    /**
+     * Instantiates the {@link BuildingController} class.
+     *
+     * @param buildings The building handling service
+     */
     public BuildingController(BuildingService buildings) {
         this.buildings = buildings;
     }
 
+    /**
+     * Lists all buildings in the system.
+     *
+     * @param page Page index (zero-based)
+     * @param limit Maximal size of a page
+     * @return Page of buildings
+     */
     @GetMapping("/buildings")
     public PageData<BuildingModel> listBuildings(
         @RequestParam Optional<Integer> page,
@@ -30,6 +45,12 @@ public class BuildingController {
         return buildings.listBuildings(index);
     }
 
+    /**
+     * Gets building data.
+     *
+     * @param id ID of a building
+     * @return Building data
+     */
     @GetMapping("/buildings/{id}")
     public BuildingModel getBuilding(@PathVariable int id) {
         var building = buildings.getBuilding(id);
