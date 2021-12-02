@@ -34,6 +34,7 @@ public class AuthenticationController {
 
     /**
      * Tries to add a new user to the system.
+     *
      * @param newUser an object of type User.
      * @return an message indicating whether the user has been added.
      */

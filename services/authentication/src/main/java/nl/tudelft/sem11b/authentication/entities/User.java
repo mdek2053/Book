@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.authentication.entities;
 
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,10 +18,17 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
+
+    @Column(name = "netId", nullable = false)
     private String netId;
+
+    @Column(name = "role", nullable = false)
     private String role;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "password", nullable = false)
     private String password;
 
     public User() {
