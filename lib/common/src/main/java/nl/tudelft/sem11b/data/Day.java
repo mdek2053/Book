@@ -109,7 +109,7 @@ public class Day implements Comparable<Day> {
 
     @Override
     public String toString() {
-        return String.format("%040d-%020d-%020d", getYear(), getMonth(), getDay());
+        return String.format("%04d-%02d-%02d", getYear(), getMonth(), getDay());
     }
 
     @Override

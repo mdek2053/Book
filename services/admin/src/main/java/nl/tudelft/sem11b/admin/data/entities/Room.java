@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import nl.tudelft.sem11b.admin.data.Closure;
+import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.RoomStudModel;
 
 @Entity
 @Table(indexes = {@Index(columnList = "suffix, building_id", unique = true)})
@@ -62,5 +64,13 @@ public class Room {
 
     public Building getBuilding() {
         return building;
+    }
+
+    public RoomStudModel toStudModel() {
+        return new RoomStudModel(id, suffix, name, capacity, closure == null ? null : closure.toModel());
+    }
+
+    public RoomModel toModel() {
+        return new RoomModel(id, suffix, name, capacity, building.toModel(), closure == null ? null : closure.toModel());
     }
 }
