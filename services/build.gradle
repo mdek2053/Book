@@ -18,13 +18,20 @@ subprojects {
 		// Spring Boot (impl)
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    // Spring Boot JPA
 		implementation 'org.springframework.boot:spring-boot-starter-web'         // Spring Boot MVC
+		implementation 'org.springframework.boot:spring-boot-starter-security'    // Spring Boot Security
+		implementation 'com.auth0:java-jwt:3.13.0'                                // jwt tokens
 		developmentOnly 'org.springframework.boot:spring-boot-devtools'           // Misc. Spring Boot development tools
 		
 		// Spring Boot (test)
 		testImplementation('org.springframework.boot:spring-boot-starter-test') { // Spring Boot test harness
 			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 		}
+		implementation 'junit:junit:4.13.1'										  // JUnit
+
 		testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc' // Spring Boot MVC mocking
 		testImplementation 'org.springframework.security:spring-security-test'    // Spring Boot Security mocking
+
+		// https://mvnrepository.com/artifact/org.postgresql/postgresql
+		implementation 'org.postgresql:postgresql:42.3.1'
 	}
 }
