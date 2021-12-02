@@ -11,10 +11,16 @@ subprojects {
 	dependencies {
 		// SEM-11b common library
 		implementation project(':lib:common')
-		
+
+		// Development DB
+		developmentOnly 'org.xerial:sqlite-jdbc'                                  // SQLite JDBC driver
+
+
 		// Spring Boot (impl)
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    // Spring Boot JPA
 		implementation 'org.springframework.boot:spring-boot-starter-web'         // Spring Boot MVC
+		implementation 'org.springframework.boot:spring-boot-starter-security'    // Spring Boot Security
+		implementation 'com.auth0:java-jwt:3.13.0'                                // jwt tokens
 		developmentOnly 'org.springframework.boot:spring-boot-devtools'           // Misc. Spring Boot development tools
 		
 		// Spring Boot (test)

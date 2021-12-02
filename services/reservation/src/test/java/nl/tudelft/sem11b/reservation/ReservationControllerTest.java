@@ -2,7 +2,6 @@ package nl.tudelft.sem11b.reservation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem11b.reservation.entity.ReservationRequest;
-import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,12 +26,14 @@ class ReservationControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ReservationService reservationService;
+    ReservationService reservationService;
 
     @Test
     void makeReservationTest() throws Exception {
         when(reservationService.makeOwnReservation(1L, "foo", "Meeting",
                 "2022-01-15T13:00", "2022-01-15T17:00")).thenReturn(1L);
+        //verify(reservationService, times(1)).makeOwnReservation(1L, "foo", "Meeting",
+                //"2022-01-15T13:00", "2022-01-15T17:00");
 
         ReservationRequest req = new ReservationRequest(1L, "Meeting",
                 "2022-01-15T13:00", "2022-01-15T17:00", null);

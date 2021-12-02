@@ -15,8 +15,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class ReservationController {
-    @Autowired
     ReservationService reservationService;
+
+    @Autowired
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
+    }
 
     @PostMapping("/reservations")
     ReservationResponse makeReservation(@RequestHeader("Authorization") String token,
