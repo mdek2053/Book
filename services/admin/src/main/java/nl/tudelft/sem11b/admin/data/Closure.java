@@ -1,23 +1,35 @@
 package nl.tudelft.sem11b.admin.data;
 
-import java.util.Date;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+
+import nl.tudelft.sem11b.data.Day;
 
 @Embeddable
 public class Closure {
     @Column(name = "reason")
     private final String reason;
-    @Column(name = "since")
-    private final Date since;
-    @Column(name = "until")
-    private final Date until;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "year", column = @Column(name = "since_year")),
+        @AttributeOverride(name = "day", column = @Column(name = "since_da"))
+    })
+    private final Day since;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "year", column = @Column(name = "until_year")),
+        @AttributeOverride(name = "day", column = @Column(name = "until_day"))
+    })
+    private final Day until;
 
-    public Closure(String reason, Date since) {
+    public Closure(String reason, Day since) {
         this(reason, since, null);
     }
 
-    public Closure(String reason, Date since, Date until) {
+    public Closure(String reason, Day since, Day until) {
         if (reason == null || reason.trim().isEmpty()) {
             throw new IllegalArgumentException("Reason must be given!");
         }
@@ -34,11 +46,11 @@ public class Closure {
         return reason;
     }
 
-    public Date getSince() {
+    public Day getSince() {
         return since;
     }
 
-    public Date getUntil() {
+    public Day getUntil() {
         return until;
     }
 }

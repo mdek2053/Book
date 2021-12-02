@@ -18,7 +18,7 @@ import nl.tudelft.sem11b.admin.data.Closure;
 @Table(indexes = {@Index(columnList = "suffix, building_id", unique = true)})
 public class Room {
     @Id @Column(name = "id", nullable = false)
-    private long id;
+    private int id;
     @Column(name = "suffix", nullable = false)
     private String suffix;
     @Column(name = "name", nullable = false)

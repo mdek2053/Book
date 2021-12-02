@@ -30,9 +30,9 @@ public class Day implements Comparable<Day> {
     private static final int[] LSCHEMA = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     @Column(name = "year")
-    private final short year;
+    private short year;
     @Column(name = "day")
-    private final short day;
+    private short day;
 
     public Day(long year, long dayOfYear) {
         var leap = isLeap(year);
@@ -57,6 +57,10 @@ public class Day implements Comparable<Day> {
 
         this.year = (short) year;
         this.day = (short) (Arrays.stream(schema).limit(month - 1).sum() + day - 1);
+    }
+
+    private Day() {
+        // default constructor for entity materialization
     }
 
     public int getYear() {

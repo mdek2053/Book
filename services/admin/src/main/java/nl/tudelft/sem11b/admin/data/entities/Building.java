@@ -11,11 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import nl.tudelft.sem11b.data.TimeOfDay;
+import nl.tudelft.sem11b.data.models.BuildingModel;
 
 @Entity
 public class Building {
     @Id @Column(name = "id", nullable = false)
-    private long id;
+    private int id;
     @Column(name = "prefix", nullable = false, unique = true)
     private String prefix;
     @Column(name = "name", nullable = false)
@@ -95,5 +96,9 @@ public class Building {
 
     public Stream<Room> getRooms() {
         return rooms.stream();
+    }
+
+    public BuildingModel toModel() {
+        return new BuildingModel(id, prefix, name, opening, closing);
     }
 }

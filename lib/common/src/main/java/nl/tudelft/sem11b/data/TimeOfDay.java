@@ -37,7 +37,7 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
 
     // TODO: Into a single timestamp
     @Column(name = "timestamp")
-    private final short timestamp;
+    private short timestamp;
 
     /**
      * Instantiates the {@link TimeOfDay} class
@@ -56,6 +56,10 @@ public class TimeOfDay implements Comparable<TimeOfDay> {
         }
 
         this.timestamp = (short) (minute + 60 * hour);
+    }
+
+    private TimeOfDay() {
+        // default constructor for entity materialization
     }
 
     /**
