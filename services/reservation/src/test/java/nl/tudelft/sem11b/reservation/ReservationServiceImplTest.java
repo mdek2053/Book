@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.TimeZone;
 
 import nl.tudelft.sem11b.data.exception.ForbiddenException;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
@@ -75,7 +76,7 @@ class ReservationServiceImplTest {
     @Test
     void makeReservationTestDateParsing() throws Exception {
         Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L),
-                ZoneId.of("UTC")); // same day about 11ish
+                ZoneId.of("UTC")); // same day about 10ish
         reservationServiceImpl.setClock(clock);
 
         ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
@@ -85,11 +86,14 @@ class ReservationServiceImplTest {
 
         when(reservationRepository.saveAndFlush(any())).thenReturn(new Reservation());
 
-        Timestamp since = new Timestamp(1642248000000L);
-        Timestamp until = new Timestamp(1642262400000L);
+        long timeAtLocal = System.currentTimeMillis();
+        long offset = TimeZone.getDefault().getOffset(timeAtLocal);
+
+        Timestamp since = new Timestamp(1642248000000L - offset);
+        Timestamp until = new Timestamp(1642262400000L - offset);
 
         reservationServiceImpl.makeReservation(1, 1, "Title",
-                "2022-01-15T13:00", "2022-01-15T17:00");
+                "2022-01-15T12:00", "2022-01-15T16:00");
 
         verify(reservationRepository, times(1)).saveAndFlush(new Reservation(1, 1, "Title",
                 since, until));
@@ -98,7 +102,7 @@ class ReservationServiceImplTest {
     @Test
     void makeReservationTestDatePast() throws Exception {
         Clock clock = Clock.fixed(Instant.ofEpochMilli(1642262800000L),
-                ZoneId.of("UTC")); // same day after 17
+                ZoneId.of("UTC")); // same day after 16
         reservationServiceImpl.setClock(clock);
 
         ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
@@ -111,7 +115,8 @@ class ReservationServiceImplTest {
 
     @Test
     void makeReservationTestDateFarFuture() throws Exception {
-        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
+        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L),
+                ZoneId.of("UTC")); // 15 jan 10ish
         reservationServiceImpl.setClock(clock);
 
         ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
@@ -124,7 +129,8 @@ class ReservationServiceImplTest {
 
     @Test
     void makeReservationTestDateTwoDays() throws Exception {
-        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
+        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L),
+                ZoneId.of("UTC")); // 15 jan 10ish
         reservationServiceImpl.setClock(clock);
 
         ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
@@ -138,7 +144,8 @@ class ReservationServiceImplTest {
 
     @Test
     void makeReservationTestDateOutsideHours() throws Exception {
-        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
+        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L),
+                ZoneId.of("UTC")); // 15 jan 10ish
         reservationServiceImpl.setClock(clock);
 
         ServerInteractionHelper helper = mock(ServerInteractionHelper.class);

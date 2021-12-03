@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.TimeZone;
 
 import nl.tudelft.sem11b.data.exception.CommunicationException;
 import nl.tudelft.sem11b.data.exception.ForbiddenException;
@@ -67,6 +69,9 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
         }
 
         // T O D O horrendous time handling, should fix
+        long timeAtLocal = System.currentTimeMillis();
+        long offset = TimeZone.getDefault().getOffset(timeAtLocal);
+
         Timestamp sinceDate;
         Timestamp untilDate;
 
@@ -77,7 +82,7 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
             throw new ForbiddenException("Date format invalid");
         }
 
-        Timestamp currentDate = new Timestamp(Instant.now(clock).toEpochMilli());
+        Timestamp currentDate = new Timestamp(Instant.now(clock).toEpochMilli() - offset);
         long week = 1209600000; // two weeks in ms
 
         // check if the reservation is not too far in the future
