@@ -35,5 +35,5 @@ service-reservation-test:
   stage: test
   script:
     - ./gradlew :services:reservation:test :services:reservation:jacocoTestReport
-    - cat services/authentication/build/reports/jacoco/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
+    - cat services/reservation/build/reports/jacoco/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"
   coverage: /([0-9]{1,3})%/
