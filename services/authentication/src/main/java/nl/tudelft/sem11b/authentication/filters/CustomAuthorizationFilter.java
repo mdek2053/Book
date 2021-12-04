@@ -27,6 +27,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
+    private final String secret;
+
+    public CustomAuthorizationFilter(String secret) {
+        this.secret = secret;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -38,7 +44,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
                     String token = authorizationHeader.substring("Bearer ".length());
-                    JWTVerifier verifier = JWT.require(Algorithm.HMAC256("super-secret")).build();
+                    JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret)).build();
                     DecodedJWT decoded = verifier.verify(token);
                     String username = decoded.getSubject();
                     String[] roles = decoded.getClaim("roles").asArray(String.class);
