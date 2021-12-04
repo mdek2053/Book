@@ -1,11 +1,12 @@
 package nl.tudelft.sem11b.authentication;
 
-import nl.tudelft.sem11b.authentication.UserService;
 import nl.tudelft.sem11b.authentication.filters.CustomAuthenticationFilter;
 import nl.tudelft.sem11b.authentication.filters.CustomAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,10 +23,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
+@PropertySource("application-${spring.profiles.active}.properties")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     UserService userDetailsService;
+
+    @Value("${spring.security.secret}")
+    private String secret;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -34,8 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().anyRequest().authenticated();
-        http.addFilter(new CustomAuthenticationFilter(authenticationManager()));
-        http.addFilterBefore(new CustomAuthorizationFilter(),
+        http.addFilter(new CustomAuthenticationFilter(authenticationManager(), secret));
+        http.addFilterBefore(new CustomAuthorizationFilter(secret),
                 UsernamePasswordAuthenticationFilter.class);
     }
 
