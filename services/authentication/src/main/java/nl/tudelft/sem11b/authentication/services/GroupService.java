@@ -6,12 +6,12 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
 import nl.tudelft.sem11b.authentication.exceptions.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.authentication.exceptions.NoAssignedGroupException;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,20 +30,20 @@ public class GroupService {
     UserService userService;
 
     /**
-     * Retrieves all groups where the user is part of.
+     * Retrieves all groups where the provided user is part of.
+     * @param user of type User of whom we want to know the group he/she is part of.
      * @return a list of all groups which the current user is part of.
      * @throws NoAssignedGroupException when the user is not part of any group.
      */
-    public List<Group> getGroupsOfCurrentUser()
-            throws NoAssignedGroupException, InvalidCredentialsException {
-        User current = userService.getCurrentUser();
+    public List<Group> getGroupsOfUser(User user)
+            throws NoAssignedGroupException {
         Optional<List<Group>> groupList = groupRepository.findAllByGroupIdExists();
 
         if (groupList.isPresent()) {
             List<Group> presentGroupList = groupList.get();
             List<Group> userGroupList = new ArrayList<>();
             for (Group group : presentGroupList) {
-                if (group.getGroupId() != 0 && group.getGroupMembers().contains(current)) {
+                if (group.getGroupId() != 0 && group.getGroupMembers().contains(user)) {
                     userGroupList.add(group);
                 }
             }
@@ -57,29 +57,19 @@ public class GroupService {
         }
     }
 
-    /* public List<User> getUsersOfCurrentGroup() throws NoAssignedGroupException {
-        User current = userService.getCurrentUser();
-        Optional<List<User>> userList = userRepository.findUsersByGroupId(current.getGroupId());
-        if (userList.isPresent()) {
-            return userList.get();
+    public List<Group> getGroupsOfSecretary(User user) throws NoAssignedGroupException {
+        Optional<List<Group>> groupList = groupRepository.findGroupsBySecretary(user);
+
+        if (groupList.isPresent()) {
+            return groupList.get();
         } else {
-            throw new NoAssignedGroupException
-            ("The group which belongs to this groupId has no members");
+            throw new NoAssignedGroupException("User has not been assigned to any group as secretary");
         }
-    }*/
-    /*public Group getCurrentGroup() throws NoAssignedGroupException {
-        User current = userService.getCurrentUser();
-        Optional<Group> group = groupRepository.findGroupByGroupId(current.getGroupId());
-        if (group.isPresent()) {
-            return group.get();
-        } else {
-            throw new NoAssignedGroupException
-            ("The group which belongs to this groupId has no members");
-        }
-    }*/
+    }
 
     /**
      * Saves the input object to the groupRepository.
+     *
      * @param group of type Group which needs to be saved in the groupRepository.
      */
     public void saveGroup(Group group) {
@@ -88,16 +78,22 @@ public class GroupService {
 
     /**
      * Adds a new group to the system after checking the validity of the input.
-     * @param secretary of type User, who is the secretary of the new group.
+     *
+     * @param secretary    of type User, who is the secretary of the new group.
      * @param groupMembers of type List, contains a list of users who will be part of the group.
      * @return the group after it is added
      * @throws InvalidGroupCredentialsException when a group already exists
-     *      with the specific groupId or when the credentials are invalid.
+     *                                          with the specific groupId or when the credentials are invalid.
      */
     public Group addGroup(User secretary, List<User> groupMembers)
             throws InvalidGroupCredentialsException {
         if (secretary == null) {
             throw new InvalidGroupCredentialsException("Secretary needs to be provided");
+        }
+        try {
+            verifyUsers(groupMembers);
+        } catch (InvalidGroupCredentialsException e) {
+            throw new InvalidGroupCredentialsException("At least one provided member is not registered in the system yet");
         }
         Optional<Integer> optGroupId = groupRepository.findTopByOrderByGroupIdDesc();
         int groupId = 1;
@@ -107,5 +103,20 @@ public class GroupService {
         Group group = new Group(secretary, groupMembers, groupId);
         saveGroup(group);
         return group;
+    }
+
+    /** Verifies the list of users if they are registered in the system.
+     * @param groupMembers of type List<User> containing new members of the group.
+     * @throws InvalidGroupCredentialsException when at least one of the entries
+     *      in the list is not registered in the system.
+     */
+    public void verifyUsers(List<User> groupMembers) throws InvalidGroupCredentialsException {
+        for (User member : groupMembers) {
+            try {
+                userService.loadUserByUsername(member.getNetId());
+            } catch (UsernameNotFoundException e) {
+                throw new InvalidGroupCredentialsException("At least one provided member is not registered in the system yet");
+            }
+        }
     }
 }

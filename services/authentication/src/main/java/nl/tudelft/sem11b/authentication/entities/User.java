@@ -67,7 +67,7 @@ public class User {
      * @param role contains the role of the user in the system.
      */
     public void setRole(String role) {
-        if (role.equals("employee") || role.equals("secretary") || role.equals("admin")) {
+        if (role.equals("employee") || role.equals("admin")) {
             this.role = role;
         } else {
             throw new IllegalArgumentException("Invalid role specified");

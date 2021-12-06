@@ -6,6 +6,7 @@ import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
 import nl.tudelft.sem11b.authentication.exceptions.InvalidGroupCredentialsException;
+import nl.tudelft.sem11b.authentication.exceptions.NoAssignedGroupException;
 import nl.tudelft.sem11b.authentication.services.GroupService;
 import nl.tudelft.sem11b.authentication.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +50,28 @@ public class AuthenticationController {
     }
 
     @PostMapping(value = "/new-group")
-    public Group postGroup(@RequestBody User secretary, @RequestBody List<User> groupMembers)
-            throws InvalidGroupCredentialsException {
-        return groupService.addGroup(secretary, groupMembers);
+    public Group postGroup(@RequestBody List<User> groupMembers)
+            throws InvalidGroupCredentialsException, InvalidCredentialsException {
+        return groupService.addGroup(service.getCurrentUser(), groupMembers);
+    }
+
+    @GetMapping(value = "/get-groups")
+    public List<Group> getGroupsOfEmployee(@RequestBody User user) throws NoAssignedGroupException {
+        return groupService.getGroupsOfUser(user);
+    }
+
+    @GetMapping(value = "/get-secretary-groups")
+    public List<Group> getGroupsOfSecretary(@RequestBody User user) throws NoAssignedGroupException {
+        return groupService.getGroupsOfSecretary(user);
+    }
+
+    @PostMapping(value = "/add-groupmember")
+    public List<User> addGroupMember(@RequestBody List<User> users, @RequestBody Group group) throws InvalidGroupCredentialsException {
+        try {
+            groupService.verifyUsers(users);
+        } catch (InvalidGroupCredentialsException e) {
+            throw new InvalidGroupCredentialsException("At least one provided member is not registered in the system yet");
+        }
+        return group.addToGroupMembers(users);
     }
 }

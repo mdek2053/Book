@@ -42,17 +42,14 @@ public class Group {
         return secretary;
     }
 
-    public void setSecretary(User secretary) {
-        this.secretary = secretary;
-    }
-
     public List<User> getGroupMembers() {
         return groupMembers;
     }
 
-    public void setGroupMembers(List<User> groupMembers) {
-        this.groupMembers = groupMembers;
+    public void setSecretary(User secretary) {
+        this.secretary = secretary;
     }
+
 
     /**
      * Adds a new user to the members of a specific group.
