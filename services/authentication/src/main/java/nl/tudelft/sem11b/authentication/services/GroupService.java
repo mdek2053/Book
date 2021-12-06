@@ -57,13 +57,21 @@ public class GroupService {
         }
     }
 
+    /**
+     * Tries to get the groups of a specific secretary.
+     *
+     * @param user of type User.
+     * @return a list of groups for which the provided user is a secretary.
+     * @throws NoAssignedGroupException when the user is no secretary for any group.
+     */
     public List<Group> getGroupsOfSecretary(User user) throws NoAssignedGroupException {
         Optional<List<Group>> groupList = groupRepository.findGroupsBySecretary(user);
 
         if (groupList.isPresent()) {
             return groupList.get();
         } else {
-            throw new NoAssignedGroupException("User has not been assigned to any group as secretary");
+            throw new NoAssignedGroupException("User has not been assigned "
+                    + "to any group as secretary");
         }
     }
 
@@ -83,7 +91,7 @@ public class GroupService {
      * @param groupMembers of type List, contains a list of users who will be part of the group.
      * @return the group after it is added
      * @throws InvalidGroupCredentialsException when a group already exists
-     *                                          with the specific groupId or when the credentials are invalid.
+     *      with the specific groupId or when the credentials are invalid.
      */
     public Group addGroup(User secretary, List<User> groupMembers)
             throws InvalidGroupCredentialsException {
@@ -93,7 +101,8 @@ public class GroupService {
         try {
             verifyUsers(groupMembers);
         } catch (InvalidGroupCredentialsException e) {
-            throw new InvalidGroupCredentialsException("At least one provided member is not registered in the system yet");
+            throw new InvalidGroupCredentialsException("At least one provided member "
+                    + "is not registered in the system yet");
         }
         Optional<Integer> optGroupId = groupRepository.findTopByOrderByGroupIdDesc();
         int groupId = 1;
@@ -106,7 +115,7 @@ public class GroupService {
     }
 
     /** Verifies the list of users if they are registered in the system.
-     * @param groupMembers of type List<User> containing new members of the group.
+     * @param groupMembers of type List containing new members of the group.
      * @throws InvalidGroupCredentialsException when at least one of the entries
      *      in the list is not registered in the system.
      */
@@ -115,7 +124,8 @@ public class GroupService {
             try {
                 userService.loadUserByUsername(member.getNetId());
             } catch (UsernameNotFoundException e) {
-                throw new InvalidGroupCredentialsException("At least one provided member is not registered in the system yet");
+                throw new InvalidGroupCredentialsException("At least one provided member "
+                        + "is not registered in the system yet");
             }
         }
     }

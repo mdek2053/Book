@@ -13,6 +13,6 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
 
     Optional<Integer> findTopByOrderByGroupIdDesc();    //Find the group with the highest groupId
 
-    Optional<List<Group>> findGroupsBySecretary(User user);     //Find the groups of a specific secretary
+    Optional<List<Group>> findGroupsBySecretary(User user);//Find the groups of a specific secretary
 
 }
