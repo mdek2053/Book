@@ -15,9 +15,12 @@ subprojects {
 		// Development DB
 		developmentOnly 'org.xerial:sqlite-jdbc'                                  // SQLite JDBC driver
 
+
 		// Spring Boot (impl)
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    // Spring Boot JPA
 		implementation 'org.springframework.boot:spring-boot-starter-web'         // Spring Boot MVC
+		implementation 'org.springframework.boot:spring-boot-starter-security'    // Spring Boot Security
+		implementation 'com.auth0:java-jwt:3.13.0'                                // jwt tokens
 		developmentOnly 'org.springframework.boot:spring-boot-devtools'           // Misc. Spring Boot development tools
 
 		// Jackson JSON serialization/deserialization infrastructure
@@ -29,5 +32,17 @@ subprojects {
 		}
 		testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc' // Spring Boot MVC mocking
 		testImplementation 'org.springframework.security:spring-security-test'    // Spring Boot Security mocking
+
+		// https://mvnrepository.com/artifact/org.postgresql/postgresql
+		implementation 'org.postgresql:postgresql:42.3.1'
+
+		// https://mvnrepository.com/artifact/org.json/json
+		implementation 'org.json:json:20210307'
+
+		implementation 'org.springframework.boot:spring-boot-starter-test'
+
+		// https://mvnrepository.com/artifact/com.h2database/h2
+		testImplementation group: 'com.h2database', name: 'h2', version: '2.0.202'
+
 	}
 }
