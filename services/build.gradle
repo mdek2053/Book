@@ -22,7 +22,10 @@ subprojects {
 		implementation 'org.springframework.boot:spring-boot-starter-security'    // Spring Boot Security
 		implementation 'com.auth0:java-jwt:3.13.0'                                // jwt tokens
 		developmentOnly 'org.springframework.boot:spring-boot-devtools'           // Misc. Spring Boot development tools
-		
+
+		// Jackson JSON serialization/deserialization infrastructure
+		implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
+
 		// Spring Boot (test)
 		testImplementation('org.springframework.boot:spring-boot-starter-test') { // Spring Boot test harness
 			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
