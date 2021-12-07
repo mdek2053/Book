@@ -31,6 +31,7 @@ public class GroupService {
 
     /**
      * Retrieves all groups where the provided user is part of.
+     *
      * @param user of type User of whom we want to know the group he/she is part of.
      * @return a list of all groups which the current user is part of.
      * @throws NoAssignedGroupException when the user is not part of any group.
@@ -114,7 +115,9 @@ public class GroupService {
         return group;
     }
 
-    /** Verifies the list of users if they are registered in the system.
+    /**
+     * Verifies the list of users if they are registered in the system.
+     *
      * @param groupMembers of type List containing new members of the group.
      * @throws InvalidGroupCredentialsException when at least one of the entries
      *      in the list is not registered in the system.

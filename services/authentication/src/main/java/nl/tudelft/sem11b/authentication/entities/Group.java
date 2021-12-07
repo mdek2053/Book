@@ -24,9 +24,10 @@ public class Group {
 
     /**
      * Constructor for Group class for generating a new group.
-     * @param secretary of type User, who is the secretary of the group
+     *
+     * @param secretary    of type User, who is the secretary of the group
      * @param groupMembers of type List, contains a list of users who are part of the group.
-     * @param groupId contains the groupId.
+     * @param groupId      contains the groupId.
      */
     public Group(User secretary, List<User> groupMembers, int groupId) {
         this.secretary = secretary;
@@ -50,9 +51,13 @@ public class Group {
         this.secretary = secretary;
     }
 
+    public void setGroupMembers(List<User> groupMembers) {
+        this.groupMembers = groupMembers;
+    }
 
     /**
      * Adds a new user to the members of a specific group.
+     *
      * @param newGroupMembers contains a list of new group members.
      * @return a new list of the current group members.
      */
