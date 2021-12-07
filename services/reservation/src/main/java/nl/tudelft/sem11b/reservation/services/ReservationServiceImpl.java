@@ -1,11 +1,13 @@
 package nl.tudelft.sem11b.reservation.services;
 
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.AbstractList;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -13,6 +15,7 @@ import nl.tudelft.sem11b.data.exception.CommunicationException;
 import nl.tudelft.sem11b.data.exception.ForbiddenException;
 import nl.tudelft.sem11b.data.exception.NotFoundException;
 import nl.tudelft.sem11b.data.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,6 +171,32 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
             NotFoundException, UnauthorizedException {
         long userId = serv.getUserId(userToken);
         return makeReservation(roomId, userId, title, since, until);
+    }
+
+    public List<ReservationModel> inspectOwnReservation(String token) throws CommunicationException, UnauthorizedException, NoSuchFieldException, IllegalAccessException {
+        List<Reservation> reservationList = reservationRepository.getOwnReservation(serv.getUserId(token));
+        List<ReservationModel> reservationModels = null;
+        for (Reservation reservation : reservationList) {
+            Field roomId = reservation.getClass().getDeclaredField("roomId");
+            roomId.setAccessible(true);
+            int roomId02 = (int) roomId.get(reservation);
+
+            Field since = reservation.getClass().getDeclaredField("since");
+            since.setAccessible(true);
+            Timestamp since02 = (Timestamp) since.get(reservation);
+
+            Field until = reservation.getClass().getDeclaredField("until");
+            until.setAccessible(true);
+            Timestamp until02 = (Timestamp) until.get(reservation);
+
+            Field title = reservation.getClass().getDeclaredField("title");
+            title.setAccessible(true);
+            String title02 = (String) title.get(reservation);
+
+            reservationModels.add(new ReservationModel(roomId02, since02, until02, title02));
+        }
+
+        return reservationModels;
     }
 
     // debug testing method
