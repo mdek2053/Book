@@ -4,6 +4,7 @@ import nl.tudelft.sem11b.data.exception.CommunicationException;
 import nl.tudelft.sem11b.data.exception.ForbiddenException;
 import nl.tudelft.sem11b.data.exception.NotFoundException;
 import nl.tudelft.sem11b.data.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.reservation.entity.ReservationRequest;
 import nl.tudelft.sem11b.reservation.entity.ReservationResponse;
 import nl.tudelft.sem11b.services.ReservationService;
@@ -64,6 +65,20 @@ public class ReservationController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Request body empty or doesn't contain all required fields");
         }
-        return null;
+        try {
+            ReservationModel model = new ReservationModel(req.getRoomId(),
+                    req.getSince(), req.getSince(), req.getTitle());
+            long reservationId = reservationService.editReservation(token, model, Long.parseLong(id));
+            return new ReservationResponse(reservationId);
+        } catch (CommunicationException c) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error communicating with other microservices");
+        } catch (UnauthorizedException c) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, c.reason);
+        } catch (NotFoundException c) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, c.reason);
+        } catch (ForbiddenException c) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, c.reason);
+        }
     }
 }

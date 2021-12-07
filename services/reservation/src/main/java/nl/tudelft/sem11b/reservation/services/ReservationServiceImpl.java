@@ -14,6 +14,7 @@ import nl.tudelft.sem11b.data.exception.CommunicationException;
 import nl.tudelft.sem11b.data.exception.ForbiddenException;
 import nl.tudelft.sem11b.data.exception.NotFoundException;
 import nl.tudelft.sem11b.data.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.entity.ReservationRequest;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
@@ -154,8 +155,7 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
 
     private Timestamp getTimestamp(String date) throws ForbiddenException {
         try {
-            Timestamp newDate = new Timestamp(dateFormat.parse(date).getTime());
-            return newDate;
+            return new Timestamp(dateFormat.parse(date).getTime());
         } catch (ParseException c) {
             throw new ForbiddenException("Date format invalid");
         }
@@ -253,7 +253,7 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
      * @throws NotFoundException if the room does not exist
      * @throws UnauthorizedException if the token is invalid
      */
-    public long editReservation(String userToken, ReservationRequest newData,
+    public long editReservation(String userToken, ReservationModel newData,
                                 Long reservationId)
             throws NotFoundException, CommunicationException,
             UnauthorizedException, ForbiddenException {
@@ -270,7 +270,7 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
         return 0;
     }
 
-    private long editOwnReservation(Long userId, ReservationRequest newData,
+    private long editOwnReservation(Long userId, ReservationModel newData,
                                     Reservation oldData)
             throws ForbiddenException, CommunicationException {
         if (newData.getTitle() == null || newData.getTitle().length() == 0) {
@@ -303,7 +303,6 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
         oldData.setSince(sinceDate);
         oldData.setUntil(untilDate);
         oldData.setRoomId(newData.getRoomId());
-        oldData.setUserId(newData.getForUser());
         return reservationRepository.save(oldData).getId();
     }
 
