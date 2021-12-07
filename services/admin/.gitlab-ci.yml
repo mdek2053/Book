@@ -31,6 +31,10 @@ service-admin-checkstyle:
       - .gradle/
   allow_failure: true
 
+service-admin-pmd:
+  stage: validate
+  script: ./gradlew :services:admin:pmdMain :services:admin:pmdTest
+
 service-admin-test:
   stage: test
   when: manual
