@@ -16,17 +16,17 @@ class GroupTest {
     User user1 = new User("netId1", "employee", "abc1");
     User user2 = new User("netId2", "employee", "abc2");
     User user3 = new User("netId3", "employee", "abc3");
-    List<User> members = new ArrayList<>();
-    List<User> newMembers = new ArrayList<>();
-    Group group = new Group(user, members, 2);
-    Group group1 = new Group(user, members, 2);
-    Group group2 = new Group(user1, newMembers, 3);
+    List<Long> members = new ArrayList<>();
+    List<Long> newMembers = new ArrayList<>();
+    Group group = new Group("group", user, members, 2);
+    Group group1 = new Group("group", user, members, 2);
+    Group group2 = new Group("group1", user1, newMembers, 3);
 
     @BeforeEach
     void setup() {
-        members.add(user1);
-        members.add(user2);
-        newMembers.add(user3);
+        members.add(user1.getId());
+        members.add(user2.getId());
+        newMembers.add(user3.getId());
         group.setGroupMembers(members);
     }
 
@@ -46,6 +46,11 @@ class GroupTest {
     }
 
     @Test
+    void getName() {
+        assertEquals("group", group.getName());
+    }
+
+    @Test
     void setSecretary() {
         group.setSecretary(user1);
         assertEquals(user1, group.getSecretary());
@@ -53,18 +58,14 @@ class GroupTest {
 
     @Test
     void setGroupMembers() {
-        List<User> newMembers = new ArrayList<>();
-        newMembers.add(user1);
         group.setGroupMembers(newMembers);
         assertEquals(newMembers, group.getGroupMembers());
     }
 
     @Test
-    void addToGroupMembers() {
-
-        List<User> updated = members;
-        updated.add(user3);
-        assertEquals(updated, group.addToGroupMembers(newMembers));
+    void setName() {
+        group.setName("newGroup");
+        assertEquals("newGroup", group.getName());
     }
 
     @Test

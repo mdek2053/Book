@@ -14,25 +14,43 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "groupId")
-    private final int groupId;
+    private int groupId;
+
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "secretary")
     private User secretary;
 
-    @Column(name = "groupMembers")
-    private List<User> groupMembers;
+    //@Column(name = "groupMembers")
+    private List<Long> groupMembers;
 
     /**
      * Constructor for Group class for generating a new group.
      *
+     * @param name         of type String, which is the name of the group.
      * @param secretary    of type User, who is the secretary of the group
      * @param groupMembers of type List, contains a list of users who are part of the group.
      * @param groupId      contains the groupId.
      */
-    public Group(User secretary, List<User> groupMembers, int groupId) {
+    public Group(String name, User secretary, List<Long> groupMembers, int groupId) {
+        this.name = name;
         this.secretary = secretary;
         this.groupMembers = groupMembers;
         this.groupId = groupId;
+    }
+
+    /**
+     * Constructor specifically for adding new groups to the system.
+     *
+     * @param name          of type String, which is the name of the group.
+     * @param secretary     of type User, who is the secretary of the group
+     * @param groupMembers  of type List, contains a list of users who are part of the group.
+     */
+    public Group(String name, User secretary, List<Long> groupMembers) {
+        this.name = name;
+        this.secretary = secretary;
+        this.groupMembers = groupMembers;
     }
 
     public int getGroupId() {
@@ -43,31 +61,37 @@ public class Group {
         return secretary;
     }
 
-    public List<User> getGroupMembers() {
+    public List<Long> getGroupMembers() {
         return groupMembers;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setSecretary(User secretary) {
         this.secretary = secretary;
     }
 
-    public void setGroupMembers(List<User> groupMembers) {
+    public void setGroupMembers(List<Long> groupMembers) {
         this.groupMembers = groupMembers;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
      * Adds a new user to the members of a specific group.
      *
      * @param newGroupMembers contains a list of new group members.
-     * @return a new list of the current group members.
      */
-    public List<User> addToGroupMembers(List<User> newGroupMembers) {
-        for (User user : newGroupMembers) {
-            if (!this.groupMembers.contains(user)) {
-                this.groupMembers.add(user);
+    public void addToGroupMembers(List<Long> newGroupMembers) {
+        for (Long id : newGroupMembers) {
+            if (!this.groupMembers.contains(id)) {
+                this.groupMembers.add(id);
             }
         }
-        return this.groupMembers;
     }
 
     @Override
@@ -80,12 +104,13 @@ public class Group {
         }
         Group group = (Group) o;
         return getGroupId() == group.getGroupId()
-                && getSecretary().equals(group.getSecretary())
+                && Objects.equals(getName(), group.getName())
+                && Objects.equals(getSecretary(), group.getSecretary())
                 && Objects.equals(getGroupMembers(), group.getGroupMembers());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getGroupId(), getSecretary(), getGroupMembers());
+        return Objects.hash(getGroupId(), getName(), getSecretary(), getGroupMembers());
     }
 }

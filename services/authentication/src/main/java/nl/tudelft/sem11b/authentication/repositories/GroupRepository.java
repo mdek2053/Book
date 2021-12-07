@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GroupRepository extends JpaRepository<Group, Integer> {
 
-    Optional<List<Group>> findAllByGroupIdExists();     //Find all existing groups
+    Optional<Group> findGroupByGroupId(int groupId);   //Find group by specific group id
 
-    Optional<Integer> findTopByOrderByGroupIdDesc();    //Find the group with the highest groupId
+    Optional<List<Group>> findAllByGroupIdExists();     //Find all existing groups
 
     Optional<List<Group>> findGroupsBySecretary(User user);//Find the groups of a specific secretary
 

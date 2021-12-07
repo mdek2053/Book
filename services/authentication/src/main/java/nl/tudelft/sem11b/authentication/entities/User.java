@@ -49,6 +49,10 @@ public class User {
         this.password = password;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getNetId() {
         return netId;
     }

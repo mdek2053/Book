@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
+import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
 import nl.tudelft.sem11b.authentication.exceptions.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.authentication.exceptions.NoAssignedGroupException;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
@@ -44,11 +45,12 @@ public class GroupService {
             List<Group> presentGroupList = groupList.get();
             List<Group> userGroupList = new ArrayList<>();
             for (Group group : presentGroupList) {
-                if (group.getGroupId() != 0 && group.getGroupMembers().contains(user)) {
+                if (group.getGroupId() != 0 && group.getGroupMembers().contains(user.getId())) {
                     userGroupList.add(group);
                 }
             }
             if (userGroupList.size() > 0) {
+                userGroupList = getGroupsOfSecretary(user, userGroupList);
                 return userGroupList;
             } else {
                 throw new NoAssignedGroupException("User is not assigned to any groups");
@@ -63,17 +65,19 @@ public class GroupService {
      *
      * @param user of type User.
      * @return a list of groups for which the provided user is a secretary.
-     * @throws NoAssignedGroupException when the user is no secretary for any group.
      */
-    public List<Group> getGroupsOfSecretary(User user) throws NoAssignedGroupException {
+    public List<Group> getGroupsOfSecretary(User user, List<Group> groups) {
         Optional<List<Group>> groupList = groupRepository.findGroupsBySecretary(user);
 
         if (groupList.isPresent()) {
-            return groupList.get();
-        } else {
-            throw new NoAssignedGroupException("User has not been assigned "
-                    + "to any group as secretary");
+            List<Group> secretaryGroups = groupList.get();
+            for (Group group : secretaryGroups) {
+                if (!groups.contains(group)) {
+                    groups.add(group);
+                }
+            }
         }
+        return groups;
     }
 
     /**
@@ -94,10 +98,10 @@ public class GroupService {
      * @throws InvalidGroupCredentialsException when a group already exists
      *      with the specific groupId or when the credentials are invalid.
      */
-    public Group addGroup(User secretary, List<User> groupMembers)
-            throws InvalidGroupCredentialsException {
+    public Group addGroup(String name, User secretary, List<Long> groupMembers)
+            throws InvalidGroupCredentialsException, InvalidCredentialsException {
         if (secretary == null) {
-            throw new InvalidGroupCredentialsException("Secretary needs to be provided");
+            secretary = userService.getCurrentUser();
         }
         try {
             verifyUsers(groupMembers);
@@ -105,12 +109,7 @@ public class GroupService {
             throw new InvalidGroupCredentialsException("At least one provided member "
                     + "is not registered in the system yet");
         }
-        Optional<Integer> optGroupId = groupRepository.findTopByOrderByGroupIdDesc();
-        int groupId = 1;
-        if (optGroupId.isPresent() && optGroupId.get() != 0) {
-            groupId = optGroupId.get() + 1;
-        }
-        Group group = new Group(secretary, groupMembers, groupId);
+        Group group = new Group(name, secretary, groupMembers);
         saveGroup(group);
         return group;
     }
@@ -122,14 +121,50 @@ public class GroupService {
      * @throws InvalidGroupCredentialsException when at least one of the entries
      *      in the list is not registered in the system.
      */
-    public void verifyUsers(List<User> groupMembers) throws InvalidGroupCredentialsException {
-        for (User member : groupMembers) {
-            try {
-                userService.loadUserByUsername(member.getNetId());
-            } catch (UsernameNotFoundException e) {
-                throw new InvalidGroupCredentialsException("At least one provided member "
-                        + "is not registered in the system yet");
+    public void verifyUsers(List<Long> groupMembers) throws InvalidGroupCredentialsException {
+        for (Long member : groupMembers) {
+            Optional<User> user = userRepository.findUserById(member);
+            if (user.isEmpty()) {
+                throw new InvalidGroupCredentialsException("At least one of the provided users "
+                        + "is not registered in the system");
             }
         }
+    }
+
+    /**
+     * Gets the info of a specific group.
+     *
+     * @param groupId over type Integer containing the groupId.
+     * @return the group which is connected to the provided groupId.
+     * @throws InvalidGroupCredentialsException when there is no group
+     *      connected to the provided groupId.
+     */
+    public Group getGroupInfo(int groupId) throws InvalidGroupCredentialsException {
+        Optional<Group> group = groupRepository.findGroupByGroupId(groupId);
+        if (group.isPresent()) {
+            return group.get();
+        } else {
+            throw new InvalidGroupCredentialsException(
+                    "There is no group with the provided group id");
+        }
+    }
+
+    /**
+     * Tries to add new members to an existing group.
+     *
+     * @param users of type List containing new members.
+     * @param group of type Group containing the group where we want to add the new members to.
+     * @throws InvalidGroupCredentialsException when at least one provided user
+     *      is not specified in the system.
+     */
+    public void addGroupMembers(List<Long> users, Group group)
+            throws InvalidGroupCredentialsException {
+        try {
+            verifyUsers(users);
+        } catch (InvalidGroupCredentialsException e) {
+            throw new InvalidGroupCredentialsException("At least one provided member "
+                    + "is not registered in the system yet");
+        }
+        group.addToGroupMembers(users);
     }
 }
