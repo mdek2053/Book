@@ -9,13 +9,16 @@ import nl.tudelft.sem11b.reservation.entity.ReservationResponse;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@RequestMapping("/reservations")
 public class ReservationController {
     ReservationService reservationService;
 
@@ -24,7 +27,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/reservations")
+    @PostMapping()
     ReservationResponse makeReservation(@RequestHeader("Authorization") String token,
                                         @RequestBody ReservationRequest req) {
         if (req == null || !req.validate()) {
@@ -53,4 +56,14 @@ public class ReservationController {
         }
     }
 
+    @PostMapping("/{id}")
+    ReservationResponse changeReservation(@PathVariable String id,
+                                          @RequestHeader("Authorization") String token,
+                                          @RequestBody ReservationRequest req) {
+        if (req == null || !req.validate()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Request body empty or doesn't contain all required fields");
+        }
+        return null;
+    }
 }
