@@ -12,7 +12,6 @@ import nl.tudelft.sem11b.authentication.exceptions.NoAssignedGroupException;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,7 +44,7 @@ public class GroupService {
             List<Group> presentGroupList = groupList.get();
             List<Group> userGroupList = new ArrayList<>();
             for (Group group : presentGroupList) {
-                if (group.getGroupId() != 0 && group.getGroupMembers().contains(user.getId())) {
+                if (group.getGroupMembers().contains(user.getId())) {
                     userGroupList.add(group);
                 }
             }
