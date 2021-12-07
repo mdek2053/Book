@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.data;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -24,9 +25,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * Represents a specific date in time. Implementation is using the Gregorian calendar.
  */
 @Embeddable
-@JsonSerialize(using = Day.Serializer.class)
-@JsonDeserialize(using = Day.Deserializer.class)
-public class Day implements Comparable<Day> {
+@JsonSerialize(using = ApiDate.Serializer.class)
+@JsonDeserialize(using = ApiDate.Deserializer.class)
+public class ApiDate implements Comparable<ApiDate> {
     private static final Pattern RGX_FORMAT =
         Pattern.compile("(\\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])");
     private static final int[] NSCHEMA = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -38,12 +39,12 @@ public class Day implements Comparable<Day> {
     private short day;
 
     /**
-     * Instantiates the {@link Day} class.
+     * Instantiates the {@link ApiDate} class.
      *
      * @param year Year component of the date
      * @param dayOfYear Day of the year (indexed from 1)
      */
-    public Day(long year, long dayOfYear) {
+    public ApiDate(long year, long dayOfYear) {
         var leap = isLeap(year);
         if (dayOfYear < 1 || (!leap && dayOfYear >= 365) || (leap && dayOfYear >= 366)) {
             throw new IllegalArgumentException("Day is out of range for the given year!");
@@ -54,13 +55,13 @@ public class Day implements Comparable<Day> {
     }
 
     /**
-     * Instantiates the {@link Day} class.
+     * Instantiates the {@link ApiDate} class.
      *
      * @param year Year component of the date
      * @param month Month component of the date
      * @param day Day component of the date
      */
-    public Day(long year, long month, long day) {
+    public ApiDate(long year, long month, long day) {
         if (month < 1 || month > 12) {
             throw new IllegalArgumentException(
                 "Month must be an integer between 1 and 12 (inclusive)!");
@@ -75,7 +76,7 @@ public class Day implements Comparable<Day> {
         this.day = (short) (Arrays.stream(schema).limit(month - 1).sum() + day - 1);
     }
 
-    private Day() {
+    private ApiDate() {
         // default constructor for entity materialization
     }
 
@@ -136,7 +137,7 @@ public class Day implements Comparable<Day> {
     }
 
     @Override
-    public int compareTo(Day other) {
+    public int compareTo(ApiDate other) {
         if (year != other.year) {
             return Short.compare(year, other.year);
         }
@@ -157,7 +158,7 @@ public class Day implements Comparable<Day> {
             return false;
         }
 
-        return compareTo((Day) o) == 0;
+        return compareTo((ApiDate) o) == 0;
     }
 
     @Override
@@ -174,7 +175,7 @@ public class Day implements Comparable<Day> {
      * @throws ParseException When string is in invalid format or the component values are outside
      *                        their respective bounds
      */
-    public static Day parse(String str) throws ParseException {
+    public static ApiDate parse(String str) throws ParseException {
         var matches = RGX_FORMAT.matcher(str.trim());
         if (!matches.matches()) {
             throw new ParseException("Given string is in invalid format!", 0);
@@ -185,7 +186,7 @@ public class Day implements Comparable<Day> {
         var day = Byte.parseByte(matches.group(3));
 
         try {
-            return new Day(year, month, day);
+            return new ApiDate(year, month, day);
         } catch (IllegalArgumentException ex) {
             throw new ParseException("Invalid date!", 0);
         }
@@ -202,44 +203,44 @@ public class Day implements Comparable<Day> {
     }
 
     /**
-     * JSON serializer for {@link Day}.
+     * JSON serializer for {@link ApiDate}.
      */
-    public static class Serializer extends JsonSerializer<Day> {
+    public static class Serializer extends JsonSerializer<ApiDate> {
         @Override
-        public void serialize(Day value, JsonGenerator gen, SerializerProvider serializers)
+        public void serialize(ApiDate value, JsonGenerator gen, SerializerProvider serializers)
             throws IOException {
             gen.writeString(value.toString());
         }
     }
 
     /**
-     * JSON deserializer for {@link Day}.
+     * JSON deserializer for {@link ApiDate}.
      */
-    public static class Deserializer extends JsonDeserializer<Day> {
+    public static class Deserializer extends JsonDeserializer<ApiDate> {
         @Override
-        public Day deserialize(JsonParser p, DeserializationContext ctxt)
+        public ApiDate deserialize(JsonParser p, DeserializationContext ctxt)
             throws IOException, JacksonException {
             var value = p.nextTextValue();
             if (value == null) {
-                throw new DayDeserializeException("Date requires a string JSON value!",
+                throw new ApiDateDeserializeException("Date requires a string JSON value!",
                     p.currentLocation());
             }
 
             try {
-                return Day.parse(value);
+                return ApiDate.parse(value);
             } catch (ParseException ex) {
-                throw new DayDeserializeException("Unable to parse a date!",
+                throw new ApiDateDeserializeException("Unable to parse a date!",
                     p.currentLocation(), ex);
             }
         }
 
-        private static class DayDeserializeException extends JsonProcessingException {
-            protected DayDeserializeException(String msg, JsonLocation loc) {
+        private static class ApiDateDeserializeException extends JsonProcessingException {
+            protected ApiDateDeserializeException(String msg, JsonLocation loc) {
                 super(msg, loc);
             }
 
-            protected DayDeserializeException(String msg, JsonLocation loc,
-                                              Throwable rootCause) {
+            protected ApiDateDeserializeException(String msg, JsonLocation loc,
+                                                  Throwable rootCause) {
                 super(msg, loc, rootCause);
             }
         }

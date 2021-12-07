@@ -1,6 +1,6 @@
 package nl.tudelft.sem11b.data.models;
 
-import nl.tudelft.sem11b.data.TimeOfDay;
+import nl.tudelft.sem11b.data.ApiTime;
 
 /**
  * Holds all building information.
@@ -9,8 +9,8 @@ public class BuildingModel {
     private final int id;
     private final String prefix;
     private final String name;
-    private final TimeOfDay open;
-    private final TimeOfDay close;
+    private final ApiTime open;
+    private final ApiTime close;
 
     /**
      * Instantiates the {@link BuildingModel}.
@@ -21,7 +21,7 @@ public class BuildingModel {
      * @param open Time of day at which the building opens
      * @param close This of day at which the building closes
      */
-    public BuildingModel(int id, String prefix, String name, TimeOfDay open, TimeOfDay close) {
+    public BuildingModel(int id, String prefix, String name, ApiTime open, ApiTime close) {
         this.id = id;
         this.prefix = prefix;
         this.name = name;
@@ -61,7 +61,7 @@ public class BuildingModel {
      *
      * @return Opening time of the building
      */
-    public TimeOfDay getOpen() {
+    public ApiTime getOpen() {
         return open;
     }
 
@@ -70,7 +70,7 @@ public class BuildingModel {
      *
      * @return Closing time of the building
      */
-    public TimeOfDay getClose() {
+    public ApiTime getClose() {
         return close;
     }
 }

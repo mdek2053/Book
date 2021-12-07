@@ -1,13 +1,12 @@
 package nl.tudelft.sem11b.services;
 
-import nl.tudelft.sem11b.data.exception.CommunicationException;
-import nl.tudelft.sem11b.data.exception.ForbiddenException;
-import nl.tudelft.sem11b.data.exception.NotFoundException;
-import nl.tudelft.sem11b.data.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 
 public interface ReservationService {
     long makeOwnReservation(long roomId, String userToken,
-                            String title, String since, String until)
-            throws ForbiddenException, CommunicationException,
-            NotFoundException, UnauthorizedException;
+                            String title, ApiDateTime since, ApiDateTime until)
+            throws ApiException, EntityNotFound, InvalidData;
 }

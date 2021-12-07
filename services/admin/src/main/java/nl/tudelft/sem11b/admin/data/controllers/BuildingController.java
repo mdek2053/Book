@@ -2,6 +2,8 @@ package nl.tudelft.sem11b.admin.data.controllers;
 
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.BuildingModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
@@ -42,7 +44,11 @@ public class BuildingController {
         @RequestParam Optional<Integer> limit) {
         var index = PageIndex.fromQuery(page, limit);
 
-        return buildings.listBuildings(index);
+        try {
+            return buildings.listBuildings(index);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
     }
 
     /**
@@ -53,7 +59,13 @@ public class BuildingController {
      */
     @GetMapping("/buildings/{id}")
     public BuildingModel getBuilding(@PathVariable int id) {
-        var building = buildings.getBuilding(id);
+        Optional<BuildingModel> building;
+        try {
+            building = buildings.getBuilding(id);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
+
         if (building.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Building not found!");
         }

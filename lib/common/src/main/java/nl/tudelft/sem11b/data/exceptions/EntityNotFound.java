@@ -3,7 +3,7 @@ package nl.tudelft.sem11b.data.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class EntityNotFound extends Exception {
+public class EntityNotFound extends ServiceException {
     private final String entityName;
 
     public EntityNotFound(String entityName) {
@@ -15,6 +15,7 @@ public class EntityNotFound extends Exception {
         return entityName;
     }
 
+    @Override
     public ResponseStatusException toResponseException() {
         return new ResponseStatusException(HttpStatus.NOT_FOUND, entityName + " not found!");
     }

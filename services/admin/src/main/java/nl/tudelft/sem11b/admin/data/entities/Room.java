@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import nl.tudelft.sem11b.admin.data.Closure;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 
@@ -114,6 +115,6 @@ public class Room {
      */
     public RoomModel toModel() {
         return new RoomModel(id, suffix, name, capacity,
-            building.toModel(), closure == null ? null : closure.toModel());
+            building.toModel(), new EquipmentModel[0], closure == null ? null : closure.toModel());
     }
 }
