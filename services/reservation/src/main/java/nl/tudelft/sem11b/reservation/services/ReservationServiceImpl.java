@@ -173,9 +173,22 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
         return makeReservation(roomId, userId, title, since, until);
     }
 
-    public List<ReservationModel> inspectOwnReservation(String token) throws CommunicationException, UnauthorizedException, NoSuchFieldException, IllegalAccessException {
-        List<Reservation> reservationList = reservationRepository.getOwnReservation(serv.getUserId(token));
+    /**
+     * Get user's own reservations.
+     * @param token authorization token of the user
+     * @return a list of ReservationModel
+     * @throws CommunicationException communication problem with server
+     * @throws UnauthorizedException invalid token
+     * @throws NoSuchFieldException in case fields don't exist in ReservationModel
+     * @throws IllegalAccessException thrown if the field was not accessible
+     */
+    public List<ReservationModel> inspectOwnReservation(String token)
+            throws CommunicationException, UnauthorizedException,
+            NoSuchFieldException, IllegalAccessException {
+        List<Reservation> reservationList =
+                reservationRepository.getOwnReservation(serv.getUserId(token));
         List<ReservationModel> reservationModels = null;
+
         for (Reservation reservation : reservationList) {
             Field roomId = reservation.getClass().getDeclaredField("roomId");
             roomId.setAccessible(true);
