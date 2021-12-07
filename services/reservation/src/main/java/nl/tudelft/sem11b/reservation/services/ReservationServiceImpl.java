@@ -258,19 +258,20 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
             throws NotFoundException, CommunicationException,
             UnauthorizedException, ForbiddenException {
         long userId = serv.getUserId(userToken);
+        String role = serv.getUserRole(userToken);
         Optional<Reservation> oldData = reservationRepository.findReservationById(reservationId);
 
         if (oldData.isEmpty()) {
             throw new NotFoundException("There is no reservation with provided id.");
         }
 
-        if (userId == oldData.get().getUserId()) {
-            return editOwnReservation(userId, newData, oldData.get());
+        if (userId == oldData.get().getUserId() || role.equals("admin")) {
+            return editReservation(oldData.get().getUserId(), newData, oldData.get());
         }
         return 0;
     }
 
-    private long editOwnReservation(Long userId, ReservationModel newData,
+    private long editReservation(Long userId, ReservationModel newData,
                                     Reservation oldData)
             throws ForbiddenException, CommunicationException {
         if (newData.getTitle() == null || newData.getTitle().length() == 0) {

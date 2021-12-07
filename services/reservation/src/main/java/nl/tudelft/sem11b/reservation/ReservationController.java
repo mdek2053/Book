@@ -68,7 +68,8 @@ public class ReservationController {
         try {
             ReservationModel model = new ReservationModel(req.getRoomId(),
                     req.getSince(), req.getSince(), req.getTitle());
-            long reservationId = reservationService.editReservation(token, model, Long.parseLong(id));
+            long reservationId = reservationService
+                    .editReservation(token, model, Long.parseLong(id));
             return new ReservationResponse(reservationId);
         } catch (CommunicationException c) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
