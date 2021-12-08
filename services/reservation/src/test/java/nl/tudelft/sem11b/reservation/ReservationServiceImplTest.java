@@ -13,14 +13,22 @@ import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
+import nl.tudelft.sem11b.data.exception.CommunicationException;
 import nl.tudelft.sem11b.data.exception.ForbiddenException;
+import nl.tudelft.sem11b.data.exception.NotFoundException;
+import nl.tudelft.sem11b.data.exception.UnauthorizedException;
+import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.reservation.services.ReservationServiceImpl;
 import nl.tudelft.sem11b.reservation.services.ServerInteractionHelper;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -186,4 +194,65 @@ class ReservationServiceImplTest {
                 "Title","2022-01-15T16:30", "2022-01-15T16:45"));
     }
 
+    @Test
+    void changeNonExistingReservation() throws Exception {
+        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
+        String token = "token123";
+        Long reservationId = 123L;
+        when(helper.getUserId(token)).thenReturn(1L);
+        when(helper.getUserRole(token)).thenReturn("admin");
+        when(reservationRepository.findReservationById(reservationId)).thenReturn(Optional.empty());
+        reservationServiceImpl.setServ(helper);
+        Long roomId = 111L;
+        String title = "Meeting";
+        String since = "2022-01-15T13:00";
+        String until = "2022-01-15T17:00";
+        ReservationModel model =
+                new ReservationModel(roomId, since, until, title);
+        assertThrows(NotFoundException.class, () ->
+                reservationServiceImpl.editReservation(token, model, reservationId));
+    }
+
+    @Test
+    void successfullyEditRoomAndTitle() throws Exception {
+        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
+
+        String token = "token123";
+        String role = "admin";
+        Long roomId = 111L;
+        Long userId = 444L;
+
+        when(helper.getUserId(token)).thenReturn(userId);
+        when(helper.getUserRole(token)).thenReturn(role);
+        when(helper.checkRoomExists(roomId)).thenReturn(true);
+        when(helper.getOpeningHours(roomId)).thenReturn(Lists.list("07:00", "20:00"));
+        reservationServiceImpl.setServ(helper);
+
+        long timeAtLocal = System.currentTimeMillis();
+        long offset = TimeZone.getDefault().getOffset(timeAtLocal);
+
+        Timestamp since = new Timestamp(1642248000000L - offset);
+        Timestamp until = new Timestamp(1642262400000L - offset);
+        String title = "Meeting";
+        Long reservationId = 123L;
+        Reservation reservation =
+                new Reservation(reservationId, roomId - 1,
+                        userId, title, since, until, null);
+        when(reservationRepository.findReservationById(reservationId))
+                .thenReturn(Optional.of(reservation));
+        List<Reservation> conflictUser = new ArrayList<>();
+        conflictUser.add(reservation);
+        when(reservationRepository.getUserConflicts(userId, since, until)).thenReturn(conflictUser);
+        when(reservationRepository.getRoomConflicts(roomId, since, until)).thenReturn(null);
+
+        Reservation changedReservation = new Reservation(reservationId, roomId, userId,
+                "New title", since, until, null);
+        when(reservationRepository.save(changedReservation))
+                .thenReturn(changedReservation);
+
+        ReservationModel model = new ReservationModel(roomId, null, null, "New title");
+        Assertions.assertEquals(reservationId,
+                reservationServiceImpl.editReservation(token, model, reservationId));
+        verify(reservationRepository, times(1)).save(changedReservation);
+    }
 }

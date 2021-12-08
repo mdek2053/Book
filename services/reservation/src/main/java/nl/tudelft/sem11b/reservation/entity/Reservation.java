@@ -132,6 +132,14 @@ public class Reservation {
         return roomId;
     }
 
+    public Timestamp getSince() {
+        return since;
+    }
+
+    public Timestamp getUntil() {
+        return until;
+    }
+
     public void setRoomId(long roomId) {
         this.roomId = roomId;
     }

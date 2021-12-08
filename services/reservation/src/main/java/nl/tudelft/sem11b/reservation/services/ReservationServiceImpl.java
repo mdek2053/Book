@@ -182,7 +182,11 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
     }
 
     private void checkRoomAvailability(long roomId, Timestamp sinceDate, Timestamp untilDate)
-            throws CommunicationException, ForbiddenException {
+            throws CommunicationException, ForbiddenException, NotFoundException {
+
+        if (!serv.checkRoomExists(roomId)) {
+            throw new NotFoundException("Room does not exist");
+        }
         // check room actually available
         List<String> openingTimesStrings = serv.getOpeningHours(roomId);
 
@@ -268,21 +272,33 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
         if (userId == oldData.get().getUserId() || role.equals("admin")) {
             return editReservation(oldData.get().getUserId(), newData, oldData.get());
         }
-        return 0;
+
+        throw new UnauthorizedException("User not authorized to change given reservation.");
     }
 
     private long editReservation(Long userId, ReservationModel newData,
                                     Reservation oldData)
-            throws ForbiddenException, CommunicationException {
-        if (newData.getTitle() == null || newData.getTitle().length() == 0) {
-            throw new ForbiddenException("Reservation must have title");
+            throws ForbiddenException, CommunicationException, NotFoundException {
+
+        Timestamp sinceDate;
+        Timestamp untilDate;
+        if (newData.getSince() != null) {
+            sinceDate = getTimestamp(newData.getSince());
+            untilDate = getTimestamp(newData.getUntil());
+            validateTime(sinceDate, untilDate);
+        } else {
+            sinceDate = oldData.getSince();
+            untilDate = oldData.getUntil();
         }
-        Timestamp sinceDate = getTimestamp(newData.getSince());
-        Timestamp untilDate = getTimestamp(newData.getUntil());
+        Long roomId;
 
-        validateTime(sinceDate, untilDate);
+        if (newData.getRoomId() != null) {
+            roomId = newData.getRoomId();
+        } else {
+            roomId = oldData.getRoomId();
+        }
 
-        checkRoomAvailability(newData.getRoomId(), sinceDate, untilDate);
+        checkRoomAvailability(roomId, sinceDate, untilDate);
 
         // check if it doesn't conflict with user's other reservations
         List<Reservation> conflictsUser = reservationRepository
@@ -295,15 +311,18 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
 
         // check if it doesn't conflict with room's other reservations
         List<Reservation> conflictsRoom = reservationRepository
-                .getRoomConflicts(newData.getRoomId(), sinceDate, untilDate);
+                .getRoomConflicts(roomId, sinceDate, untilDate);
         if (conflictsRoom != null
                 && (conflictsRoom.size() > 1 || !conflictsRoom.get(0).equals(oldData))) {
             throw new ForbiddenException("Reservation conflicts with room's existing reservations");
 
         }
+        if (newData.getTitle() != null && newData.getTitle().length() > 0) {
+            oldData.setTitle(newData.getTitle());
+        }
         oldData.setSince(sinceDate);
         oldData.setUntil(untilDate);
-        oldData.setRoomId(newData.getRoomId());
+        oldData.setRoomId(roomId);
         return reservationRepository.save(oldData).getId();
     }
 

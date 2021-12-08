@@ -61,13 +61,13 @@ public class ReservationController {
     ReservationResponse changeReservation(@PathVariable String id,
                                           @RequestHeader("Authorization") String token,
                                           @RequestBody ReservationRequest req) {
-        if (req == null || !req.validate()) {
+        if (req == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Request body empty or doesn't contain all required fields");
+                    "Request body empty");
         }
         try {
             ReservationModel model = new ReservationModel(req.getRoomId(),
-                    req.getSince(), req.getSince(), req.getTitle());
+                    req.getSince(), req.getUntil(), req.getTitle());
             long reservationId = reservationService
                     .editReservation(token, model, Long.parseLong(id));
             return new ReservationResponse(reservationId);
