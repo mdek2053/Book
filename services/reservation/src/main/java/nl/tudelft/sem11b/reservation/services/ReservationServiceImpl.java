@@ -199,11 +199,11 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
 
             Field since = reservation.getClass().getDeclaredField("since");
             since.setAccessible(true);
-            Timestamp since02 = (Timestamp) since.get(reservation);
+            String since02 = (String) since.get(reservation);
 
             Field until = reservation.getClass().getDeclaredField("until");
             until.setAccessible(true);
-            Timestamp until02 = (Timestamp) until.get(reservation);
+            String until02 = (String) until.get(reservation);
 
             Field title = reservation.getClass().getDeclaredField("title");
             title.setAccessible(true);

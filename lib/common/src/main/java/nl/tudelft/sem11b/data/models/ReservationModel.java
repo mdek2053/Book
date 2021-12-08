@@ -4,19 +4,17 @@ import java.sql.Timestamp;
 
 public class ReservationModel {
     private final long roomId;
-    private final Timestamp since;
-    private final Timestamp until;
+    private final String since;
+    private final String until;
     private final String title;
 
     public long getRoomId() {
         return roomId;
     }
 
-    public Timestamp getSince() {
-        return since;
-    }
+    public String getSince() { return since; }
 
-    public Timestamp getUntil() {
+    public String getUntil() {
         return until;
     }
 
@@ -31,7 +29,7 @@ public class ReservationModel {
      * @param until end time of reservation
      * @param title title of reservation
      */
-    public ReservationModel(long roomId, Timestamp since, Timestamp until, String title) {
+    public ReservationModel(long roomId, String since, String until, String title) {
         this.roomId = roomId;
         this.since = since;
         this.until = until;

@@ -65,8 +65,8 @@ class ReservationControllerTest {
     @Test
     void inspectOwnReservation() throws Exception {
         ReservationModel reservationModel1 = new ReservationModel(1L,
-                Timestamp.valueOf("2022-01-15 13:00:00"),
-                Timestamp.valueOf("2022-01-15 17:00:00"), "Meeting");
+                "2022-01-15 13:00:",
+                "2022-01-15 17:00:00", "Meeting");
 
         List<ReservationModel> reservationModelList = new ArrayList<>();
         reservationModelList.add(reservationModel1);
@@ -78,8 +78,8 @@ class ReservationControllerTest {
                 .header("Authorization", "token")
                 .accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        String expected = "[{\"roomId\":1,\"since\":\"2022-01-15T12:00:00.000+00:00\","
-                + "\"until\":\"2022-01-15T16:00:00.000+00:00\",\"title\":\"Meeting\"}]";
+        String expected = "[{\"roomId\":1,\"since\":\"2022-01-15 13:00:\",\"until\":"
+                + "\"2022-01-15 17:00:00\",\"title\":\"Meeting\"}]";
         assertEquals(expected, result.getResponse().getContentAsString());
     }
 
