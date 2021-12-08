@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "reservation")
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -147,5 +146,41 @@ public class Reservation {
 
     public long getId() {
         return id;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public long getRoomId() {
+        return roomId;
+    }
+
+    public Timestamp getSince() {
+        return since;
+    }
+
+    public Timestamp getUntil() {
+        return until;
+    }
+
+    public void setRoomId(long roomId) {
+        this.roomId = roomId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSince(Timestamp since) {
+        this.since = since;
+    }
+
+    public void setUntil(Timestamp until) {
+        this.until = until;
     }
 }

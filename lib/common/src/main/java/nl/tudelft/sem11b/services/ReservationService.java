@@ -17,4 +17,9 @@ public interface ReservationService {
     List<ReservationModel> inspectOwnReservation(String token)
             throws CommunicationException, UnauthorizedException,
             NoSuchFieldException, IllegalAccessException;
+
+    long editReservation(String userToken, ReservationModel newData,
+                              Long reservationId)
+            throws NotFoundException, CommunicationException,
+            UnauthorizedException, ForbiddenException;
 }
