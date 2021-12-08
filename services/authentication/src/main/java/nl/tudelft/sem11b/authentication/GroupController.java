@@ -10,6 +10,7 @@ import nl.tudelft.sem11b.authentication.exceptions.NoAssignedGroupException;
 import nl.tudelft.sem11b.authentication.services.GroupService;
 import nl.tudelft.sem11b.authentication.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ public class GroupController {
      * @throws InvalidCredentialsException when the provided credentials
      *      of a specific user is not valid.
      */
+    @PreAuthorize("hasRole('admin')")
     @PostMapping()
     public Group postGroup(@RequestBody String name, @RequestBody User secretary,
                            @RequestBody List<Long> groupMembers)
@@ -49,7 +51,7 @@ public class GroupController {
         return groupService.addGroup(name, secretary, groupMembers);
     }
 
-    @GetMapping(value = "/groups/mine")
+    @GetMapping(value = "/mine")
     public List<Group> getGroupsOfEmployee(@RequestBody User user) throws NoAssignedGroupException {
         return groupService.getGroupsOfUser(user);
     }

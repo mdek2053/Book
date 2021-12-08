@@ -22,7 +22,6 @@ public class Group {
     @Column(name = "secretary")
     private User secretary;
 
-    //@Column(name = "groupMembers")
     private List<Long> groupMembers;
 
     /**
