@@ -1,4 +1,4 @@
-package nl.tudelft.sem11b.reservation;
+package nl.tudelft.sem11b.admin;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

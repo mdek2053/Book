@@ -13,6 +13,7 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.services.RoomsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 public class RoomController {
     private final RoomsService rooms;
+
     private ServerInteractionHelper serverInteractionHelper = new ServerInteractionHelper();
 
     /**
@@ -37,6 +39,7 @@ public class RoomController {
      *
      * @param rooms The room handling service
      */
+    @Autowired
     public RoomController(RoomsService rooms) {
         this.rooms = rooms;
     }

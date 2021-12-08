@@ -98,6 +98,15 @@ public class Room {
     }
 
     /**
+     * Gets the closure..
+     *
+     * @return Closure object
+     */
+    public Closure getClosure() {
+        return closure;
+    }
+
+    /**
      * Gets the entity of the parent building.
      *
      * @return Parent building
