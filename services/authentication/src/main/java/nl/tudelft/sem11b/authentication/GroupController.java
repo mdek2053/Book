@@ -42,7 +42,7 @@ public class GroupController {
      * @throws InvalidCredentialsException when the provided credentials
      *      of a specific user is not valid.
      */
-    @PostMapping(value = "/groups")
+    @PostMapping()
     public Group postGroup(@RequestBody String name, @RequestBody User secretary,
                            @RequestBody List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException {
