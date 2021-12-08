@@ -1,3 +1,10 @@
 plugins {
 	id 'java-library'
 }
+
+dependencies {
+	implementation 'org.hibernate:hibernate-core:5.6.1.Final'           // Hibernate + JPA
+	implementation 'org.springframework.data:spring-data-commons:2.5.6' // Spring Boot data API
+	implementation 'org.springframework:spring-web:5.3.12'              // Spring Boot web API
+
+}

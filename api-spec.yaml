@@ -1439,3 +1439,4 @@ components:
       schema:
         type: integer
         default: 32
+
