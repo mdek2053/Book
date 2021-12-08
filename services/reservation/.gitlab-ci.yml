@@ -31,9 +31,9 @@ service-reservation-checkstyle:
       - .gradle/
   allow_failure: true
 
-service-reservation-pmd:
-  stage: validate
-  script: ./gradlew :services:reservation:pmdMain :services:reservation:pmdTest
+#service-reservation-pmd:
+  #stage: validate
+  #script: ./gradlew :services:reservation:pmdMain :services:reservation:pmdTest
 
 service-reservation-test:
   stage: test
