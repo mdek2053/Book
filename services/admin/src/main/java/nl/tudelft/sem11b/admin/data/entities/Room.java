@@ -89,6 +89,15 @@ public class Room {
     }
 
     /**
+     * Sets the room closed.
+     *
+     * @param closure Closure object
+     */
+    public void setClosure(Closure closure) {
+        this.closure = closure;
+    }
+
+    /**
      * Gets the entity of the parent building.
      *
      * @return Parent building

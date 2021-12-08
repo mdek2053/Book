@@ -45,4 +45,14 @@ public class ClosureObject implements Serializable {
         this.since = since;
         this.until = until;
     }
+
+    /**
+     * Checks if the entity has all mandatory fields filled in.
+     * @return true if valid, false otherwise
+     */
+    public boolean validate() {
+        return description != null && description.length() > 0
+                && since != null && since.length() > 0 // this should be changed to
+                && until != null && until.length() > 0; // date string validation once feasible.
+    }
 }
