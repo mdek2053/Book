@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.exception.CommunicationException;
 import nl.tudelft.sem11b.data.exception.ForbiddenException;
 import nl.tudelft.sem11b.data.exception.NotFoundException;
