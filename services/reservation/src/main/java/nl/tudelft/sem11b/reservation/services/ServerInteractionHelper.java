@@ -106,4 +106,27 @@ public class ServerInteractionHelper {
 
         return room.getClosure().getDescription();
     }
+
+    /**
+     * Gets the role of user with a given token.
+     * @param userToken the token used for authorization
+     * @return the user's role
+     * @throws CommunicationException if there is any sort of communication error with the server
+     * @throws UnauthorizedException if the token is invalid
+     */
+    public String getUserRole(String userToken)
+            throws UnauthorizedException, CommunicationException {
+        String path = domainUserMicroservice + "/users/me";
+
+        HttpResponse<String> response = helper.getResponse(client, path, userToken);
+
+        String responseBody = response.body();
+
+        if (response.statusCode() == 403) { // 403 means token is invalid
+            throw new UnauthorizedException("Token is invalid");
+        }
+
+        JSONObject obj = new JSONObject(responseBody);
+        return obj.getString("role");
+    }
 }

@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.reservation.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import javax.transaction.Transactional;
 
 import nl.tudelft.sem11b.reservation.entity.Reservation;
@@ -42,4 +43,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query(value = "SELECT * \n"
             + "FROM reservation", nativeQuery = true)
     List<Reservation> getAll();
+
+    Optional<Reservation> findReservationById(Long id);
 }
