@@ -9,16 +9,22 @@ public class ReservationModel {
     private final String title;
 
     public long getRoomId() {
+
         return roomId;
     }
 
-    public String getSince() { return since; }
+    public String getSince() {
+
+        return since;
+    }
 
     public String getUntil() {
+
         return until;
     }
 
     public String getTitle() {
+
         return title;
     }
 
