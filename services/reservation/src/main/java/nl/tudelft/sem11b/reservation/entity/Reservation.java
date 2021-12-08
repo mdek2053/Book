@@ -34,6 +34,30 @@ public class Reservation {
     @Column(name = "cancel")
     private String cancelReason;
 
+    public long getRoomId() {
+        return roomId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Timestamp getSince() {
+        return since;
+    }
+
+    public Timestamp getUntil() {
+        return until;
+    }
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
     public Reservation() {
     }
 

@@ -190,26 +190,11 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
         List<ReservationModel> reservationModels = null;
 
         for (Reservation reservation : reservationList) {
-            Field roomId = reservation.getClass().getDeclaredField("roomId");
-            roomId.setAccessible(true);
-            int roomId02 = (int) roomId.get(reservation);
-
-            //Just to resolve checkstyle - can be ignored
-            ReservationModel model = new ReservationModel(roomId02, null, null, null);
-
-            Field since = reservation.getClass().getDeclaredField("since");
-            since.setAccessible(true);
-            String since02 = (String) since.get(reservation);
-
-            Field until = reservation.getClass().getDeclaredField("until");
-            until.setAccessible(true);
-            String until02 = (String) until.get(reservation);
-
-            Field title = reservation.getClass().getDeclaredField("title");
-            title.setAccessible(true);
-            String title02 = (String) title.get(reservation);
-
-            reservationModels.add(new ReservationModel(roomId02, since02, until02, title02));
+            long roomId = reservation.getRoomId();
+            String since = reservation.getSince().toString();
+            String until = reservation.getUntil().toString();
+            String title = reservation.getTitle();
+            reservationModels.add(new ReservationModel(roomId, since, until, title));
         }
 
         return reservationModels;
