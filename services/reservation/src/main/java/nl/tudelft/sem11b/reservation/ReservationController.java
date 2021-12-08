@@ -63,7 +63,7 @@ public class ReservationController {
         }
     }
 
-    @GetMapping("/reservations/mine")
+    @GetMapping("/mine")
     public List<ReservationModel> inspectOwnReservation(
             @RequestHeader("Authorization") String token)
             throws CommunicationException, UnauthorizedException,
