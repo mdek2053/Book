@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem11b.data.exception.CommunicationException;
 import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 import nl.tudelft.sem11b.data.models.BuildingObject;
+import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.RoomObject;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;

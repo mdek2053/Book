@@ -1,15 +1,20 @@
 package nl.tudelft.sem11b.reservation;
 
+import java.util.List;
+
 import nl.tudelft.sem11b.data.exception.CommunicationException;
 import nl.tudelft.sem11b.data.exception.ForbiddenException;
 import nl.tudelft.sem11b.data.exception.NotFoundException;
 import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.entity.ReservationRequest;
 import nl.tudelft.sem11b.reservation.entity.ReservationResponse;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
 
 @RestController
 @RequestMapping("/reservations")
@@ -55,6 +61,14 @@ public class ReservationController {
         } catch (ForbiddenException c) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, c.reason);
         }
+    }
+
+    @GetMapping("/mine")
+    public List<ReservationModel> inspectOwnReservation(
+            @RequestHeader("Authorization") String token)
+            throws CommunicationException, UnauthorizedException,
+            NoSuchFieldException, IllegalAccessException {
+        return reservationService.inspectOwnReservation(token);
     }
 
     @PostMapping("/{id}")

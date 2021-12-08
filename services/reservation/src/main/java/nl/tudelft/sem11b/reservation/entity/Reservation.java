@@ -33,6 +33,34 @@ public class Reservation {
     @Column(name = "cancel")
     private String cancelReason;
 
+    public long getId() {
+        return id;
+    }
+
+    public long getRoomId() {
+        return roomId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Timestamp getSince() {
+        return since;
+    }
+
+    public Timestamp getUntil() {
+        return until;
+    }
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
     public Reservation() {
     }
 
@@ -118,26 +146,6 @@ public class Reservation {
                 + ", until=" + until
                 + ", cancel_reason='" + cancelReason + '\''
                 + '}';
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public long getRoomId() {
-        return roomId;
-    }
-
-    public Timestamp getSince() {
-        return since;
-    }
-
-    public Timestamp getUntil() {
-        return until;
     }
 
     public void setRoomId(long roomId) {

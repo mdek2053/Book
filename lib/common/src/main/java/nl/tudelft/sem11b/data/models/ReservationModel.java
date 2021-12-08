@@ -56,4 +56,3 @@ public class ReservationModel {
         return Objects.hash(roomId, since, until, title);
     }
 }
-

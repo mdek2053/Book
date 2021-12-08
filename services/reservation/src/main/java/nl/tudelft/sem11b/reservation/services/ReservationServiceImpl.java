@@ -1,11 +1,13 @@
 package nl.tudelft.sem11b.reservation.services;
 
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.AbstractList;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -243,6 +245,33 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
             NotFoundException, UnauthorizedException {
         long userId = serv.getUserId(userToken);
         return makeReservation(roomId, userId, title, since, until);
+    }
+
+    /**
+     * Get user's own reservations.
+     * @param token authorization token of the user
+     * @return a list of ReservationModel
+     * @throws CommunicationException communication problem with server
+     * @throws UnauthorizedException invalid token
+     * @throws NoSuchFieldException in case fields don't exist in ReservationModel
+     * @throws IllegalAccessException thrown if the field was not accessible
+     */
+    public List<ReservationModel> inspectOwnReservation(String token)
+            throws CommunicationException, UnauthorizedException,
+            NoSuchFieldException, IllegalAccessException {
+        List<Reservation> reservationList =
+                reservationRepository.getOwnReservation(serv.getUserId(token));
+        List<ReservationModel> reservationModels = null;
+
+        for (Reservation reservation : reservationList) {
+            long roomId = reservation.getRoomId();
+            String since = reservation.getSince().toString();
+            String until = reservation.getUntil().toString();
+            String title = reservation.getTitle();
+            reservationModels.add(new ReservationModel(roomId, since, until, title));
+        }
+
+        return reservationModels;
     }
 
     /**

@@ -38,6 +38,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             nativeQuery = true)
     List<Reservation> getRoomConflicts(long roomId, Timestamp since, Timestamp until);
 
+    @Transactional
+    @Query(value = "SELECT * \n"
+            + "FROM reservation\n"
+            + "WHERE user_id = ?1\n", nativeQuery = true)
+    List<Reservation> getOwnReservation(long userId);
+
     // debug testing method
     @Transactional
     @Query(value = "SELECT * \n"
