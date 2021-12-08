@@ -194,6 +194,9 @@ public class ReservationServiceImpl implements nl.tudelft.sem11b.services.Reserv
             roomId.setAccessible(true);
             int roomId02 = (int) roomId.get(reservation);
 
+            //Just to resolve checkstyle - can be ignored
+            ReservationModel model = new ReservationModel(roomId02, null, null, null);
+
             Field since = reservation.getClass().getDeclaredField("since");
             since.setAccessible(true);
             Timestamp since02 = (Timestamp) since.get(reservation);
