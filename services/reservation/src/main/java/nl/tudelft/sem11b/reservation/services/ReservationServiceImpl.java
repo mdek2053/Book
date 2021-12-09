@@ -157,7 +157,7 @@ public class ReservationServiceImpl implements ReservationService {
      * @throws ApiException if there is any communication problem with the server
      * @throws EntityNotFound if the room does not exist
      */
-    public long makeOwnReservation(long roomId, String userToken, String title,
+    public long makeOwnReservation(long roomId, String title,
                                    ApiDateTime since, ApiDateTime until)
             throws ApiException, EntityNotFound, InvalidData {
         // TODO: Uncomment once API clients are in place

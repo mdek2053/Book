@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.tudelft.sem11b.data.ApiDateTime;
-import nl.tudelft.sem11b.reservation.entity.ReservationRequest;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -34,10 +34,10 @@ class ReservationControllerTest {
 
     @Test
     void makeReservationTest() throws Exception {
-        when(reservationService.makeOwnReservation(1L, "foo", "Meeting",
+        when(reservationService.makeOwnReservation(1L, "Meeting",
                 new ApiDateTime(2022,1,15,13,0), new ApiDateTime(2022,1,15,17,0))).thenReturn(1L);
 
-        ReservationRequest req = new ReservationRequest(1L, "Meeting",
+        ReservationRequestModel req = new ReservationRequestModel(1L, "Meeting",
             new ApiDateTime(2022,1,15,13,0), new ApiDateTime(2022,1,15,17,0), null);
 
         MvcResult mvcResult = mockMvc.perform(post("/reservations")

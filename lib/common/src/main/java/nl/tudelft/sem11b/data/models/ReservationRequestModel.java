@@ -1,14 +1,13 @@
-package nl.tudelft.sem11b.reservation.entity;
+package nl.tudelft.sem11b.data.models;
 
-import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
 
-public class ReservationRequest {
-    Long roomId;
-    String title;
-    ApiDateTime since;
-    ApiDateTime until;
-    Long forUser;
+public class ReservationRequestModel {
+    private Long roomId;
+    private String title;
+    private ApiDateTime since;
+    private ApiDateTime until;
+    private Long forUser;
 
     public Long getRoomId() {
         return roomId;
@@ -41,7 +40,7 @@ public class ReservationRequest {
                 && until != null;
     }
 
-    public ReservationRequest() {
+    private ReservationRequestModel() {
     }
 
     /**
@@ -52,7 +51,7 @@ public class ReservationRequest {
      * @param until end time of the reservation
      * @param forUser optinally, can specify for which user the reservation is made
      */
-    public ReservationRequest(Long roomId, String title, ApiDateTime since, ApiDateTime until, Long forUser) {
+    public ReservationRequestModel(Long roomId, String title, ApiDateTime since, ApiDateTime until, Long forUser) {
         this.roomId = roomId;
         this.title = title;
         this.since = since;
