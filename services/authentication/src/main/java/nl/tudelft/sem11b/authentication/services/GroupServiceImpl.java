@@ -6,11 +6,12 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.authentication.exceptions.NoAssignedGroupException;
+import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
+import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
+import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
+import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
  * Provides a service to handle different requests with groups.
  */
 @Service
-public class GroupService {
+public class GroupServiceImpl {
 
     @Autowired
     GroupRepository groupRepository;
@@ -27,7 +28,7 @@ public class GroupService {
     UserRepository userRepository;
 
     @Autowired
-    UserService userService;
+    UserServiceImpl userService;
 
     /**
      * Retrieves all groups where the provided user is part of.
@@ -97,7 +98,7 @@ public class GroupService {
      * @throws InvalidGroupCredentialsException when a group already exists
      *      with the specific groupId or when the credentials are invalid.
      */
-    public Group addGroup(String name, User secretary, List<Long> groupMembers)
+    public Group addGroup(String name, UserModel secretary, List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException {
         if (secretary == null) {
             secretary = userService.getCurrentUser();

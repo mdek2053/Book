@@ -1,14 +1,9 @@
 package nl.tudelft.sem11b.authentication;
 
-import java.util.List;
-
-import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.authentication.exceptions.NoAssignedGroupException;
-import nl.tudelft.sem11b.authentication.services.GroupService;
-import nl.tudelft.sem11b.authentication.services.UserService;
+import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
+import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
+import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,11 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     @Autowired
-    UserService service;
+    UserServiceImpl service;
 
 
     @GetMapping("/me")
-    public User me() throws InvalidCredentialsException {
+    public UserModel me() throws InvalidCredentialsException {
         return service.getCurrentUser();
     }
 
@@ -40,7 +35,7 @@ public class AuthenticationController {
      * @return an object with the new User.
      */
     @PostMapping(value = "/")
-    public User postUser(@RequestBody User newUser) throws InvalidCredentialsException {
+    public UserModel postUser(@RequestBody UserModel newUser) throws InvalidCredentialsException {
         newUser = service.addUser(newUser);
 
         return newUser;

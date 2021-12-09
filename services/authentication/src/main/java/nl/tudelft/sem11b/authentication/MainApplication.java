@@ -2,7 +2,8 @@ package nl.tudelft.sem11b.authentication;
 
 import nl.tudelft.sem11b.Service;
 import nl.tudelft.sem11b.authentication.entities.User;
-import nl.tudelft.sem11b.authentication.services.UserService;
+import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
+import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,9 +20,9 @@ public class MainApplication {
     }
 
     @Bean
-    CommandLineRunner run(UserService userService) {
+    CommandLineRunner run(UserServiceImpl userService) {
         return args -> {
-            User admin = new User("SystemAdmin", "admin", "password");
+            UserModel admin = new UserModel("SystemAdmin", "admin", "password");
             try {
                 userService.addUser(admin);     // add admin if it doesn't exist in system already
             } catch (Exception e) {

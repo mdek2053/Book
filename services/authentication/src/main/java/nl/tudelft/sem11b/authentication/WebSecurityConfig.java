@@ -2,7 +2,7 @@ package nl.tudelft.sem11b.authentication;
 
 import nl.tudelft.sem11b.authentication.filters.CustomAuthenticationFilter;
 import nl.tudelft.sem11b.authentication.filters.CustomAuthorizationFilter;
-import nl.tudelft.sem11b.authentication.services.UserService;
+import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    UserService userDetailsService;
+    UserServiceImpl userDetailsService;
 
     @Value("${spring.security.secret}")
     private String secret;

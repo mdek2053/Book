@@ -1,5 +1,7 @@
 package nl.tudelft.sem11b.authentication.entities;
 
+import nl.tudelft.sem11b.data.models.UserModel;
+
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -20,7 +22,7 @@ public class Group {
     private String name;
 
     @Column(name = "secretary")
-    private User secretary;
+    private UserModel secretary;
 
     private List<Long> groupMembers;
 
@@ -32,7 +34,7 @@ public class Group {
      * @param groupMembers of type List, contains a list of users who are part of the group.
      * @param groupId      contains the groupId.
      */
-    public Group(String name, User secretary, List<Long> groupMembers, int groupId) {
+    public Group(String name, UserModel secretary, List<Long> groupMembers, int groupId) {
         this.name = name;
         this.secretary = secretary;
         this.groupMembers = groupMembers;
@@ -46,7 +48,7 @@ public class Group {
      * @param secretary     of type User, who is the secretary of the group
      * @param groupMembers  of type List, contains a list of users who are part of the group.
      */
-    public Group(String name, User secretary, List<Long> groupMembers) {
+    public Group(String name, UserModel secretary, List<Long> groupMembers) {
         this.name = name;
         this.secretary = secretary;
         this.groupMembers = groupMembers;
@@ -56,7 +58,7 @@ public class Group {
         return groupId;
     }
 
-    public User getSecretary() {
+    public UserModel getSecretary() {
         return secretary;
     }
 
@@ -68,7 +70,7 @@ public class Group {
         return name;
     }
 
-    public void setSecretary(User secretary) {
+    public void setSecretary(UserModel secretary) {
         this.secretary = secretary;
     }
 

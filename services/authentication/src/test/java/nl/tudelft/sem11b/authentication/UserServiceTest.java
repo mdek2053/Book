@@ -12,9 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.User;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
+import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
-import nl.tudelft.sem11b.authentication.services.UserService;
+import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
+import nl.tudelft.sem11b.data.models.UserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -46,13 +47,16 @@ public class UserServiceTest {
     private PasswordEncoder encoder;
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userService;
 
     private final String netId1 = "Andy";
     private final String netId2 = "Bob";
 
     private final User plainTextPasswordUser = new User("Bob", "employee", "plain");
     private final User encodedPasswordUser = new User("Bob", "employee", "encoded");
+
+    private final UserModel plainTextPasswordUserModel = new UserModel("Bob", "employee", "plain");
+    private final User encodedPasswordUserModel = new User("Bob", "employee", null);
 
     @Test
     public void loadUserNonExistentTest() {
@@ -90,19 +94,19 @@ public class UserServiceTest {
     @Test
     public void addUserInvalidNetIdTest() {
         assertThrows(InvalidCredentialsException.class, () -> userService.addUser(
-                new User(null, "employee", "banana")));
+                new UserModel(null, "employee", "banana")));
     }
 
     @Test
     public void addUserInvalidRoleTest() {
         assertThrows(InvalidCredentialsException.class, () -> userService.addUser(
-                new User("Stefan", null, "banana")));
+                new UserModel("Stefan", null, "banana")));
     }
 
     @Test
     public void addUserInvalidPasswordTest() {
         assertThrows(InvalidCredentialsException.class, () -> userService.addUser(
-                new User("Stefan", "employee", null)));
+                new UserModel("Stefan", "employee", null)));
     }
 
     @Test
@@ -111,7 +115,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.of(plainTextPasswordUser));
 
         assertThrows(InvalidCredentialsException.class, () ->
-                userService.addUser(plainTextPasswordUser));
+                userService.addUser(plainTextPasswordUserModel));
     }
 
     @Test
@@ -121,7 +125,7 @@ public class UserServiceTest {
                 .thenReturn(encodedPasswordUser.getPassword());
 
         try {
-            assertEquals(encodedPasswordUser, userService.addUser(plainTextPasswordUser));
+            assertEquals(encodedPasswordUserModel, userService.addUser(plainTextPasswordUserModel));
         } catch (Exception e) {
             fail();
         }
