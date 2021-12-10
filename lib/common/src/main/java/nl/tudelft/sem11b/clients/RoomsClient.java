@@ -28,7 +28,7 @@ public class RoomsClient implements RoomsService {
     }
 
     @Override
-    public PageData<RoomStudModel> listRooms(PageIndex page, int building)
+    public PageData<RoomStudModel> listRooms(PageIndex page, long building)
         throws ApiException, EntityNotFound {
         var uri = "/buildings/" + building + "/rooms?page=" + page.getPage() + "&limit="
             + page.getLimit();
@@ -43,7 +43,7 @@ public class RoomsClient implements RoomsService {
     }
 
     @Override
-    public Optional<RoomModel> getRoom(int id) throws ApiException {
+    public Optional<RoomModel> getRoom(long id) throws ApiException {
         return api.get("/rooms/" + id, new TypeReference<RoomModel>() {}).toOptional();
     }
 }

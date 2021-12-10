@@ -11,5 +11,5 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 public interface BuildingService {
     PageData<BuildingModel> listBuildings(PageIndex page) throws ApiException;
 
-    Optional<BuildingModel> getBuilding(int id) throws ApiException;
+    Optional<BuildingModel> getBuilding(long id) throws ApiException;
 }

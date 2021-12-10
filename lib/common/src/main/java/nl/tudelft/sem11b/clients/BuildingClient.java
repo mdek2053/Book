@@ -25,7 +25,7 @@ public class BuildingClient implements BuildingService {
     }
 
     @Override
-    public Optional<BuildingModel> getBuilding(int id) throws ApiException {
+    public Optional<BuildingModel> getBuilding(long id) throws ApiException {
         return api.get("/buildings/" + id, new TypeReference<BuildingModel>() {}).toOptional();
     }
 }

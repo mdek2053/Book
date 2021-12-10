@@ -4,7 +4,7 @@ package nl.tudelft.sem11b.data.models;
  * A summary object for a room used in listings.
  */
 public class RoomStudModel {
-    private final int id;
+    private final long id;
     private final String suffix;
     private final String name;
     private final int capacity;
@@ -19,7 +19,7 @@ public class RoomStudModel {
      * @param capacity Maximal room capacity
      * @param closure Room closure object (if any)
      */
-    public RoomStudModel(int id, String suffix, String name, int capacity, ClosureModel closure) {
+    public RoomStudModel(long id, String suffix, String name, int capacity, ClosureModel closure) {
         this.id = id;
         this.suffix = suffix;
         this.name = name;
@@ -35,7 +35,7 @@ public class RoomStudModel {
      * @param name Room name
      * @param capacity Maximal room capacity
      */
-    public RoomStudModel(int id, String suffix, String name, int capacity) {
+    public RoomStudModel(long id, String suffix, String name, int capacity) {
         this(id, suffix, name, capacity, null);
     }
 
@@ -44,7 +44,7 @@ public class RoomStudModel {
      *
      * @return ID of the room
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 

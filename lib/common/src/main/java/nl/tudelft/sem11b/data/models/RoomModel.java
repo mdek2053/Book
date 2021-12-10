@@ -7,7 +7,7 @@ import java.util.stream.Stream;
  * Holds all room information.
  */
 public class RoomModel {
-    private final int id;
+    private final long id;
     private final String suffix;
     private final String name;
     private final int capacity;
@@ -25,7 +25,7 @@ public class RoomModel {
      * @param building The building information object
      * @param closure  The room closure (if any)
      */
-    public RoomModel(int id, String suffix, String name, int capacity,
+    public RoomModel(long id, String suffix, String name, int capacity,
                      BuildingModel building, EquipmentModel[] equipment, ClosureModel closure) {
         this.id = id;
         this.suffix = suffix;
@@ -45,7 +45,7 @@ public class RoomModel {
      * @param capacity Room maximal capacity
      * @param building The building information object
      */
-    public RoomModel(int id, String suffix, String name, int capacity,
+    public RoomModel(long id, String suffix, String name, int capacity,
                      BuildingModel building, EquipmentModel[] equipment) {
         this(id, suffix, name, capacity, building, equipment, null);
     }
@@ -55,7 +55,7 @@ public class RoomModel {
      *
      * @return ID of the room
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 

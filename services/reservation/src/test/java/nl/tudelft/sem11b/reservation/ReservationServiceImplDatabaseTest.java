@@ -26,7 +26,7 @@ class ReservationServiceImplDatabaseTest {
     void makeReservationTestUserConflicts() throws Exception {
         Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
         // 15 Jan '22 10:20 so reservations aren't too much in the future
-        reservationServiceImpl.setClock(clock);
+        // reservationServiceImpl.setClock(clock);
 
         // TODO: Uncomment once API clients are in place
 //        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
@@ -57,7 +57,7 @@ class ReservationServiceImplDatabaseTest {
     void makeReservationTestRoomConflicts() throws Exception {
         Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
         // 15 Jan '22 10:20 so reservations aren't too much in the future
-        reservationServiceImpl.setClock(clock);
+        // reservationServiceImpl.setClock(clock);
 
         // TODO: Uncomment once API clients are in place
 //        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);

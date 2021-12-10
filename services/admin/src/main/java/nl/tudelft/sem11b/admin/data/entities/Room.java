@@ -22,7 +22,7 @@ import nl.tudelft.sem11b.data.models.RoomStudModel;
 @Table(indexes = {@Index(columnList = "suffix, building_id", unique = true)})
 public class Room {
     @Id @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
     @Column(name = "suffix", nullable = false)
     private String suffix;
     @Column(name = "name", nullable = false)

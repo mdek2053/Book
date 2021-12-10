@@ -12,8 +12,8 @@ import nl.tudelft.sem11b.data.models.RoomStudModel;
 public interface RoomsService {
     PageData<RoomStudModel> listRooms(PageIndex page) throws ApiException;
 
-    PageData<RoomStudModel> listRooms(PageIndex page, int building)
+    PageData<RoomStudModel> listRooms(PageIndex page, long building)
         throws ApiException, EntityNotFound;
 
-    Optional<RoomModel> getRoom(int id) throws ApiException;
+    Optional<RoomModel> getRoom(long id) throws ApiException;
 }

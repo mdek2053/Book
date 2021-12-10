@@ -19,7 +19,7 @@ import nl.tudelft.sem11b.data.models.BuildingModel;
 @Entity
 public class Building {
     @Id @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
     @Column(name = "prefix", nullable = false, unique = true)
     private String prefix;
     @Column(name = "name", nullable = false)
