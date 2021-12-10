@@ -6,6 +6,9 @@ import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.IdModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.http.ApiClient;
 import nl.tudelft.sem11b.http.Authenticated;
@@ -32,5 +35,19 @@ public class ReservationClient implements ReservationService {
         }
 
         return res.get().getId();
+    }
+
+    @Override
+    public PageData<ReservationModel> inspectOwnReservation(PageIndex page)
+        throws ApiException {
+        // TODO: Implement
+        return null;
+    }
+
+    @Override
+    public void editReservation(long reservationId, String title, ApiDateTime since,
+                                ApiDateTime until)
+        throws ApiException, EntityNotFound, InvalidData {
+        // TODO: Implement
     }
 }
