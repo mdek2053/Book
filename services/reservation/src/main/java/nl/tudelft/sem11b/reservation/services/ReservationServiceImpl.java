@@ -1,14 +1,12 @@
 package nl.tudelft.sem11b.reservation.services;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -20,6 +18,7 @@ import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.services.ReservationService;
 import nl.tudelft.sem11b.services.RoomsService;
+import nl.tudelft.sem11b.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -28,11 +27,14 @@ import org.springframework.stereotype.Service;
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservations;
     private final RoomsService rooms;
+    private final UserService users;
 
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservations, RoomsService rooms) {
+    public ReservationServiceImpl(ReservationRepository reservations, RoomsService rooms,
+                                  UserService users) {
         this.reservations = reservations;
         this.rooms = rooms;
+        this.users = users;
     }
 
     public long makeReservation(long roomId, long userId,
@@ -133,27 +135,19 @@ public class ReservationServiceImpl implements ReservationService {
     public long makeOwnReservation(long roomId, String title,
                                    ApiDateTime since, ApiDateTime until)
         throws ApiException, EntityNotFound, InvalidData {
-        // TODO: Uncomment once API clients are in place
-        // long userId = serv.getUserId(userToken);
-        long userId = 0;
-        return makeReservation(roomId, userId, title, since, until);
+        return makeReservation(roomId, users.currentUser().getId(), title, since, until);
     }
 
     public PageData<ReservationModel> inspectOwnReservation(PageIndex page) throws ApiException {
-        // TODO: get user ID
-        var userId = 0;
-        var data = reservations.findByUserId(userId, page.getPage(Sort.by("id")));
+        var data =
+            reservations.findByUserId(users.currentUser().getId(), page.getPage(Sort.by("id")));
         return new PageData<>(data.map(Reservation::toModel));
     }
 
     public void editReservation(long reservationId, String title, ApiDateTime since,
                                 ApiDateTime until)
         throws ApiException, EntityNotFound, InvalidData {
-        // TODO: Implement once user service interface is wired in
-//        long userId = serv.getUserId(userToken);
-//        String role = serv.getUserRole(userToken);
-        long userId = 0;
-        String role = "admin";
+        var user = users.currentUser();
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
@@ -161,7 +155,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
         var reservation = reservationOpt.get();
 
-        if (userId != reservation.getUserId() && !role.equals("admin")) {
+        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
             throw new ApiException("Reservation",
                 "User not authorized to change given reservation.");
         }
@@ -178,7 +172,7 @@ public class ReservationServiceImpl implements ReservationService {
         var sinceTs = Timestamp.valueOf(since.toLocal());
         var untilTs = Timestamp.valueOf(until.toLocal());
 
-        validateConflicts(userId, reservation.getRoomId(), sinceTs, untilTs);
+        validateConflicts(user.getId(), reservation.getRoomId(), sinceTs, untilTs);
 
         if (title != null) {
             if (title.isBlank()) {
