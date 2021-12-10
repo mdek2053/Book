@@ -2,21 +2,23 @@ package nl.tudelft.sem11b.data.models;
 
 import java.util.Objects;
 
+import nl.tudelft.sem11b.data.ApiDateTime;
+
 public class ReservationModel {
     private final long roomId;
-    private final String since;
-    private final String until;
+    private final ApiDateTime since;
+    private final ApiDateTime until;
     private final String title;
 
     public long getRoomId() {
         return roomId;
     }
 
-    public String getSince() {
+    public ApiDateTime getSince() {
         return since;
     }
 
-    public String getUntil() {
+    public ApiDateTime getUntil() {
         return until;
     }
 
@@ -31,7 +33,7 @@ public class ReservationModel {
      * @param until end time of reservation
      * @param title title of reservation
      */
-    public ReservationModel(long roomId, String since, String until, String title) {
+    public ReservationModel(long roomId, ApiDateTime since, ApiDateTime until, String title) {
         this.roomId = roomId;
         this.since = since;
         this.until = until;

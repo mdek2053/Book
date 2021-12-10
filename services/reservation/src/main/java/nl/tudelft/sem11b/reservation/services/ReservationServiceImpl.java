@@ -141,7 +141,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     public PageData<ReservationModel> inspectOwnReservation(PageIndex page) throws ApiException {
         // TODO: get user ID
-        var data = reservations.findByUserId(0, page.getPage(Sort.by("id")));
+        var userId = 0;
+        var data = reservations.findByUserId(userId, page.getPage(Sort.by("id")));
         return new PageData<>(data.map(Reservation::toModel));
     }
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
@@ -23,7 +22,7 @@ public class ReservationClient implements ReservationService {
 
     @Override
     public long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData {
+        throws ApiException, EntityNotFound {
         var req = new ReservationRequestModel(roomId, title, since, until, null);
 
         var res = api.post("/reservations", req,
@@ -38,16 +37,16 @@ public class ReservationClient implements ReservationService {
     }
 
     @Override
-    public PageData<ReservationModel> inspectOwnReservation(PageIndex page)
-        throws ApiException {
-        // TODO: Implement
-        return null;
+    public PageData<ReservationModel> inspectOwnReservation(PageIndex page) throws ApiException {
+        var path = "/reservations/mine?page=" + page.getPage() + "&limit=" + page.getLimit();
+
+        return api.get(path, new TypeReference<PageData<ReservationModel>>() {}).unwrap();
     }
 
     @Override
     public void editReservation(long reservationId, String title, ApiDateTime since,
-                                ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData {
-        // TODO: Implement
+                                ApiDateTime until) throws ApiException {
+        var model = new ReservationRequestModel(null, title, since, until, null);
+        api.post("/reservations/" + reservationId, model, new TypeReference<>() {}).unwrap();
     }
 }

@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.data;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -67,6 +68,14 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
         return new ApiDateTime(
             ApiDate.parse(str.substring(0, idx).stripLeading()),
             ApiTime.parse(str.substring(idx + 1).stripTrailing())
+        );
+    }
+
+    public static ApiDateTime from(Timestamp ts) {
+        var local = ts.toLocalDateTime();
+        return new ApiDateTime(
+            local.getYear(), local.getMonth().getValue(), local.getDayOfMonth(),
+            local.getHour(), local.getMinute()
         );
     }
 

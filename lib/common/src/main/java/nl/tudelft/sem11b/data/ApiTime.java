@@ -35,7 +35,6 @@ public class ApiTime implements Comparable<ApiTime> {
     private static final Pattern RGX_FORMAT =
         Pattern.compile("(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])");
 
-    // TODO: Into a single timestamp
     @Column(name = "timestamp")
     private short timestamp;
 
