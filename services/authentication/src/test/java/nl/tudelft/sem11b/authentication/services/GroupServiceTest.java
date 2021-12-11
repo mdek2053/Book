@@ -14,12 +14,12 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
+import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
+import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.models.UserModel;
-import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
-import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
