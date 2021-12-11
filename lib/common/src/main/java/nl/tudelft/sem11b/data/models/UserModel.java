@@ -56,4 +56,13 @@ public class UserModel {
     public int hashCode() {
         return Objects.hash(netId, role, password);
     }
+
+    @Override
+    public String toString() {
+        return "UserModel{" +
+                "netId='" + netId + '\'' +
+                ", role='" + role + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

@@ -52,8 +52,8 @@ class GroupServiceTest {
     List<Long> users1 = new ArrayList<>();
     List<Long> users2 = new ArrayList<>();
     List<Group> groups = new ArrayList<>();
-    Group group1 = new Group("group", userModel1, new ArrayList<>(), 2);
-    Group group2 = new Group("group1", userModel2, new ArrayList<>(), 4);
+    Group group1 = new Group("group", user1, new ArrayList<>(), 2);
+    Group group2 = new Group("group1", user1, new ArrayList<>(), 4);
 
     @BeforeEach
     void setup() {
@@ -91,8 +91,8 @@ class GroupServiceTest {
     void addGroupNoPreviousGroupId() throws InvalidGroupCredentialsException,
             InvalidCredentialsException {
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(user1));
-        Group group = new Group("group", userModel1, users1, 1);
-        assertEquals(group, groupService.addGroup("group", userModel1, users1));
+        Group group = new Group("group", user1, users1, 1);
+        assertEquals(group, groupService.addGroup("group", user1, users1));
         verify(groupRepository, times(1)).save(group);
     }
 

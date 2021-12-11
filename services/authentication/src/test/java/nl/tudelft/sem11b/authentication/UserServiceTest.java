@@ -56,7 +56,9 @@ public class UserServiceTest {
     private final User encodedPasswordUser = new User("Bob", "employee", "encoded");
 
     private final UserModel plainTextPasswordUserModel = new UserModel("Bob", "employee", "plain");
-    private final User encodedPasswordUserModel = new User("Bob", "employee", null);
+    private final UserModel encodedPasswordUserModel = new UserModel("Bob", "employee", null);
+
+    private final UserModel nullPasswordUserModel = new UserModel("Bob", "employee", null);
 
     @Test
     public void loadUserNonExistentTest() {
@@ -88,7 +90,7 @@ public class UserServiceTest {
         when(userRepositoryMock.findUserByNetId(netId2))
                 .thenReturn(Optional.of(plainTextPasswordUser));
 
-        assertEquals(plainTextPasswordUser, userService.getCurrentUser());
+        assertEquals(nullPasswordUserModel, userService.getCurrentUser());
     }
 
     @Test

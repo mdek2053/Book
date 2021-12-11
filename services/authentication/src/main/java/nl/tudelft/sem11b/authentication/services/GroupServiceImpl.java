@@ -98,10 +98,11 @@ public class GroupServiceImpl {
      * @throws InvalidGroupCredentialsException when a group already exists
      *      with the specific groupId or when the credentials are invalid.
      */
-    public Group addGroup(String name, UserModel secretary, List<Long> groupMembers)
+    public Group addGroup(String name, User secretary, List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException {
         if (secretary == null) {
-            secretary = userService.getCurrentUser();
+            UserModel secretaryModel = userService.getCurrentUser();
+            secretary = userRepository.findUserByNetId(secretaryModel.getNetId()).get();
         }
         try {
             verifyUsers(groupMembers);

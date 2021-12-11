@@ -46,7 +46,7 @@ public class GroupController {
      */
     @PreAuthorize("hasRole('admin')")
     @PostMapping()
-    public Group postGroup(@RequestBody String name, @RequestBody UserModel secretary,
+    public Group postGroup(@RequestBody String name, @RequestBody User secretary,
                            @RequestBody List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException {
         return groupService.addGroup(name, secretary, groupMembers);
