@@ -6,11 +6,11 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
+import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
+import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
-import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
-import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

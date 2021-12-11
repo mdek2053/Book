@@ -1,6 +1,5 @@
 package nl.tudelft.sem11b.authentication.entities;
 
-import nl.tudelft.sem11b.data.models.UserModel;
 
 import java.util.List;
 import java.util.Objects;

@@ -12,6 +12,12 @@ public class UserModel {
         this.role = role;
     }
 
+    /**
+     * Constructor for Usermodel that uses password.
+     * @param netId the netId
+     * @param role the role
+     * @param password the password
+     */
     public UserModel(String netId, String role, String password) {
         this.netId = netId;
         this.role = role;
@@ -46,10 +52,15 @@ public class UserModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserModel userModel = (UserModel) o;
-        return netId.equals(userModel.netId) && role.equals(userModel.role) && Objects.equals(password, userModel.password);
+        return netId.equals(userModel.netId) && role.equals(userModel.role)
+                && Objects.equals(password, userModel.password);
     }
 
     @Override
@@ -59,10 +70,10 @@ public class UserModel {
 
     @Override
     public String toString() {
-        return "UserModel{" +
-                "netId='" + netId + '\'' +
-                ", role='" + role + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return "UserModel{"
+                + "netId='" + netId + '\''
+                + ", role='" + role + '\''
+                + ", password='" + password + '\''
+                + '}';
     }
 }

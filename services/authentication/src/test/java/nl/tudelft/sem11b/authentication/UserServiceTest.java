@@ -13,9 +13,9 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
+import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
-import nl.tudelft.sem11b.data.models.UserModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;

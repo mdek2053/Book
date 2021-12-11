@@ -4,11 +4,11 @@ import java.util.List;
 
 import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
+import nl.tudelft.sem11b.authentication.services.GroupServiceImpl;
+import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
-import nl.tudelft.sem11b.authentication.services.GroupServiceImpl;
-import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
 import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
