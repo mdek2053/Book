@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.reservation.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import javax.transaction.Transactional;
 
 import nl.tudelft.sem11b.reservation.entity.Reservation;
@@ -37,9 +38,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             nativeQuery = true)
     List<Reservation> getRoomConflicts(long roomId, Timestamp since, Timestamp until);
 
+    @Transactional
+    @Query(value = "SELECT * \n"
+            + "FROM reservation\n"
+            + "WHERE user_id = ?1\n", nativeQuery = true)
+    List<Reservation> getOwnReservation(long userId);
+
     // debug testing method
     @Transactional
     @Query(value = "SELECT * \n"
             + "FROM reservation", nativeQuery = true)
     List<Reservation> getAll();
+
+    Optional<Reservation> findReservationById(Long id);
 }
