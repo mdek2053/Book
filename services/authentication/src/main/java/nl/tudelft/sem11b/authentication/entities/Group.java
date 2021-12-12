@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.authentication.entities;
 
+
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;

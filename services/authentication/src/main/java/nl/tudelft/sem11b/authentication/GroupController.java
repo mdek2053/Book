@@ -4,11 +4,12 @@ import java.util.List;
 
 import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.authentication.exceptions.NoAssignedGroupException;
-import nl.tudelft.sem11b.authentication.services.GroupService;
-import nl.tudelft.sem11b.authentication.services.UserService;
+import nl.tudelft.sem11b.authentication.services.GroupServiceImpl;
+import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
+import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
+import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
+import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
+import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupController {
 
     @Autowired
-    GroupService groupService;
+    GroupServiceImpl groupService;
 
     @Autowired
-    UserService userService;
+    UserServiceImpl userService;
 
-    public GroupController(GroupService groupService, UserService userService) {
+    public GroupController(GroupServiceImpl groupService, UserServiceImpl userService) {
         this.groupService = groupService;
         this.userService = userService;
     }

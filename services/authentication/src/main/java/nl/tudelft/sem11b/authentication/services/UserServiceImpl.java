@@ -5,8 +5,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.User;
-import nl.tudelft.sem11b.authentication.exceptions.InvalidCredentialsException;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
+import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
+import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +23,7 @@ import org.springframework.stereotype.Service;
  * Provides a service which handles the authentication and registering of users.
  */
 @Service
-public class UserService implements UserDetailsService {
+public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -52,12 +54,13 @@ public class UserService implements UserDetailsService {
      * Gets the data of the user which currently uses the system.
      * @return an object of type User of the current user.
      */
-    public User getCurrentUser() throws InvalidCredentialsException {
+    public UserModel getCurrentUser() throws InvalidCredentialsException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String netId = auth.getPrincipal().toString();
         Optional<User> user = userRepository.findUserByNetId(netId);
         if (user.isPresent()) {
-            return user.get();
+            User current = user.get();
+            return new UserModel(current.getNetId(), current.getRole());
         } else {
             throw new InvalidCredentialsException("No user exists with this netId");
         }
@@ -78,7 +81,7 @@ public class UserService implements UserDetailsService {
      * @throws InvalidCredentialsException when the credentials are not valid or
      *      when the user already exists in the system.
      */
-    public User addUser(User user) throws InvalidCredentialsException {
+    public UserModel addUser(UserModel user) throws InvalidCredentialsException {
         if (user.getNetId() == null || user.getPassword() == null || user.getRole() == null) {
             throw new InvalidCredentialsException(
                     "Expected netId, password and role to be provided");
@@ -90,6 +93,6 @@ public class UserService implements UserDetailsService {
         User newUser = new User(user.getNetId(), user.getRole(),
                 passwordEncoder.encode(user.getPassword()));
         saveUser(newUser);
-        return newUser;
+        return new UserModel(newUser.getNetId(), newUser.getRole());
     }
 }

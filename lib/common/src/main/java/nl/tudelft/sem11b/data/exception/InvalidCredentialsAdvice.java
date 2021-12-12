@@ -1,4 +1,4 @@
-package nl.tudelft.sem11b.authentication.exceptions;
+package nl.tudelft.sem11b.data.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
