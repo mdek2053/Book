@@ -17,22 +17,28 @@ import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
 import nl.tudelft.sem11b.data.Day;
 import nl.tudelft.sem11b.data.models.ClosureObject;
 import nl.tudelft.sem11b.services.RoomsService;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-@SpringBootTest
 class RoomsServiceImplTest {
-    @Autowired
     RoomsService roomService;
 
-    @MockBean
+    @Mock
     BuildingRepository buildings;
 
-    @MockBean
+    @Mock
     RoomRepository rooms;
+
+    @BeforeEach
+    void before() {
+        rooms = Mockito.mock(RoomRepository.class);
+        roomService = new RoomsServiceImpl(buildings, rooms);
+    }
 
     @Test
     void closeRoom() throws ParseException {
