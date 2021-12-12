@@ -11,11 +11,20 @@ import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.http.ApiClient;
 import nl.tudelft.sem11b.http.Authenticated;
+import nl.tudelft.sem11b.services.BuildingService;
 import nl.tudelft.sem11b.services.ReservationService;
 
+/**
+ * A client for the {@link ReservationService} API. This client requires authentication.
+ */
 public class ReservationClient implements ReservationService {
     private final ApiClient<Authenticated> api;
 
+    /**
+     * Instantiates the {@link ReservationClient} class.
+     *
+     * @param api API client with authentication
+     */
     public ReservationClient(ApiClient<Authenticated> api) {
         this.api = api;
     }

@@ -51,7 +51,7 @@ public class RoomModel {
     }
 
     private RoomModel() {
-
+        // default constructor for model materialization
     }
 
     /**

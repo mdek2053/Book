@@ -34,7 +34,7 @@ public class BuildingController {
     /**
      * Lists all buildings in the system.
      *
-     * @param page Page index (zero-based)
+     * @param page  Page index (zero-based)
      * @param limit Maximal size of a page
      * @return Page of buildings
      */

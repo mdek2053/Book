@@ -1,14 +1,14 @@
 package nl.tudelft.sem11b.reservation;
 
+import java.util.Optional;
+
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
-import nl.tudelft.sem11b.data.models.ReservationRequestModel;
-
-import java.util.Optional;
-
 import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
+import nl.tudelft.sem11b.services.BuildingService;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,17 +22,30 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-
+/**
+ * REST API proxy for {@link ReservationService}.
+ */
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
     ReservationService reservationService;
 
+    /**
+     * Instantiates the {@link ReservationController} class.
+     *
+     * @param reservationService The reservation handling service
+     */
     @Autowired
     public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 
+    /**
+     * Creates a new reservation on behalf of the current user.
+     *
+     * @param req Reservation data
+     * @return ID of the newly created reservation
+     */
     @PostMapping()
     IdModel<Long> makeReservation(@RequestBody ReservationRequestModel req) {
         if (req == null || !req.validate()) {
@@ -53,6 +66,13 @@ public class ReservationController {
         }
     }
 
+    /**
+     * Lists the reservations of the current user.
+     *
+     * @param page  Page index (zero-based)
+     * @param limit Maximal size of a page
+     * @return Page of reservations
+     */
     @GetMapping("/mine")
     public PageData<ReservationModel> inspectOwnReservation(
         @RequestParam Optional<Integer> page,
@@ -66,6 +86,12 @@ public class ReservationController {
         }
     }
 
+    /**
+     * Updates the reservation with the given unique numeric identifier.
+     *
+     * @param id  ID of the reservation to update
+     * @param req New reservation data
+     */
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void changeReservation(@PathVariable long id, @RequestBody ReservationRequestModel req) {

@@ -13,11 +13,11 @@ public class RoomStudModel {
     /**
      * Instantiates the {@link RoomStudModel} class.
      *
-     * @param id Unique numeric identifier of the room
-     * @param suffix Room suffix
-     * @param name Room name
+     * @param id       Unique numeric identifier of the room
+     * @param suffix   Room suffix
+     * @param name     Room name
      * @param capacity Maximal room capacity
-     * @param closure Room closure object (if any)
+     * @param closure  Room closure object (if any)
      */
     public RoomStudModel(long id, String suffix, String name, int capacity, ClosureModel closure) {
         this.id = id;
@@ -30,9 +30,9 @@ public class RoomStudModel {
     /**
      * Instantiates the {@link RoomStudModel} class.
      *
-     * @param id Unique numeric identifier of the room
-     * @param suffix Room suffix
-     * @param name Room name
+     * @param id       Unique numeric identifier of the room
+     * @param suffix   Room suffix
+     * @param name     Room name
      * @param capacity Maximal room capacity
      */
     public RoomStudModel(long id, String suffix, String name, int capacity) {
@@ -40,7 +40,7 @@ public class RoomStudModel {
     }
 
     private RoomStudModel() {
-
+        // default constructor for model materialization
     }
 
     /**

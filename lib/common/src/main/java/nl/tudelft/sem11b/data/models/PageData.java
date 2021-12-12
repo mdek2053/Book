@@ -18,7 +18,7 @@ public class PageData<T> {
      * Instantiates the {@link PageData} class.
      *
      * @param total Total number of items that match the query
-     * @param data Page items
+     * @param data  Page items
      */
     public PageData(long total, List<T> data) {
         if (total < 0) {
@@ -48,7 +48,7 @@ public class PageData<T> {
     }
 
     private PageData() {
-
+        // default constructor for model materialization
     }
 
     /**

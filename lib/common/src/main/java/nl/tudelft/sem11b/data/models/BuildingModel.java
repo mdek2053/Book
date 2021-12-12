@@ -30,6 +30,7 @@ public class BuildingModel {
     }
 
     private BuildingModel() {
+        // default constructor for model materialization
     }
 
     /**

@@ -29,6 +29,13 @@ public class ReservationServiceImpl implements ReservationService {
     private final RoomsService rooms;
     private final UserService users;
 
+    /**
+     * Instantiates the {@link ReservationServiceImpl} class.
+     *
+     * @param reservations Reservations repository
+     * @param rooms        Rooms handling service
+     * @param users        Users handling service
+     */
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservations, RoomsService rooms,
                                   UserService users) {
@@ -37,6 +44,19 @@ public class ReservationServiceImpl implements ReservationService {
         this.users = users;
     }
 
+    /**
+     * Creates a new reservation on behalf of the user with the given ID.
+     *
+     * @param roomId ID of the room where the reservation takes place
+     * @param userId ID of the user making the reservation
+     * @param title  Title of the reservation
+     * @param since  Starting date and time of the reservation
+     * @param until  Ending date and time of the reservation
+     * @return ID of the newly created reservation
+     * @throws ApiException   Thrown when a remote API encountered an error
+     * @throws EntityNotFound Thrown when the given room was not found
+     * @throws InvalidData    Thrown when the given data is invalid
+     */
     public long makeReservation(long roomId, long userId,
                                 String title, ApiDateTime since, ApiDateTime until)
         throws ApiException, EntityNotFound, InvalidData {
@@ -132,18 +152,21 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    @Override
     public long makeOwnReservation(long roomId, String title,
                                    ApiDateTime since, ApiDateTime until)
         throws ApiException, EntityNotFound, InvalidData {
         return makeReservation(roomId, users.currentUser().getId(), title, since, until);
     }
 
+    @Override
     public PageData<ReservationModel> inspectOwnReservation(PageIndex page) throws ApiException {
         var data =
             reservations.findByUserId(users.currentUser().getId(), page.getPage(Sort.by("id")));
         return new PageData<>(data.map(Reservation::toModel));
     }
 
+    @Override
     public void editReservation(long reservationId, String title, ApiDateTime since,
                                 ApiDateTime until)
         throws ApiException, EntityNotFound, InvalidData {

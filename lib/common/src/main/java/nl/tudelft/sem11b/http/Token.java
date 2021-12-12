@@ -2,9 +2,17 @@ package nl.tudelft.sem11b.http;
 
 import java.util.Objects;
 
+/**
+ * Represents an authentication token.
+ */
 public class Token {
     private final String token;
 
+    /**
+     * Instantiates the {@link Token} class.
+     *
+     * @param token String representation of the authentication token
+     */
     public Token(String token) {
         if (token == null || token.isBlank()) {
             throw new IllegalArgumentException("Token cannot be null or empty!");

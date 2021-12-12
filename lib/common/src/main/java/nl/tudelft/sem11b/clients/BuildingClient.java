@@ -11,9 +11,17 @@ import nl.tudelft.sem11b.http.ApiClient;
 import nl.tudelft.sem11b.http.Authenticated;
 import nl.tudelft.sem11b.services.BuildingService;
 
+/**
+ * A client for the {@link BuildingService} API. This client requires authentication.
+ */
 public class BuildingClient implements BuildingService {
     private final ApiClient<Authenticated> api;
 
+    /**
+     * Instantiates the {@link BuildingClient} class.
+     *
+     * @param api API client with authentication
+     */
     public BuildingClient(ApiClient<Authenticated> api) {
         this.api = api;
     }

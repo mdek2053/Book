@@ -32,8 +32,8 @@ public class ClosureModel {
         this.until = until;
     }
 
-    private ClosureModel(){
-
+    private ClosureModel() {
+        // default constructor for model materialization
     }
 
     /**

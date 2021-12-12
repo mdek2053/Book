@@ -11,9 +11,16 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+/**
+ * Implements the JavaScript Object Notation (JSON) serialization/deserialization scheme.
+ * @see Coding
+ */
 public class JsonCoding implements Coding {
     private final ObjectMapper mapper;
 
+    /**
+     * Instantiates the {@link JsonCoding} class.
+     */
     public JsonCoding() {
         this.mapper = new JsonMapper()
             .configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
