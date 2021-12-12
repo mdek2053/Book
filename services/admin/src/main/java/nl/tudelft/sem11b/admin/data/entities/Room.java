@@ -116,4 +116,8 @@ public class Room {
         return new RoomModel(id, suffix, name, capacity,
             building.toModel(), closure == null ? null : closure.toModel());
     }
+
+    public int getCapacity() {
+        return capacity;
+    }
 }

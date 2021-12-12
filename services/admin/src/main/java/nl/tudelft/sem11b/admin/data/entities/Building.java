@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.persistence.AttributeOverride;
@@ -172,5 +173,22 @@ public class Building {
      */
     public BuildingModel toModel() {
         return new BuildingModel(id, prefix, name, opening, closing);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Building building = (Building) o;
+        return id == building.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
