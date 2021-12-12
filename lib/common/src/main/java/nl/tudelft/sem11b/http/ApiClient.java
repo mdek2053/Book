@@ -110,8 +110,7 @@ public class ApiClient<I extends Identity> {
     private <S> ApiResponse<S> request(ApiRequest req, TypeReference<S> type) {
         // add authentication details to the request
         identity.authenticate(req);
-
-        // TODO: The Accept header
+        req.header("Accept", coding.getType());
 
         ApiResponse<S> res;
         try {
@@ -129,8 +128,8 @@ public class ApiClient<I extends Identity> {
                 if (status / 100 == 2) {
                     // check if response body can be deserialized with the current coding
                     var bodyType = info.headers().firstValue("Content-Type")
-                        .filter(i -> coding.getType()
-                            .equalsIgnoreCase(i)); // TODO: Does not take quality etc. into account
+                        .map(ApiClient::getContentType)
+                        .filter(i -> i.equalsIgnoreCase(coding.getType()));
                     if (bodyType.isEmpty()) {
                         return HttpResponse.BodySubscribers.mapping(
                             HttpResponse.BodySubscribers.discarding(),
@@ -173,5 +172,14 @@ public class ApiClient<I extends Identity> {
 
     private URI getUri(String path) {
         return uri.resolve(path);
+    }
+
+    private static String getContentType(String str) {
+        if (str.contains(";")) {
+            var arr = str.split(";", 2);
+            return arr[0].trim();
+        }
+
+        return str.trim();
     }
 }

@@ -96,7 +96,6 @@ public class Closure {
      * @return Closure model
      */
     public ClosureModel toModel() {
-        // TODO: unify this class and the model class (so move this class into common lib)
         return new ClosureModel(reason, since, until);
     }
 }
