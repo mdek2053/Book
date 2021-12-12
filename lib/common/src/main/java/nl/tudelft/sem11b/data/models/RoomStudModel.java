@@ -4,11 +4,11 @@ package nl.tudelft.sem11b.data.models;
  * A summary object for a room used in listings.
  */
 public class RoomStudModel {
-    private final long id;
-    private final String suffix;
-    private final String name;
-    private final int capacity;
-    private final ClosureModel closure;
+    private long id;
+    private String suffix;
+    private String name;
+    private int capacity;
+    private ClosureModel closure;
 
     /**
      * Instantiates the {@link RoomStudModel} class.
@@ -37,6 +37,10 @@ public class RoomStudModel {
      */
     public RoomStudModel(long id, String suffix, String name, int capacity) {
         this(id, suffix, name, capacity, null);
+    }
+
+    private RoomStudModel() {
+
     }
 
     /**

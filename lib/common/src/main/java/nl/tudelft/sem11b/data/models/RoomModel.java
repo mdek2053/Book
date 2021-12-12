@@ -7,13 +7,13 @@ import java.util.stream.Stream;
  * Holds all room information.
  */
 public class RoomModel {
-    private final long id;
-    private final String suffix;
-    private final String name;
-    private final int capacity;
-    private final BuildingModel building;
-    private final EquipmentModel[] equipment;
-    private final ClosureModel closure;
+    private long id;
+    private String suffix;
+    private String name;
+    private int capacity;
+    private BuildingModel building;
+    private EquipmentModel[] equipment;
+    private ClosureModel closure;
 
     /**
      * Instantiates the {@link RoomModel} class.
@@ -48,6 +48,10 @@ public class RoomModel {
     public RoomModel(long id, String suffix, String name, int capacity,
                      BuildingModel building, EquipmentModel[] equipment) {
         this(id, suffix, name, capacity, building, equipment, null);
+    }
+
+    private RoomModel() {
+
     }
 
     /**

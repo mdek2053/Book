@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.http;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -45,6 +46,8 @@ public class ApiClient<I extends Identity> {
     }
 
     private <S> ApiResponse<S> request(ApiRequest req, TypeReference<S> type) {
+        identity.authenticate(req);
+
         ApiResponse<S> res;
         try {
             res = http.send(req.toJava(coding), (info) -> {
@@ -56,9 +59,20 @@ public class ApiClient<I extends Identity> {
                 }
 
                 if (status / 100 == 2) {
+                    var bodyType = info.headers().firstValue("Content-Type")
+                        .filter(i -> coding.getType().equalsIgnoreCase(i));
+                    if (bodyType.isEmpty()) {
+                        return HttpResponse.BodySubscribers.mapping(
+                            HttpResponse.BodySubscribers.discarding(),
+                            i -> new ApiResponse<S>(service, new ApiException(service,
+                                "Server responded with an invalid `Content-Type` header!")));
+                    }
+
                     return HttpResponse.BodySubscribers.mapping(
-                        HttpResponse.BodySubscribers.ofInputStream(), stream -> {
-                            var reader = new InputStreamReader(stream);
+                        HttpResponse.BodySubscribers.ofByteArray(), bytes -> {
+                            // TODO: I would use .ofInputStream(), but Java does not expect
+                            //       blocking operations here. This is potentially dangerous
+                            var reader = new InputStreamReader(new ByteArrayInputStream(bytes));
                             try {
                                 return new ApiResponse<S>(service, coding.decode(reader, type));
                             } catch (IOException | DecodeException ex) {

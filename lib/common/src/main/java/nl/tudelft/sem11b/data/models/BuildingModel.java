@@ -6,20 +6,20 @@ import nl.tudelft.sem11b.data.ApiTime;
  * Holds all building information.
  */
 public class BuildingModel {
-    private final long id;
-    private final String prefix;
-    private final String name;
-    private final ApiTime open;
-    private final ApiTime close;
+    private long id;
+    private String prefix;
+    private String name;
+    private ApiTime open;
+    private ApiTime close;
 
     /**
      * Instantiates the {@link BuildingModel}.
      *
-     * @param id Unique numeric identifier of the building
+     * @param id     Unique numeric identifier of the building
      * @param prefix Building prefix
-     * @param name Building name
-     * @param open Time of day at which the building opens
-     * @param close This of day at which the building closes
+     * @param name   Building name
+     * @param open   Time of day at which the building opens
+     * @param close  This of day at which the building closes
      */
     public BuildingModel(long id, String prefix, String name, ApiTime open, ApiTime close) {
         this.id = id;
@@ -27,6 +27,9 @@ public class BuildingModel {
         this.name = name;
         this.open = open;
         this.close = close;
+    }
+
+    private BuildingModel() {
     }
 
     /**

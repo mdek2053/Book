@@ -118,7 +118,8 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
         @Override
         public ApiDateTime deserialize(JsonParser p, DeserializationContext ctxt)
             throws IOException, JacksonException {
-            var value = p.nextTextValue();
+            var value = p.getValueAsString();
+
             if (value == null) {
                 throw new ApiDateTimeDeserializeException("Date and time requires a string JSON value!",
                     p.currentLocation());

@@ -11,8 +11,8 @@ import org.springframework.data.domain.Page;
  * @param <T> Type of items
  */
 public class PageData<T> {
-    private final long total;
-    private final List<T> data;
+    private long total;
+    private List<T> data;
 
     /**
      * Instantiates the {@link PageData} class.
@@ -45,6 +45,10 @@ public class PageData<T> {
      */
     public PageData(Page<T> page) {
         this(page.getTotalElements(), page.getContent());
+    }
+
+    private PageData() {
+
     }
 
     /**

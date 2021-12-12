@@ -220,7 +220,7 @@ public class ApiDate implements Comparable<ApiDate> {
         @Override
         public ApiDate deserialize(JsonParser p, DeserializationContext ctxt)
             throws IOException, JacksonException {
-            var value = p.nextTextValue();
+            var value = p.getValueAsString();
             if (value == null) {
                 throw new ApiDateDeserializeException("Date requires a string JSON value!",
                     p.currentLocation());

@@ -146,7 +146,7 @@ public class ApiTime implements Comparable<ApiTime> {
         @Override
         public ApiTime deserialize(JsonParser p, DeserializationContext ctxt)
             throws IOException {
-            var value = p.nextTextValue();
+            var value = p.getValueAsString();
             if (value == null) {
                 throw new TimeOfDayDeserializeException("Time of day requires a string JSON value!",
                     p.currentLocation());

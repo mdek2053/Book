@@ -18,18 +18,16 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // StartA < EndB or StartB < EndA
     @Transactional
     @Query(value = "SELECT COUNT(*) > 0 \n"
-            + "FROM reservation\n"
-            + "WHERE user_id = ?1\n"
-            + "  AND (((?2 < until) AND (since < ?3)) OR ((since = ?2) AND (until = ?3)))",
-            nativeQuery = true)
+            + "FROM Reservation\n"
+            + "WHERE userId = ?1\n"
+            + "  AND (((?2 < until) AND (since < ?3)) OR ((since = ?2) AND (until = ?3)))")
     boolean hasUserConflict(long userId, Timestamp since, Timestamp until);
 
     @Transactional
     @Query(value = "SELECT COUNT(*) > 0 \n"
-            + "FROM reservation\n"
-            + "WHERE room_id = ?1\n"
-            + "  AND (((?2 < until) AND (since < ?3)) OR ((since = ?2) AND (until = ?3)))",
-            nativeQuery = true)
+            + "FROM Reservation\n"
+            + "WHERE roomId = ?1\n"
+            + "  AND (((?2 < until) AND (since < ?3)) OR ((since = ?2) AND (until = ?3)))")
     boolean hasRoomConflict(long roomId, Timestamp since, Timestamp until);
 
     Page<Reservation> findByUserId(long userId, Pageable page);

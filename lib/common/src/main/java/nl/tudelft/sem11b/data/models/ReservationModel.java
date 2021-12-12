@@ -5,10 +5,10 @@ import java.util.Objects;
 import nl.tudelft.sem11b.data.ApiDateTime;
 
 public class ReservationModel {
-    private final long roomId;
-    private final ApiDateTime since;
-    private final ApiDateTime until;
-    private final String title;
+    private long roomId;
+    private ApiDateTime since;
+    private ApiDateTime until;
+    private String title;
 
     public long getRoomId() {
         return roomId;
@@ -38,6 +38,10 @@ public class ReservationModel {
         this.since = since;
         this.until = until;
         this.title = title;
+    }
+
+    private ReservationModel() {
+
     }
 
     @Override
