@@ -9,6 +9,7 @@ import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
+import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,19 +47,20 @@ public class GroupController {
      */
     @PreAuthorize("hasRole('admin')")
     @PostMapping()
-    public Group postGroup(@RequestBody String name, @RequestBody User secretary,
+    public GroupModel postGroup(@RequestBody String name, @RequestBody UserModel secretary,
                            @RequestBody List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException {
         return groupService.addGroup(name, secretary, groupMembers);
     }
 
     @GetMapping(value = "/mine")
-    public List<Group> getGroupsOfEmployee(@RequestBody User user) throws NoAssignedGroupException {
+    public List<GroupModel> getGroupsOfEmployee(@RequestBody UserModel user)
+            throws NoAssignedGroupException {
         return groupService.getGroupsOfUser(user);
     }
 
     @GetMapping(value = "/{id}")
-    public Group getGroupInfo(@PathVariable int id) throws InvalidGroupCredentialsException {
+    public GroupModel getGroupInfo(@PathVariable int id) throws InvalidGroupCredentialsException {
         return groupService.getGroupInfo(id);
     }
 
@@ -71,7 +73,7 @@ public class GroupController {
      *      of the group are not valid.
      */
     @PostMapping(value = "/groupmembers")
-    public void addGroupMember(@RequestBody List<Long> users, @RequestBody Group group)
+    public void addGroupMember(@RequestBody List<Long> users, @RequestBody GroupModel group)
             throws InvalidGroupCredentialsException {
         groupService.addGroupMembers(users, group);
     }

@@ -35,12 +35,28 @@ public class User {
 
     }
 
+    /**
+     * Constructor for testing purposes of creating users.
+     *
+     * @param id       provides the id of the user.
+     * @param netId    provides the username of the user in the system.
+     * @param role     provides which role the user has in the system,
+     *                 can be a employee, secretary or admin.
+     * @param password provides the password of the user which the user can log in with.
+     */
+    public User(Long id, String netId, String role, String password) {
+        this.id = id;
+        this.netId = netId;
+        this.role = role;
+        this.password = password;
+    }
 
     /**
      * Constructor for creating new users.
-     * @param netId provides the username of the user in the system.
-     * @param role provides which role the user has in the system,
-     *             can be a employee, secretary or admin.
+     *
+     * @param netId    provides the username of the user in the system.
+     * @param role     provides which role the user has in the system,
+     *                 can be a employee, secretary or admin.
      * @param password provides the password of the user which the user can log in with.
      */
     public User(String netId, String role, String password) {
@@ -68,6 +84,7 @@ public class User {
     /**
      * First checks whether the provided role is valid.
      * After that, sets the role of the user.
+     *
      * @param role contains the role of the user in the system.
      */
     public void setRole(String role) {

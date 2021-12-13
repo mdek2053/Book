@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
      */
     @Override
     public UserDetails loadUserByUsername(String netId) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findUserByNetId(netId);
+        Optional<UserModel> user = userRepository.findUserByNetId(netId);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("No such user exists.");
         }
@@ -57,9 +57,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public UserModel getCurrentUser() throws InvalidCredentialsException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String netId = auth.getPrincipal().toString();
-        Optional<User> user = userRepository.findUserByNetId(netId);
+        Optional<UserModel> user = userRepository.findUserByNetId(netId);
         if (user.isPresent()) {
-            User current = user.get();
+            UserModel current = user.get();
             return new UserModel(current.getNetId(), current.getRole());
         } else {
             throw new InvalidCredentialsException("No user exists with this netId");

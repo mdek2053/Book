@@ -3,6 +3,7 @@ package nl.tudelft.sem11b.data.models;
 import java.util.Objects;
 
 public class UserModel {
+    private Long id;
     private String netId;
     private String role;
     private String password;
@@ -13,7 +14,23 @@ public class UserModel {
     }
 
     /**
-     * Constructor for Usermodel that uses password.
+     * Constructor for creating new users.
+     *
+     * @param id       provides the id of the user.
+     * @param netId    provides the username of the user in the system.
+     * @param role     provides which role the user has in the system,
+     *                 can be a employee, secretary or admin.
+     * @param password provides the password of the user which the user can log in with.
+     */
+    public UserModel(Long id, String netId, String role, String password) {
+        this.id = id;
+        this.netId = netId;
+        this.role = role;
+        this.password = password;
+    }
+
+    /**
+     * Constructor for UserModel that uses password.
      * @param netId the netId
      * @param role the role
      * @param password the password
@@ -24,7 +41,9 @@ public class UserModel {
         this.password = password;
     }
 
-
+    public Long getId() {
+        return id;
+    }
 
     public String getNetId() {
         return netId;

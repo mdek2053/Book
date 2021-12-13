@@ -77,7 +77,7 @@ public class UserServiceTest {
                         .getPassword(), authorities);
 
         when(userRepositoryMock.findUserByNetId(netId2))
-                .thenReturn(Optional.of(plainTextPasswordUser));
+                .thenReturn(Optional.of(plainTextPasswordUserModel));
 
         assertEquals(expected, userService.loadUserByUsername(netId2));
     }
@@ -88,7 +88,7 @@ public class UserServiceTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(netId2);
         when(userRepositoryMock.findUserByNetId(netId2))
-                .thenReturn(Optional.of(plainTextPasswordUser));
+                .thenReturn(Optional.of(plainTextPasswordUserModel));
 
         assertEquals(nullPasswordUserModel, userService.getCurrentUser());
     }
@@ -114,7 +114,7 @@ public class UserServiceTest {
     @Test
     public void addUserAlreadyExistsTest() {
         when(userRepositoryMock.findUserByNetId(netId2))
-                .thenReturn(Optional.of(plainTextPasswordUser));
+                .thenReturn(Optional.of(plainTextPasswordUserModel));
 
         assertThrows(InvalidCredentialsException.class, () ->
                 userService.addUser(plainTextPasswordUserModel));
