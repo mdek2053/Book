@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.data;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalTime;
 import java.util.regex.Pattern;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -125,6 +126,16 @@ public class ApiTime implements Comparable<ApiTime> {
         var minute = matches.group(2);
 
         return new ApiTime(Byte.parseByte(hour), Byte.parseByte(minute));
+    }
+
+    /**
+     * Gets current time. Note that any time resolution beyond minutes is lost.
+     *
+     * @return Current time
+     */
+    public static ApiTime now() {
+        var now = LocalTime.now();
+        return new ApiTime(now.getHour(), now.getMinute());
     }
 
     /**

@@ -31,6 +31,4 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     boolean hasRoomConflict(long roomId, Timestamp since, Timestamp until);
 
     Page<Reservation> findByUserId(long userId, Pageable page);
-
-    Optional<Reservation> findReservationById(Long id);
 }

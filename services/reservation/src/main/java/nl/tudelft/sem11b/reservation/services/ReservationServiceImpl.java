@@ -83,7 +83,7 @@ public class ReservationServiceImpl implements ReservationService {
         validateConflicts(userId, roomId, sinceTs, untilTs);
 
         var reservation = new Reservation(roomId, userId, title, sinceTs, untilTs);
-        return reservations.saveAndFlush(reservation).getId();
+        return reservations.save(reservation).getId();
     }
 
     private void validateTime(ApiDateTime since, ApiDateTime until) throws InvalidData {
@@ -102,7 +102,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // check if the reservation is not too far in the future
-        if (sinceJava.until(now, ChronoUnit.DAYS) > 14) {
+        if (now.until(sinceJava, ChronoUnit.DAYS) >= 14) {
             throw new InvalidData("Reservation is more than two weeks away");
         }
 
@@ -116,7 +116,7 @@ public class ReservationServiceImpl implements ReservationService {
         throws InvalidData {
         // check if in business hours
         if (room.getBuilding().getOpen().compareTo(since.getTime()) > 0
-            || room.getBuilding().getClose().compareTo(since.getTime()) < 0) {
+            || room.getBuilding().getClose().compareTo(until.getTime()) < 0) {
             throw new InvalidData("Reservation not between room opening hours");
         }
 
@@ -127,7 +127,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // check if closure is still ongoing
-        if (closure.getUntil() == null || closure.getUntil().compareTo(since.getDate()) > 0) {
+        if (closure.getUntil() == null || closure.getUntil().compareTo(since.getDate()) >= 0) {
             if (closure.getUntil() != null) {
                 throw new InvalidData(
                     "Room is under maintenance (until " + closure.getUntil() + ")");
@@ -170,7 +170,6 @@ public class ReservationServiceImpl implements ReservationService {
     public void editReservation(long reservationId, String title, ApiDateTime since,
                                 ApiDateTime until)
         throws ApiException, EntityNotFound, InvalidData {
-        var user = users.currentUser();
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
@@ -178,6 +177,15 @@ public class ReservationServiceImpl implements ReservationService {
         }
         var reservation = reservationOpt.get();
 
+        if (since == null) {
+            since = ApiDateTime.from(reservation.getSince());
+        }
+
+        if (until == null) {
+            until = ApiDateTime.from(reservation.getUntil());
+        }
+
+        var user = users.currentUser();
         if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
             throw new ApiException("Reservation",
                 "User not authorized to change given reservation.");

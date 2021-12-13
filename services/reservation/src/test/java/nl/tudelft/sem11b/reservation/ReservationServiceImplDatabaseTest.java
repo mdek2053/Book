@@ -1,93 +1,91 @@
 package nl.tudelft.sem11b.reservation;
 
+import static nl.tudelft.sem11b.reservation.Constants.ROOM_A;
+import static nl.tudelft.sem11b.reservation.Constants.ROOM_B;
+import static nl.tudelft.sem11b.reservation.Constants.USER_A;
+import static nl.tudelft.sem11b.reservation.Constants.USER_B;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Optional;
 
+import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.reservation.services.ReservationServiceImpl;
+import nl.tudelft.sem11b.services.RoomsService;
+import nl.tudelft.sem11b.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest
 class ReservationServiceImplDatabaseTest {
     @Autowired
-    ReservationServiceImpl reservationServiceImpl;
+    ReservationServiceImpl service;
+
+    @MockBean
+    RoomsService rooms;
+
+    @MockBean
+    UserService users;
 
     // Checks if the SQL for checking conflicts is correct
     @Test
     void makeReservationTestUserConflicts() throws Exception {
-        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
-        // 15 Jan '22 10:20 so reservations aren't too much in the future
-        // reservationServiceImpl.setClock(clock);
-
-        // TODO: Uncomment once API clients are in place
-//        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
-//        when(helper.checkRoomExists(anyLong())).thenReturn(true);
-//        when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
-//        reservationServiceImpl.setServ(helper);
+        when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
+        when(rooms.getRoom(ROOM_B.getId())).thenReturn(Optional.of(ROOM_B));
+        when(users.currentUser()).thenReturn(USER_A);
 
         // one reservation between 13:30 and 14:00
-        reservationServiceImpl.makeReservation(1, 1, "Title",
-            new ApiDateTime(2022, 1, 15, 13, 0), new ApiDateTime(2022, 1, 15, 14, 0));
+        service.makeOwnReservation(ROOM_A.getId(), "Reservation # 1",
+            ApiDate.tomorrow().at(13, 30), ApiDate.tomorrow().at(14, 0));
 
         // another between 14:00 and 15:00, no conflict
-        reservationServiceImpl.makeReservation(1, 1, "Title",
-            new ApiDateTime(2022, 1, 15, 14, 0), new ApiDateTime(2022, 1, 15, 15, 0));
+        service.makeOwnReservation(ROOM_B.getId(), "Reservation # 2",
+            ApiDate.tomorrow().at(14, 0), ApiDate.tomorrow().at(15, 0));
 
         // another between 14:59 and 15:15, this one conflicts with reservation #2
-        assertThrows(InvalidData.class, () -> reservationServiceImpl.makeReservation(1, 1,
-            "Title", new ApiDateTime(2022, 1, 15, 14, 59), new ApiDateTime(2022, 1, 15, 15, 15)));
+        assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_B.getId(),
+            "Conflict", ApiDate.tomorrow().at(14, 59), ApiDate.tomorrow().at(15, 15)));
 
         // between 14:00 and 15:00, should conflict with #2 again
-        assertThrows(InvalidData.class, () -> reservationServiceImpl.makeReservation(1, 1,
-            "Title", new ApiDateTime(2022, 1, 15, 14, 0), new ApiDateTime(2022, 1, 15, 15, 0)));
-
-        //System.out.println(reservationService.getAll());
+        assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_A.getId(),
+            "Conflict", ApiDate.tomorrow().at(14, 0), ApiDate.tomorrow().at(15, 0)));
     }
 
     @Test
     void makeReservationTestRoomConflicts() throws Exception {
-        Clock clock = Clock.fixed(Instant.ofEpochMilli(1642242000000L), ZoneId.of("UTC"));
-        // 15 Jan '22 10:20 so reservations aren't too much in the future
-        // reservationServiceImpl.setClock(clock);
+        when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
+        when(rooms.getRoom(ROOM_B.getId())).thenReturn(Optional.of(ROOM_B));
 
-        // TODO: Uncomment once API clients are in place
-//        ServerInteractionHelper helper = mock(ServerInteractionHelper.class);
-//        when(helper.checkRoomExists(anyLong())).thenReturn(true);
-//        when(helper.getOpeningHours(anyLong())).thenReturn(Lists.list("07:00", "20:00"));
-//        reservationServiceImpl.setServ(helper);
+        // arrange
+        when(users.currentUser()).thenReturn(USER_A);
+        service.makeOwnReservation(ROOM_A.getId(), "Reservation # 1",
+            ApiDate.tomorrow().at(13, 0), ApiDate.tomorrow().at(15, 0));
 
-        // one reservation between 13:30 and 14:00
-        reservationServiceImpl.makeReservation(3, 2, "Title",
-            new ApiDateTime(2022, 1, 15, 13, 0), new ApiDateTime(2022, 1, 15, 14, 0));
+        when(users.currentUser()).thenReturn(USER_B);
+        service.makeOwnReservation(ROOM_B.getId(), "Reservation # 2",
+            ApiDate.tomorrow().at(14, 0), ApiDate.tomorrow().at(16, 0));
 
-        // another between 14:00 and 15:00, another room
-        reservationServiceImpl.makeReservation(4, 3, "Title",
-            new ApiDateTime(2022, 1, 15, 14, 0), new ApiDateTime(2022, 1, 15, 15, 0));
 
-        // one between 14:59 and 15:15 in room 3 no conflict
-        reservationServiceImpl.makeReservation(3, 4, "Title",
-            new ApiDateTime(2022, 1, 15, 14, 59), new ApiDateTime(2022, 1, 15, 15, 15));
+        // action + assert
+        when(users.currentUser()).thenReturn(USER_A);
+        assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_B.getId(),
+            "Conflict B # 1", ApiDate.tomorrow().at(15, 0), ApiDate.tomorrow().at(16, 0)));
 
-        // between 15:15 and 15:30 in room 3, no conflict
-        reservationServiceImpl.makeReservation(3, 5, "Title",
-            new ApiDateTime(2022, 1, 15, 15, 15), new ApiDateTime(2022, 1, 15, 15, 30));
-
-        // between 15:29 and 15:30 in room 3, conflict
-        assertThrows(InvalidData.class, () -> reservationServiceImpl.makeReservation(3, 6,
-            "Title", new ApiDateTime(2022, 1, 15, 15, 29), new ApiDateTime(2022, 1, 15, 15, 30)));
-
-        // between 14:15 and 15:00 in room 4, should conflict
-        assertThrows(InvalidData.class, () -> reservationServiceImpl.makeReservation(4, 7,
-            "Title", new ApiDateTime(2022, 1, 15, 14, 15), new ApiDateTime(2022, 1, 15, 15, 0)));
+        when(users.currentUser()).thenReturn(USER_B);
+        assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_A.getId(),
+            "Conflict B # 1", ApiDate.tomorrow().at(13, 30), ApiDate.tomorrow().at(14, 30)));
     }
 
 }
