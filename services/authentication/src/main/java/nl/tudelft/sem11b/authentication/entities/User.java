@@ -81,6 +81,11 @@ public class User {
         }
     }
 
+    /**
+     * Converts this entity into it's equivalent model.
+     *
+     * @return Model of this entity
+     */
     public UserModel toModel() {
         String[] roles;
         if (role == null || role.equalsIgnoreCase("employee")) {

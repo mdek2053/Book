@@ -23,6 +23,11 @@ public class AuthenticationController {
     @Autowired
     UserService service;
 
+    /**
+     * Gets the current user.
+     *
+     * @return Current user
+     */
     @GetMapping("/me")
     public UserModel me() {
         try {
@@ -42,7 +47,8 @@ public class AuthenticationController {
     public IdModel<Long> postUser(@RequestBody UserRequestModel model) {
         long id;
         try {
-            id = service.addUser(model.getLogin(), model.getPassword(), Roles.valueOf(model.getRole()));
+            id = service.addUser(model.getLogin(), model.getPassword(),
+                Roles.valueOf(model.getRole()));
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }

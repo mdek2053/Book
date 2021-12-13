@@ -24,7 +24,8 @@ public class MainApplication {
     CommandLineRunner run(UserServiceImpl userService) {
         return args -> {
             try {
-                userService.addUser("SystemAdmin", "password", Roles.Admin);     // add admin if it doesn't exist in system already
+                // add admin if it doesn't exist in system already
+                userService.addUser("SystemAdmin", "password", Roles.Admin);
             } catch (Exception e) {
                 System.out.println("Admin already exists.");
             }
