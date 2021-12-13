@@ -1,6 +1,9 @@
 package nl.tudelft.sem11b.services;
 
+import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
+import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 
 /**
@@ -15,4 +18,6 @@ public interface UserService {
      * @throws ApiException Thrown when a remote API encountered an error
      */
     UserModel currentUser() throws ApiException;
+
+    long addUser(String netId, String password, Roles role) throws ApiException, InvalidData;
 }

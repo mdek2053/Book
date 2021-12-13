@@ -1,7 +1,9 @@
 package nl.tudelft.sem11b.clients;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.http.ApiClient;
 import nl.tudelft.sem11b.http.Authenticated;
@@ -26,5 +28,11 @@ public class UserClient implements UserService {
     @Override
     public UserModel currentUser() throws ApiException {
         return api.get("/users/me", new TypeReference<UserModel>() {}).unwrap();
+    }
+
+    @Override
+    public long addUser(String netId, String password, Roles role)
+        throws ApiException, InvalidData {
+        return -1; // TODO: Implement
     }
 }
