@@ -37,18 +37,18 @@ public class GroupController {
     /**
      * Tries to add a new group to the system.
      *
-     * @param groupMembers of type List containing the groupMembers.
+     * @param model of type List containing the groupMembers.
      * @return an object containing the new Group.
      * @throws InvalidGroupCredentialsException when the provided credentials
      *                                          of the group are not valid.
      */
-    @PreAuthorize("hasRole('admin')")
-    @PostMapping()
-    public GroupModel postGroup(@RequestBody String name, @RequestBody Long secretaryId,
-                                @RequestBody List<Long> groupMembers)
+    //@PreAuthorize("hasRole('Admin')")
+    @PostMapping("")
+    public GroupModel postGroup(@RequestBody GroupModel model)
             throws InvalidGroupCredentialsException {
         try {
-            return groupService.addGroup(name, secretaryId, groupMembers);
+            return groupService
+                    .addGroup(model.getName(), model.getSecretary(), model.getGroupMembers());
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }

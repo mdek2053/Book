@@ -52,7 +52,7 @@ public class GroupServiceImpl implements GroupService {
             List<GroupModel> userGroupList = new ArrayList<>();
             for (Group group : groupList) {
                 if (group.getGroupMembers().contains(user.getId())) {
-                    GroupModel model = new GroupModel(group.getName(), group.getSecretary().getId(),
+                    GroupModel model = new GroupModel(group.getName(), group.getSecretary(),
                             group.getGroupMembers(), group.getGroupId());
                     userGroupList.add(model);
                 }
@@ -78,12 +78,12 @@ public class GroupServiceImpl implements GroupService {
         Optional<User> secretary = userRepository.findUserByNetId(user.getLogin());
         if (secretary.isPresent()) {
             Optional<List<Group>> groupList =
-                    groupRepository.findGroupsBySecretary(secretary.get());
+                    groupRepository.findGroupsBySecretary(secretary.get().getId());
 
             if (groupList.isPresent()) {
                 List<Group> secretaryGroups = groupList.get();
                 for (Group group : secretaryGroups) {
-                    GroupModel model = new GroupModel(group.getName(), group.getSecretary().getId(),
+                    GroupModel model = new GroupModel(group.getName(), group.getSecretary(),
                             group.getGroupMembers(), group.getGroupId());
                     if (!groups.contains(model)) {
                         groups.add(model);
@@ -125,7 +125,7 @@ public class GroupServiceImpl implements GroupService {
 
         verifyUsers(groupMembers);
 
-        Group group = new Group(name, secretary, groupMembers);
+        Group group = new Group(name, secretary.getId(), groupMembers);
         saveGroup(group);
         return new GroupModel(group.getName(), secretaryId, groupMembers);
     }
@@ -159,7 +159,7 @@ public class GroupServiceImpl implements GroupService {
         Optional<Group> group = groupRepository.findGroupByGroupId(groupId);
         if (group.isPresent()) {
             Group presentGroup = group.get();
-            return new GroupModel(presentGroup.getName(), presentGroup.getSecretary().getId(),
+            return new GroupModel(presentGroup.getName(), presentGroup.getSecretary(),
                     presentGroup.getGroupMembers(), presentGroup.getGroupId());
         } else {
             throw new InvalidGroupCredentialsException(

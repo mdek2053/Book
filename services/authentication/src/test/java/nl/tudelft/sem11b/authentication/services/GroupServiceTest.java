@@ -56,9 +56,9 @@ class GroupServiceTest {
     List<Long> users1 = new ArrayList<>();
     List<Long> users2 = new ArrayList<>();
     List<Group> groups = new ArrayList<>();
-    Group group1 = new Group("group", user1, new ArrayList<>(), 2L);
-    Group group2 = new Group("group1", user2, new ArrayList<>(), 4L);
-    Group group = new Group("abc", user1, new ArrayList<>(), 3L);
+    Group group1 = new Group("group", user1.getId(), new ArrayList<>(), 2L);
+    Group group2 = new Group("group1", user2.getId(), new ArrayList<>(), 4L);
+    Group group = new Group("abc", user1.getId(), new ArrayList<>(), 3L);
 
     GroupModel groupModel1;
     GroupModel groupModel2;
@@ -107,8 +107,7 @@ class GroupServiceTest {
         ApiException {
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(user1));
         GroupModel group = new GroupModel("name", userModel1.getId(), users1);
-        Group groupSaved = new Group(group.getName(), new User(user1.getNetId(),
-                user1.getRole(), passwordEncoder.encode(user1.getPassword())),
+        Group groupSaved = new Group(group.getName(), user1.getId(),
                 group.getGroupMembers(), group.getGroupId());
         assertEquals(group, groupService.addGroup(group.getName(), userModel1.getId(), users1));
         verify(groupRepository, times(1)).save(groupSaved);
