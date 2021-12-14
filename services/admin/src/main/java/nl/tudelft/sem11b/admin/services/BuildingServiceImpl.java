@@ -26,7 +26,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public Optional<BuildingModel> getBuilding(int id) {
+    public Optional<BuildingModel> getBuilding(long id) {
         return buildings.findById(id).map(Building::toModel);
     }
 }

@@ -14,8 +14,12 @@ import java.util.Optional;
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
 import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
+import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.data.models.UserRequestModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -55,10 +59,12 @@ public class UserServiceTest {
     private final User plainTextPasswordUser = new User("Bob", "employee", "plain");
     private final User encodedPasswordUser = new User("Bob", "employee", "encoded");
 
-    private final UserModel plainTextPasswordUserModel = new UserModel("Bob", "employee", "plain");
-    private final UserModel encodedPasswordUserModel = new UserModel("Bob", "employee", null);
+    private final UserRequestModel
+        plainTextPasswordUserModel = new UserRequestModel("Bob", "plain", "employee");
+    private final UserRequestModel encodedPasswordUserModel =
+        new UserRequestModel("Bob", null, "employee");
 
-    private final UserModel nullPasswordUserModel = new UserModel("Bob", "employee", null);
+    private final UserModel nullPasswordUserModel = new UserModel(1L, "Bob", new String[0]);
 
     @Test
     public void loadUserNonExistentTest() {
@@ -72,65 +78,55 @@ public class UserServiceTest {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(plainTextPasswordUser.getRole()));
         org.springframework.security.core.userdetails.User expected =
-                new org.springframework.security.core.userdetails
-                        .User(plainTextPasswordUser.getNetId(), plainTextPasswordUser
-                        .getPassword(), authorities);
+            new org.springframework.security.core.userdetails
+                .User(plainTextPasswordUser.getNetId(), plainTextPasswordUser
+                .getPassword(), authorities);
 
         when(userRepositoryMock.findUserByNetId(netId2))
-                .thenReturn(Optional.of(plainTextPasswordUserModel));
+            .thenReturn(Optional.of(plainTextPasswordUser));
 
         assertEquals(expected, userService.loadUserByUsername(netId2));
     }
 
     @Test
-    public void getCurrentUserTest() throws InvalidCredentialsException {
+    public void getCurrentUserTest() throws InvalidCredentialsException, ApiException {
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(netId2);
         when(userRepositoryMock.findUserByNetId(netId2))
-                .thenReturn(Optional.of(plainTextPasswordUserModel));
+            .thenReturn(Optional.of(plainTextPasswordUser));
 
-        assertEquals(nullPasswordUserModel, userService.getCurrentUser());
+        assertEquals(nullPasswordUserModel.getLogin(), userService.currentUser().getLogin());
     }
 
     @Test
     public void addUserInvalidNetIdTest() {
-        assertThrows(InvalidCredentialsException.class, () -> userService.addUser(
-                new UserModel(null, "employee", "banana")));
-    }
-
-    @Test
-    public void addUserInvalidRoleTest() {
-        assertThrows(InvalidCredentialsException.class, () -> userService.addUser(
-                new UserModel("Stefan", null, "banana")));
+        assertThrows(InvalidData.class, () -> userService.addUser(
+            null, "banana", null));
     }
 
     @Test
     public void addUserInvalidPasswordTest() {
-        assertThrows(InvalidCredentialsException.class, () -> userService.addUser(
-                new UserModel("Stefan", "employee", null)));
+        assertThrows(InvalidData.class, () -> userService.addUser(
+            "Stefan", null, null));
     }
 
     @Test
     public void addUserAlreadyExistsTest() {
         when(userRepositoryMock.findUserByNetId(netId2))
-                .thenReturn(Optional.of(plainTextPasswordUserModel));
+            .thenReturn(Optional.of(plainTextPasswordUser));
 
-        assertThrows(InvalidCredentialsException.class, () ->
-                userService.addUser(plainTextPasswordUserModel));
+        assertThrows(InvalidData.class, () ->
+            userService.addUser(netId2, "plain", null));
     }
 
     @Test
-    public void addUserSuccessfulTest() {
+    public void addUserSuccessfulTest() throws InvalidData {
         when(userRepositoryMock.findUserByNetId(netId2)).thenReturn(Optional.empty());
         when(encoder.encode(plainTextPasswordUser.getPassword()))
-                .thenReturn(encodedPasswordUser.getPassword());
+            .thenReturn(encodedPasswordUser.getPassword());
 
-        try {
-            assertEquals(encodedPasswordUserModel, userService.addUser(plainTextPasswordUserModel));
-        } catch (Exception e) {
-            fail();
-        }
+        userService.addUser("Bob", "plain", null);
 
         verify(userRepositoryMock, times(1)).save(encodedPasswordUser);
     }

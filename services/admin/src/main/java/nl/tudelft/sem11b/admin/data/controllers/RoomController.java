@@ -2,7 +2,9 @@ package nl.tudelft.sem11b.admin.data.controllers;
 
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
@@ -44,7 +46,11 @@ public class RoomController {
         @RequestParam Optional<Integer> limit) {
         var index = PageIndex.fromQuery(page, limit);
 
-        return rooms.listRooms(index);
+        try {
+            return rooms.listRooms(index);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
     }
 
     /**
@@ -64,7 +70,7 @@ public class RoomController {
 
         try {
             return rooms.listRooms(index, id);
-        } catch (EntityNotFound e) {
+        } catch (ServiceException e) {
             throw e.toResponseException();
         }
     }
@@ -77,7 +83,13 @@ public class RoomController {
      */
     @GetMapping("/rooms/{id}")
     public RoomModel getRoom(@PathVariable int id) {
-        var room = rooms.getRoom(id);
+        Optional<RoomModel> room;
+        try {
+            room = rooms.getRoom(id);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
+
         if (room.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found!");
         }

@@ -20,6 +20,7 @@ import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.models.GroupModel;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.models.UserModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,7 +97,7 @@ class GroupServiceTest {
 
     @Test
     void addGroupNoPreviousGroupId() throws InvalidGroupCredentialsException,
-            InvalidCredentialsException {
+        ApiException {
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(userModel1));
         GroupModel group = new GroupModel("group", userModel1, users1, 0);
         Group groupSaved = new Group(group.getName(), new User(userModel1.getNetId(),

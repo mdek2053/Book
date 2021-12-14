@@ -12,6 +12,8 @@ import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.models.GroupModel;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,10 +109,11 @@ public class GroupServiceImpl implements GroupService {
      *      with the specific groupId or when the credentials are invalid.
      */
     public GroupModel addGroup(String name, UserModel secretary, List<Long> groupMembers)
-            throws InvalidGroupCredentialsException, InvalidCredentialsException {
+            throws ApiException, InvalidGroupCredentialsException {
         if (secretary == null) {
-            UserModel secretaryModel = userService.getCurrentUser();
-            secretary = userRepository.findUserByNetId(secretaryModel.getNetId()).get();
+            UserModel secretaryModel;
+            secretaryModel = userService.currentUser();
+            secretary = userRepository.findUserByNetId(secretaryModel.getLogin()).get();
         }
         try {
             verifyUsers(groupMembers);

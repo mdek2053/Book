@@ -6,7 +6,11 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
+import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
+import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     /**
      * Finds a user by providing the netId/username as input.
+     *
      * @param netId the username of a user which is used to identify a user in the system.
      * @return the data of a user if the user is found in the system.
      * @throws UsernameNotFoundException when no user exists with the provided username.
@@ -50,49 +55,41 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return new org.springframework.security.core.userdetails.User(netId, password, authorities);
     }
 
-    /**
-     * Gets the data of the user which currently uses the system.
-     * @return an object of type User of the current user.
-     */
-    public UserModel getCurrentUser() throws InvalidCredentialsException {
+    @Override
+    public UserModel currentUser() throws ApiException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String netId = auth.getPrincipal().toString();
         Optional<UserModel> user = userRepository.findUserByNetId(netId);
         if (user.isPresent()) {
-            UserModel current = user.get();
-            return new UserModel(current.getNetId(), current.getRole());
+            return user.get().toModel();
         } else {
-            throw new InvalidCredentialsException("No user exists with this netId");
+            throw new ApiException("Authentication", "No user exists with this netId");
         }
     }
 
     /**
      * Saves the provided input in the userRepository.
+     *
      * @param user contains data from a specific user of the system.
      */
     private void saveUser(User user) {
         userRepository.save(user);
     }
 
-    /**
-     * Adds a user to the system.
-     * @param user contains data from a specific user of the system.
-     * @return object of type User which contains the data after it is saved in the userRepository.
-     * @throws InvalidCredentialsException when the credentials are not valid or
-     *      when the user already exists in the system.
-     */
-    public UserModel addUser(UserModel user) throws InvalidCredentialsException {
-        if (user.getNetId() == null || user.getPassword() == null || user.getRole() == null) {
-            throw new InvalidCredentialsException(
-                    "Expected netId, password and role to be provided");
+    @Override
+    public long addUser(String netId, String password, Roles role) throws InvalidData {
+        if (netId == null || netId.isBlank() || password == null || password.isBlank()) {
+            throw new InvalidData(
+                "NetID and password must be given!");
         }
-        if (userRepository.findUserByNetId(user.getNetId()).isPresent()) {
-            throw new InvalidCredentialsException("User with this netId already exists.");
+        if (userRepository.findUserByNetId(netId).isPresent()) {
+            throw new InvalidData("User with this netId already exists.");
         }
 
-        User newUser = new User(user.getNetId(), user.getRole(),
-                passwordEncoder.encode(user.getPassword()));
+        User newUser = new User(netId, role == null ? "employee" : role.toString(),
+            passwordEncoder.encode(password));
         saveUser(newUser);
-        return new UserModel(newUser.getNetId(), newUser.getRole());
+
+        return newUser.getId();
     }
 }

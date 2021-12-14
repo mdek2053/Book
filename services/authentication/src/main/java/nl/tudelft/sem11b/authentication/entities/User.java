@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import nl.tudelft.sem11b.data.models.UserModel;
 
 
 /**
@@ -19,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private long id;
 
     @Column(name = "netId", nullable = false)
     private String netId;
@@ -65,7 +66,7 @@ public class User {
         this.password = password;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -95,6 +96,21 @@ public class User {
         }
     }
 
+    /**
+     * Converts this entity into it's equivalent model.
+     *
+     * @return Model of this entity
+     */
+    public UserModel toModel() {
+        String[] roles;
+        if (role == null || role.equalsIgnoreCase("employee")) {
+            roles = null;
+        } else {
+            roles = new String[]{role};
+        }
+
+        return new UserModel(id, netId, roles);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -106,7 +122,7 @@ public class User {
         }
         User user = (User) o;
         return getNetId().equals(user.getNetId())
-                && getRole().equals(user.getRole());
+            && getRole().equals(user.getRole());
     }
 
     @Override

@@ -1,98 +1,69 @@
 package nl.tudelft.sem11b.data.models;
 
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
+import nl.tudelft.sem11b.data.Roles;
+
+/**
+ * Holds all information about a user.
+ */
 public class UserModel {
-    private Long id;
-    private String netId;
-    private String role;
-    private String password;
-
-    public UserModel(String netId, String role) {
-        this.netId = netId;
-        this.role = role;
-    }
+    private long id;
+    private String login;
+    private String[] roles;
 
     /**
-     * Constructor for creating new users.
+     * Instantiates the {@link UserModel} class.
      *
-     * @param id       provides the id of the user.
-     * @param netId    provides the username of the user in the system.
-     * @param role     provides which role the user has in the system,
-     *                 can be a employee, secretary or admin.
-     * @param password provides the password of the user which the user can log in with.
+     * @param id    Unique numeric identifier of the user
+     * @param login NetID of the user
+     * @param roles Roles the user has
      */
-    public UserModel(Long id, String netId, String role, String password) {
+    public UserModel(long id, String login, String[] roles) {
         this.id = id;
-        this.netId = netId;
-        this.role = role;
-        this.password = password;
+        this.login = login;
+        this.roles = roles;
+    }
+
+    private UserModel() {
+        // default constructor for model materialization
     }
 
     /**
-     * Constructor for UserModel that uses password.
-     * @param netId the netId
-     * @param role the role
-     * @param password the password
+     * Gets the unique numeric identifier of the user.
+     *
+     * @return ID of the user
      */
-    public UserModel(String netId, String role, String password) {
-        this.netId = netId;
-        this.role = role;
-        this.password = password;
-    }
-
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public String getNetId() {
-        return netId;
+    /**
+     * Gets the NetID of the user.
+     *
+     * @return NetID of the user
+     */
+    public String getLogin() {
+        return login;
     }
 
-    public void setNetId(String netId) {
-        this.netId = netId;
+    /**
+     * Gets all the roles the user is in (as strings).
+     *
+     * @return Roles of user
+     */
+    public Stream<String> getRoles() {
+        return roles != null ? Arrays.stream(roles) : Stream.empty();
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        UserModel userModel = (UserModel) o;
-        return netId.equals(userModel.netId) && role.equals(userModel.role)
-                && Objects.equals(password, userModel.password);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(netId, role, password);
-    }
-
-    @Override
-    public String toString() {
-        return "UserModel{"
-                + "netId='" + netId + '\''
-                + ", role='" + role + '\''
-                + ", password='" + password + '\''
-                + '}';
+    /**
+     * Checks if the user has the given role.
+     *
+     * @param role Role to check
+     * @return {@code true} if the user has the given role; {@code false} otherwise
+     */
+    public boolean inRole(Roles role) {
+        return getRoles().anyMatch(i -> i.equalsIgnoreCase(role.toString()));
     }
 }
