@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.admin.data.entities.Room;
-import nl.tudelft.sem11b.admin.data.exceptions.FilterException;
-import nl.tudelft.sem11b.admin.data.filters.BaseFilter;
-import nl.tudelft.sem11b.admin.data.filters.CapacityFilter;
+import nl.tudelft.sem11b.admin.data.filters.*;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
@@ -68,15 +66,47 @@ public class RoomsServiceImpl implements RoomsService {
     private BaseFilter setupChain(Map<String, Object> filterValues) throws InvalidFilterException {
         BaseFilter head = new BaseFilter();
         BaseFilter tail = head;
+
         if(filterValues.containsKey("capacity")){
             try {
-                BaseFilter filter = new CapacityFilter((Integer)filterValues.get("capacity"))
+                BaseFilter filter = new CapacityFilter((Integer)filterValues.get("capacity"));
                 tail.setNext(filter);
                 tail = filter;
             } catch (Exception e) {
                 throw new InvalidFilterException("Invalid capacity filter!");
             }
         }
+
+        if(filterValues.containsKey("equipment")){
+            try {
+                BaseFilter filter = new EquipmentFilter();
+                tail.setNext(filter);
+                tail = filter;
+            } catch (Exception e) {
+                throw new InvalidFilterException("Invalid equipment filter!");
+            }
+        }
+
+        if(filterValues.containsKey("from") || filterValues.containsKey("until")){
+            try {
+                BaseFilter filter = new AvailabilityFilter((String)filterValues.get("from"), (String)filterValues.get("until"));
+                tail.setNext(filter);
+                tail = filter;
+            } catch (Exception e) {
+                throw new InvalidFilterException("Invalid availability filter!");
+            }
+        }
+
+        if(filterValues.containsKey("building")){
+            try {
+                BaseFilter filter = new BuildingFilter((Integer)filterValues.get("building"));
+                tail.setNext(filter);
+                tail = filter;
+            } catch (Exception e) {
+                throw new InvalidFilterException("Invalid building filter!");
+            }
+        }
+
         return head;
     }
 
