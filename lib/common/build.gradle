@@ -6,5 +6,6 @@ dependencies {
 	implementation 'org.hibernate:hibernate-core:5.6.1.Final'           // Hibernate + JPA
 	implementation 'org.springframework.data:spring-data-commons:2.5.6' // Spring Boot data API
 	implementation 'org.springframework:spring-web:5.3.12'              // Spring Boot web API
+	implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.54'   // Tomcat server API
 
 }
