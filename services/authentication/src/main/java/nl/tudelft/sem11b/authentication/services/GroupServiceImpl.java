@@ -57,7 +57,7 @@ public class GroupServiceImpl implements GroupService {
                     userGroupList.add(model);
                 }
             }
-            if (userGroupList.size() > 0) {
+            if (userGroupList.size() >= 0) {
                 userGroupList = getGroupsOfSecretary(user, userGroupList);
                 return userGroupList;
             } else {
@@ -99,8 +99,8 @@ public class GroupServiceImpl implements GroupService {
      *
      * @param group of type Group which needs to be saved in the groupRepository.
      */
-    public void saveGroup(Group group) {
-        groupRepository.save(group);
+    public Group saveGroup(Group group) {
+        return groupRepository.save(group);
     }
 
     /**
@@ -126,8 +126,8 @@ public class GroupServiceImpl implements GroupService {
         verifyUsers(groupMembers);
 
         Group group = new Group(name, secretary.getId(), groupMembers);
-        saveGroup(group);
-        return new GroupModel(group.getName(), secretaryId, groupMembers);
+        group = saveGroup(group);
+        return new GroupModel(group.getName(), secretaryId, groupMembers, group.getGroupId());
     }
 
     /**

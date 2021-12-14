@@ -63,6 +63,9 @@ public class Group {
         this.groupMembers = groupMembers;
     }
 
+    public Group() {
+
+    }
 
     public Long getGroupId() {
         return groupId;

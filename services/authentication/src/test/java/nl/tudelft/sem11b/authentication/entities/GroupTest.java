@@ -37,7 +37,7 @@ class GroupTest {
 
     @Test
     void getSecretary() {
-        assertEquals(user, group.getSecretary());
+        assertEquals(user.getId(), group.getSecretary());
     }
 
     @Test
@@ -53,7 +53,7 @@ class GroupTest {
     @Test
     void setSecretary() {
         group.setSecretary(user1.getId());
-        assertEquals(user1, group.getSecretary());
+        assertEquals(user1.getId(), group.getSecretary());
     }
 
     @Test

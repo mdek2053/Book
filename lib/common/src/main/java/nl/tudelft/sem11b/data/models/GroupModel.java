@@ -25,6 +25,10 @@ public class GroupModel {
         this.groupId = groupId;
     }
 
+    public GroupModel() {
+
+    }
+
     /**
      * Constructor specifically for adding new groups to the system.
      *

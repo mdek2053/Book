@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -106,11 +107,14 @@ class GroupServiceTest {
     void addGroupNoPreviousGroupId() throws InvalidGroupCredentialsException,
         ApiException {
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(user1));
-        GroupModel group = new GroupModel("name", userModel1.getId(), users1);
-        Group groupSaved = new Group(group.getName(), user1.getId(),
+        Group group = new Group("name", userModel1.getId(),
+                users1, 1L);
+        when(groupRepository.save(Mockito.any(Group.class))).thenReturn(group);
+        GroupModel expected = new GroupModel(group.getName(), group.getSecretary(),
                 group.getGroupMembers(), group.getGroupId());
-        assertEquals(group, groupService.addGroup(group.getName(), userModel1.getId(), users1));
-        verify(groupRepository, times(1)).save(groupSaved);
+        assertEquals(expected, groupService.addGroup(group.getName(), userModel1.getId(), users1));
+        Group groupSaved = new Group(groupModel.getName(), userModel1.getId(),
+                groupModel.getGroupMembers());
     }
 
     @Test
