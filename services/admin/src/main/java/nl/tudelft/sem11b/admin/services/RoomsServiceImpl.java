@@ -1,20 +1,21 @@
 package nl.tudelft.sem11b.admin.services;
 
-import java.text.ParseException;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
-import nl.tudelft.sem11b.data.Day;
+import nl.tudelft.sem11b.data.Roles;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.ClosureObject;
+import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.services.RoomsService;
+import nl.tudelft.sem11b.services.UserService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +23,19 @@ import org.springframework.stereotype.Service;
 public class RoomsServiceImpl implements RoomsService {
     private final BuildingRepository buildings;
     private final RoomRepository rooms;
+    private final UserService users;
 
-    public RoomsServiceImpl(BuildingRepository buildings, RoomRepository rooms) {
+    /**
+     * Instantiates the {@link RoomsServiceImpl} class.
+     *
+     * @param buildings Building repository
+     * @param rooms     Room repository
+     * @param users     Users handling service
+     */
+    public RoomsServiceImpl(BuildingRepository buildings, RoomRepository rooms, UserService users) {
         this.buildings = buildings;
         this.rooms = rooms;
+        this.users = users;
     }
 
     @Override
@@ -49,25 +59,37 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public void closeRoom(int id, ClosureObject closure) throws ParseException {
-        Optional<Room> roomById = rooms.findById(id);
-        if (roomById.isEmpty()) {
-            return;
+    public void closeRoom(long id, ClosureModel closure) throws EntityNotFound, ApiException {
+        var user = users.currentUser();
+        if (!user.inRole(Roles.Admin)) {
+            throw new ApiException("Rooms",
+                    "User not authorized to close rooms.");
         }
-        Room room = roomById.get();
-        room.setClosure(new Closure(closure.getDescription(),
-                Day.parse(closure.getSince()),
-                Day.parse(closure.getSince())));
+
+        if (!rooms.existsById(id)) {
+            throw new EntityNotFound("Room");
+        }
+
+        Room room = rooms.getById(id);
+        room.setClosure(new Closure(closure.getReason(),
+                closure.getSince(),
+                closure.getUntil()));
         rooms.save(room);
     }
 
     @Override
-    public void reopenRoom(int id) {
-        Optional<Room> roomById = rooms.findById(id);
-        if (roomById.isEmpty()) {
-            return;
+    public void reopenRoom(long id) throws EntityNotFound, ApiException {
+        var user = users.currentUser();
+        if (!user.inRole(Roles.Admin)) {
+            throw new ApiException("Rooms",
+                    "User not authorized to open rooms.");
         }
-        Room room = roomById.get();
+
+        if (!rooms.existsById(id)) {
+            throw new EntityNotFound("Room");
+        }
+
+        Room room = rooms.getById(id);
         room.setClosure(null);
         rooms.save(room);
     }

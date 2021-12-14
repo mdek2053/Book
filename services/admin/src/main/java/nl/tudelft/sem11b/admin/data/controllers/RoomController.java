@@ -2,15 +2,22 @@ package nl.tudelft.sem11b.admin.data.controllers;
 
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.exceptions.ServiceException;
+import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.services.RoomsService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,7 +34,6 @@ public class RoomController {
      *
      * @param rooms The room handling service
      */
-    @Autowired
     public RoomController(RoomsService rooms) {
         this.rooms = rooms;
     }
@@ -98,59 +104,23 @@ public class RoomController {
 
     /**
      * Changes or adds a room closure.
-     * @param token user's token
-     * @param id ID of room to close
+     *
+     * @param id      ID of the room being modified
      * @param closure closure information
      */
     @PostMapping("/room/{id}/closure")
-    public void closeRoom(@RequestHeader("Authorization") String token, @PathVariable int id,
-                                    @RequestBody ClosureObject closure) {
-        if (closure == null || !closure.validate()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Closure object not valid");
-        }
-
-        try {
-            serverInteractionHelper.verifyUserAdmin(token);
-        } catch (CommunicationException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (UnauthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.reason);
-        }
-
-
-        var room = rooms.getRoom(id);
-        if (room.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found!");
-        }
-
-        try {
-            rooms.closeRoom(id, closure);
-        } catch (ParseException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dates are not valid");
-        }
+    public void closeRoom(@PathVariable int id, @RequestBody ClosureModel closure)
+            throws EntityNotFound, ApiException {
+        rooms.closeRoom(id, closure);
     }
 
     /**
      * Removes a room closure, i.e. reopens the room.
-     * @param token user's token
+     *
      * @param id ID of room to reopen
      */
     @DeleteMapping("/room/{id}/closure")
-    public void closeRoom(@RequestHeader("Authorization") String token, @PathVariable int id) {
-
-        try {
-            serverInteractionHelper.verifyUserAdmin(token);
-        } catch (CommunicationException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (UnauthorizedException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.reason);
-        }
-
-        var room = rooms.getRoom(id);
-        if (room.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found!");
-        }
-
+    public void reopenRoom(@PathVariable int id) throws EntityNotFound, ApiException {
         rooms.reopenRoom(id);
     }
 }
