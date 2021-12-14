@@ -12,6 +12,7 @@ import nl.tudelft.sem11b.services.BuildingService;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -101,6 +102,15 @@ public class ReservationController {
 
         try {
             reservationService.editReservation(id, req.getTitle(), req.getSince(), req.getUntil());
+        } catch (ServiceException ex) {
+            throw ex.toResponseException();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    void deleteReservation(@PathVariable long id) {
+        try {
+            reservationService.deleteReservation(id);
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }
