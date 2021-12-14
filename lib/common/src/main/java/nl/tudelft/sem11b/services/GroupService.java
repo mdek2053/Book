@@ -15,12 +15,10 @@ public interface GroupService {
 
     List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups);
 
-    GroupModel addGroup(String name, UserModel secretary, List<Long> groupMembers)
+    GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException;
 
-    void verifyUsers(List<Long> groupMembers) throws InvalidGroupCredentialsException;
-
-    GroupModel getGroupInfo(int groupId) throws InvalidGroupCredentialsException;
+    GroupModel getGroupInfo(Long groupId) throws InvalidGroupCredentialsException;
 
     void addGroupMembers(List<Long> users, GroupModel group)
             throws InvalidGroupCredentialsException;

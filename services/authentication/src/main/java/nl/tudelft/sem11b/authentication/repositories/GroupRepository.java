@@ -10,10 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GroupRepository extends JpaRepository<Group, Integer> {
 
-    Optional<GroupModel> findGroupByGroupId(int groupId);   //Find group by specific group id
+    Optional<Group> findGroupByGroupId(Long groupId);   //Find group by specific group id
 
-    Optional<List<GroupModel>> findAllByGroupIdExists();     //Find all existing groups
-
-    Optional<List<GroupModel>> findGroupsBySecretary(User secretary); //Find groups of a secretary
+    Optional<List<Group>> findGroupsBySecretary(User secretary); //Find groups of a secretary
 
 }

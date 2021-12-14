@@ -5,9 +5,9 @@ import java.util.Objects;
 
 public class GroupModel {
 
-    private int groupId;
+    private Long groupId;
     private String name;
-    private UserModel secretary;
+    private Long secretary;
     private List<Long> groupMembers;
 
     /**
@@ -18,7 +18,7 @@ public class GroupModel {
      * @param groupMembers of type List, contains a list of users who are part of the group.
      * @param groupId      contains the groupId.
      */
-    public GroupModel(String name, UserModel secretary, List<Long> groupMembers, int groupId) {
+    public GroupModel(String name, Long secretary, List<Long> groupMembers, Long groupId) {
         this.name = name;
         this.secretary = secretary;
         this.groupMembers = groupMembers;
@@ -32,17 +32,17 @@ public class GroupModel {
      * @param secretary     of type UserModel, who is the secretary of the group
      * @param groupMembers  of type List, contains a list of users who are part of the group.
      */
-    public GroupModel(String name, UserModel secretary, List<Long> groupMembers) {
+    public GroupModel(String name, Long secretary, List<Long> groupMembers) {
         this.name = name;
         this.secretary = secretary;
         this.groupMembers = groupMembers;
     }
 
-    public int getGroupId() {
+    public Long getGroupId() {
         return groupId;
     }
 
-    public UserModel getSecretary() {
+    public Long getSecretary() {
         return secretary;
     }
 
@@ -54,7 +54,7 @@ public class GroupModel {
         return name;
     }
 
-    public void setSecretary(UserModel secretary) {
+    public void setSecretary(Long secretary) {
         this.secretary = secretary;
     }
 
