@@ -1,25 +1,20 @@
 package nl.tudelft.sem11b.admin.data.controllers;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Optional;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.tudelft.sem11b.admin.services.ServerInteractionHelper;
-import nl.tudelft.sem11b.data.models.ClosureObject;
-import nl.tudelft.sem11b.data.models.RoomModel;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import nl.tudelft.sem11b.admin.data.Closure;
+import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.services.RoomsService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,49 +23,46 @@ import org.springframework.test.web.servlet.MvcResult;
 @WebMvcTest(RoomController.class)
 class RoomControllerTest {
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    RoomController roomController;
+    MockMvc mockMvc;
 
     @MockBean
-    RoomsService rooms;
+    RoomsService roomsService;
 
-    @MockBean
-    ServerInteractionHelper helper;
+    RoomController controller;
+
+    @BeforeEach
+    void initController() {
+        controller = new RoomController(roomsService);
+    }
 
     @Test
     void closeRoom() throws Exception {
-        roomController.setServerInteractionHelper(helper);
+        // arrange
+        ObjectMapper mapper = new JsonMapper();
+        Closure closure = new Closure("blue ball machine broke",
+                new ApiDate(2021, 9, 1),
+                new ApiDate(2021, 9, 13));
 
-        ClosureObject closure = new ClosureObject("a banana fell",
-                "2021-09-20", "2021-09-21");
-
-        doNothing().when(helper).verifyUserAdmin("foo");
-        when(rooms.getRoom(1)).thenReturn(Optional.of(new RoomModel(1,
-                "", "", 1, null)));
-        doNothing().when(rooms).closeRoom(1, closure);
-
+        // action
         MvcResult mvcResult = mockMvc.perform(post("/room/1/closure")
-                        .header("Authorization", "foo")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(closure)))
+                        .content(mapper.writeValueAsString(closure.toModel())))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
+
+        // assert
+        verify(roomsService, times(1)).closeRoom(1, closure.toModel());
     }
 
     @Test
     void reopenRoom() throws Exception {
-        roomController.setServerInteractionHelper(helper);
-
-        doNothing().when(helper).verifyUserAdmin("foo");
-        when(rooms.getRoom(1)).thenReturn(Optional.of(new RoomModel(1,
-                "", "", 1, null)));
-        doNothing().when(rooms).reopenRoom(1);
-
-        MvcResult mvcResult = mockMvc.perform(delete("/room/1/closure")
-                        .header("Authorization", "foo"))
+        // action
+        MvcResult mvcResult = mockMvc.perform(delete("/room/1/closure"))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
+
+        // assert
+        verify(roomsService, times(1)).reopenRoom(1);
     }
+
 }
