@@ -1,7 +1,9 @@
 package nl.tudelft.sem11b.services;
 
+import java.util.Map;
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.PageData;
@@ -36,6 +38,10 @@ public interface RoomsService {
      */
     PageData<RoomStudModel> listRooms(PageIndex page, long building)
         throws ApiException, EntityNotFound;
+
+
+    PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues)
+            throws ApiException, EntityNotFound, InvalidFilterException;
 
     /**
      * Gets all information about a room with the given unique numeric identifier.

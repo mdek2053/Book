@@ -1,16 +1,26 @@
 package nl.tudelft.sem11b.admin.services;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.admin.data.entities.Room;
+import nl.tudelft.sem11b.admin.data.exceptions.FilterException;
+import nl.tudelft.sem11b.admin.data.filters.BaseFilter;
+import nl.tudelft.sem11b.admin.data.filters.CapacityFilter;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
+import nl.tudelft.sem11b.data.exception.InvalidFilterException;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.services.RoomsService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +47,37 @@ public class RoomsServiceImpl implements RoomsService {
 
         return new PageData<>(rooms.findAllByBuildingId(building, page.getPage(Sort.by("id")))
             .map(Room::toStudModel));
+    }
+
+    @Override
+    public PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues) throws ApiException, EntityNotFound, InvalidFilterException {
+
+        BaseFilter chain = setupChain(filterValues);
+
+        Page<Room> roomPage = rooms.findAll(page.getPage(Sort.by("id")));
+        List<RoomStudModel> filteredRooms = new ArrayList<RoomStudModel>();
+        for(Room room : roomPage){
+            if(chain.handle(room)) {
+                filteredRooms.add(room.toStudModel());
+            }
+        }
+
+        return new PageData<RoomStudModel>(filteredRooms.size(), filteredRooms);
+    }
+
+    private BaseFilter setupChain(Map<String, Object> filterValues) throws InvalidFilterException {
+        BaseFilter head = new BaseFilter();
+        BaseFilter tail = head;
+        if(filterValues.containsKey("capacity")){
+            try {
+                BaseFilter filter = new CapacityFilter((Integer)filterValues.get("capacity"))
+                tail.setNext(filter);
+                tail = filter;
+            } catch (Exception e) {
+                throw new InvalidFilterException("Invalid capacity filter!");
+            }
+        }
+        return head;
     }
 
     @Override

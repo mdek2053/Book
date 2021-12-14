@@ -98,6 +98,10 @@ public class Room {
         return building;
     }
 
+    public int getCapacity() {
+        return capacity;
+    }
+
     /**
      * Converts the entity into its equivalent stud (partial) model.
      *
