@@ -1,26 +1,16 @@
 package nl.tudelft.sem11b.admin.data.controllers;
 
-import java.text.ParseException;
 import java.util.Optional;
 
-import nl.tudelft.sem11b.admin.services.ServerInteractionHelper;
-import nl.tudelft.sem11b.data.exception.CommunicationException;
-import nl.tudelft.sem11b.data.exception.UnauthorizedException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.ClosureObject;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.services.RoomsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,8 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class RoomController {
     private final RoomsService rooms;
 
-    private ServerInteractionHelper serverInteractionHelper = new ServerInteractionHelper();
-
     /**
      * Instantiates the {@link RoomController} class.
      *
@@ -42,10 +30,6 @@ public class RoomController {
     @Autowired
     public RoomController(RoomsService rooms) {
         this.rooms = rooms;
-    }
-
-    public void setServerInteractionHelper(ServerInteractionHelper serverInteractionHelper) {
-        this.serverInteractionHelper = serverInteractionHelper;
     }
 
     /**
@@ -61,7 +45,11 @@ public class RoomController {
         @RequestParam Optional<Integer> limit) {
         var index = PageIndex.fromQuery(page, limit);
 
-        return rooms.listRooms(index);
+        try {
+            return rooms.listRooms(index);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
     }
 
     /**
@@ -81,7 +69,7 @@ public class RoomController {
 
         try {
             return rooms.listRooms(index, id);
-        } catch (EntityNotFound e) {
+        } catch (ServiceException e) {
             throw e.toResponseException();
         }
     }
@@ -94,7 +82,13 @@ public class RoomController {
      */
     @GetMapping("/rooms/{id}")
     public RoomModel getRoom(@PathVariable int id) {
-        var room = rooms.getRoom(id);
+        Optional<RoomModel> room;
+        try {
+            room = rooms.getRoom(id);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
+
         if (room.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found!");
         }

@@ -34,7 +34,7 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public PageData<RoomStudModel> listRooms(PageIndex page, int building) throws EntityNotFound {
+    public PageData<RoomStudModel> listRooms(PageIndex page, long building) throws EntityNotFound {
         if (!buildings.existsById(building)) {
             throw new EntityNotFound("Building");
         }
@@ -44,7 +44,7 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public Optional<RoomModel> getRoom(int id) {
+    public Optional<RoomModel> getRoom(long id) {
         return rooms.findById(id).map(Room::toModel);
     }
 

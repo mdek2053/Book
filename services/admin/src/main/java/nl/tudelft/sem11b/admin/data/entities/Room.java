@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import nl.tudelft.sem11b.admin.data.Closure;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 
@@ -21,7 +22,7 @@ import nl.tudelft.sem11b.data.models.RoomStudModel;
 @Table(indexes = {@Index(columnList = "suffix, building_id", unique = true)})
 public class Room {
     @Id @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
     @Column(name = "suffix", nullable = false)
     private String suffix;
     @Column(name = "name", nullable = false)
@@ -132,6 +133,6 @@ public class Room {
      */
     public RoomModel toModel() {
         return new RoomModel(id, suffix, name, capacity,
-            building.toModel(), closure == null ? null : closure.toModel());
+            building.toModel(), new EquipmentModel[0], closure == null ? null : closure.toModel());
     }
 }

@@ -8,8 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.models.ReservationModel;
+
 @Entity
-@Table(name = "reservation")
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,6 +35,34 @@ public class Reservation {
 
     @Column(name = "cancel")
     private String cancelReason;
+
+    public long getId() {
+        return id;
+    }
+
+    public long getRoomId() {
+        return roomId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Timestamp getSince() {
+        return since;
+    }
+
+    public Timestamp getUntil() {
+        return until;
+    }
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
 
     public Reservation() {
     }
@@ -73,6 +103,10 @@ public class Reservation {
         this.since = since;
         this.until = until;
         this.cancelReason = null;
+    }
+
+    public ReservationModel toModel() {
+        return new ReservationModel(id, ApiDateTime.from(since), ApiDateTime.from(until), title);
     }
 
     @Override
@@ -121,7 +155,23 @@ public class Reservation {
                 + '}';
     }
 
-    public long getId() {
-        return id;
+    public void setRoomId(long roomId) {
+        this.roomId = roomId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSince(Timestamp since) {
+        this.since = since;
+    }
+
+    public void setUntil(Timestamp until) {
+        this.until = until;
     }
 }

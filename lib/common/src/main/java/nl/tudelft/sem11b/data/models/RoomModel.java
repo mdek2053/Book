@@ -1,47 +1,57 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 /**
  * Holds all room information.
  */
 public class RoomModel {
-    private final int id;
-    private final String suffix;
-    private final String name;
-    private final int capacity;
-    private final BuildingModel building;
-    private final ClosureModel closure;
+    private long id;
+    private String suffix;
+    private String name;
+    private int capacity;
+    private BuildingModel building;
+    private EquipmentModel[] equipment;
+    private ClosureModel closure;
 
     /**
      * Instantiates the {@link RoomModel} class.
      *
-     * @param id Unique numeric identifier of the room
-     * @param suffix Room suffix
-     * @param name Room name
+     * @param id       Unique numeric identifier of the room
+     * @param suffix   Room suffix
+     * @param name     Room name
      * @param capacity Room maximal capacity
      * @param building The building information object
-     * @param closure The room closure (if any)
+     * @param closure  The room closure (if any)
      */
-    public RoomModel(int id, String suffix, String name, int capacity,
-                     BuildingModel building, ClosureModel closure) {
+    public RoomModel(long id, String suffix, String name, int capacity,
+                     BuildingModel building, EquipmentModel[] equipment, ClosureModel closure) {
         this.id = id;
         this.suffix = suffix;
         this.name = name;
         this.capacity = capacity;
         this.building = building;
+        this.equipment = equipment;
         this.closure = closure;
     }
 
     /**
      * Instantiates the {@link RoomModel} class without closure.
      *
-     * @param id Unique numeric identifier of the room
-     * @param suffix Room suffix
-     * @param name Room name
+     * @param id       Unique numeric identifier of the room
+     * @param suffix   Room suffix
+     * @param name     Room name
      * @param capacity Room maximal capacity
      * @param building The building information object
      */
-    public RoomModel(int id, String suffix, String name, int capacity, BuildingModel building) {
-        this(id, suffix, name,capacity, building, null);
+    public RoomModel(long id, String suffix, String name, int capacity,
+                     BuildingModel building, EquipmentModel[] equipment) {
+        this(id, suffix, name, capacity, building, equipment, null);
+    }
+
+    private RoomModel() {
+        // default constructor for model materialization
     }
 
     /**
@@ -49,7 +59,7 @@ public class RoomModel {
      *
      * @return ID of the room
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -87,6 +97,10 @@ public class RoomModel {
      */
     public BuildingModel getBuilding() {
         return building;
+    }
+
+    public Stream<EquipmentModel> getEquipment() {
+        return Arrays.stream(equipment);
     }
 
     /**
