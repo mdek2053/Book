@@ -166,6 +166,26 @@ public class Building {
     }
 
     /**
+     * Creates a building object.
+     *
+     * @param id       building's id
+     * @param prefix   prefix of building
+     * @param name     name of building
+     * @param opening  time the building opens
+     * @param closing  time the building closes
+     * @param rooms    rooms contained in the building
+     */
+    public Building(long id, String prefix, String name,
+                    ApiTime opening, ApiTime closing, Set<Room> rooms) {
+        this.id = id;
+        this.prefix = prefix;
+        this.name = name;
+        this.opening = opening;
+        this.closing = closing;
+        this.rooms = rooms;
+    }
+
+    /**
      * Converts the building entity into its equivalent model.
      *
      * @return Building model
