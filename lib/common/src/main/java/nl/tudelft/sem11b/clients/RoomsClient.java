@@ -5,11 +5,13 @@ import java.util.Optional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.http.ApiClient;
+import nl.tudelft.sem11b.http.ApiResponse;
 import nl.tudelft.sem11b.http.Authenticated;
 import nl.tudelft.sem11b.services.ReservationService;
 import nl.tudelft.sem11b.services.RoomsService;
@@ -54,5 +56,24 @@ public class RoomsClient implements RoomsService {
     @Override
     public Optional<RoomModel> getRoom(long id) throws ApiException {
         return api.get("/rooms/" + id, new TypeReference<RoomModel>() {}).toOptional();
+    }
+
+    @Override
+    public void closeRoom(long id, ClosureModel closure) throws ApiException {
+        var response = api.post("/rooms/" + id + "/closure",
+                closure, new TypeReference<>() {});
+
+        if (!response.isSuccessful()) {
+            throw response.getError();
+        }
+    }
+
+    @Override
+    public void reopenRoom(long id) throws ApiException {
+        var response = api.delete("/rooms/" + id + "/closure");
+
+        if (!response.isSuccessful()) {
+            throw response.getError();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.data;
 
+import java.util.Objects;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -98,4 +99,25 @@ public class Closure {
     public ClosureModel toModel() {
         return new ClosureModel(reason, since, until);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Closure)) {
+            return false;
+        }
+
+        Closure closure = (Closure) o;
+
+        if (!Objects.equals(reason, closure.reason)) {
+            return false;
+        }
+        if (!Objects.equals(since, closure.since)) {
+            return false;
+        }
+        return Objects.equals(until, closure.until);
+    }
+
 }

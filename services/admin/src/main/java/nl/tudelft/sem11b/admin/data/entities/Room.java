@@ -90,12 +90,50 @@ public class Room {
     }
 
     /**
+     * Sets the room closed.
+     *
+     * @param closure Closure object
+     */
+    public void setClosure(Closure closure) {
+        this.closure = closure;
+    }
+
+    /**
+     * Gets the closure..
+     *
+     * @return Closure object
+     */
+    public Closure getClosure() {
+        return closure;
+    }
+
+    /**
      * Gets the entity of the parent building.
      *
      * @return Parent building
      */
     public Building getBuilding() {
         return building;
+    }
+
+    /**
+     * Constructs a room object.
+     *
+     * @param id        the room's id
+     * @param suffix    the suffix of the room
+     * @param name      name of the room
+     * @param capacity  capacity
+     * @param closure   object which specifies the closure, or null if open
+     * @param building  object representing the building the room is part of
+     */
+    public Room(long id, String suffix, String name, int capacity,
+                Closure closure, Building building) {
+        this.id = id;
+        this.suffix = suffix;
+        this.name = name;
+        this.capacity = capacity;
+        this.closure = closure;
+        this.building = building;
     }
 
     /**

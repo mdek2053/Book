@@ -5,14 +5,19 @@ import java.util.Optional;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
+import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.services.RoomsService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -95,5 +100,27 @@ public class RoomController {
         }
 
         return room.get();
+    }
+
+    /**
+     * Changes or adds a room closure.
+     *
+     * @param id      ID of the room being modified
+     * @param closure closure information
+     */
+    @PostMapping("/room/{id}/closure")
+    public void closeRoom(@PathVariable int id, @RequestBody ClosureModel closure)
+            throws EntityNotFound, ApiException {
+        rooms.closeRoom(id, closure);
+    }
+
+    /**
+     * Removes a room closure, i.e. reopens the room.
+     *
+     * @param id ID of room to reopen
+     */
+    @DeleteMapping("/room/{id}/closure")
+    public void reopenRoom(@PathVariable int id) throws EntityNotFound, ApiException {
+        rooms.reopenRoom(id);
     }
 }

@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
@@ -45,4 +46,20 @@ public interface RoomsService {
      * @throws ApiException Thrown when a remote API encountered an error
      */
     Optional<RoomModel> getRoom(long id) throws ApiException;
+
+    /**
+     * Adds a closure to a room. The user making the change must have admin rights.
+     *
+     * @param id       The id of the room that is modified.
+     * @param closure  Object containing information about the closure.
+     * @throws ApiException Thrown when a remote API encountered an error
+     */
+    void closeRoom(long id, ClosureModel closure) throws ApiException, EntityNotFound;
+
+    /**
+     * Removes any existing closure from a room. The user making the change must have admin rights.
+     *
+     * @param id The id of the room that is modified.
+     */
+    void reopenRoom(long id) throws EntityNotFound, ApiException;
 }
