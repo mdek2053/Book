@@ -49,10 +49,10 @@ class GroupServiceTest {
     User user3 = new User(3L, "User3", "employee", "abc2");
     User user4 = new User(4L, "User4", "employee", "abc3");
 
-    UserModel userModel1 = new UserModel(1L, "User", "employee", "abc");
-    UserModel userModel2 = new UserModel(2L, "User2", "employee", "abc1");
-    UserModel userModel3 = new UserModel(3L, "User3", "employee", "abc2");
-    UserModel userModel4 = new UserModel(4L, "User4", "employee", "abc3");
+    UserModel userModel1 = new UserModel(1L, "User", new String[1]);
+    UserModel userModel2 = new UserModel(2L, "User2", new String[1]);
+    UserModel userModel3 = new UserModel(3L, "User3", new String[1]);
+    UserModel userModel4 = new UserModel(4L, "User4", new String[1]);
 
     List<Long> users1 = new ArrayList<>();
     List<Long> users2 = new ArrayList<>();
@@ -98,10 +98,10 @@ class GroupServiceTest {
     @Test
     void addGroupNoPreviousGroupId() throws InvalidGroupCredentialsException,
         ApiException {
-        when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(userModel1));
-        GroupModel group = new GroupModel("group", userModel1, users1, 0);
-        Group groupSaved = new Group(group.getName(), new User(userModel1.getNetId(),
-                userModel1.getRole(), passwordEncoder.encode(userModel1.getPassword())),
+        when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(user1));
+        GroupModel group = new GroupModel("name", userModel1, users1);
+        Group groupSaved = new Group(group.getName(), new User(user1.getNetId(),
+                user1.getRole(), passwordEncoder.encode(user1.getPassword())),
                 group.getGroupMembers(), group.getGroupId());
         assertEquals(group, groupService.addGroup("group", userModel1, users1));
         verify(groupRepository, times(1)).save(groupSaved);

@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
      */
     @Override
     public UserDetails loadUserByUsername(String netId) throws UsernameNotFoundException {
-        Optional<UserModel> user = userRepository.findUserByNetId(netId);
+        Optional<User> user = userRepository.findUserByNetId(netId);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("No such user exists.");
         }
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public UserModel currentUser() throws ApiException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String netId = auth.getPrincipal().toString();
-        Optional<UserModel> user = userRepository.findUserByNetId(netId);
+        Optional<User> user = userRepository.findUserByNetId(netId);
         if (user.isPresent()) {
             return user.get().toModel();
         } else {

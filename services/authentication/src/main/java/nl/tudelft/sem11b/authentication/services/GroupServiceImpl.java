@@ -75,15 +75,16 @@ public class GroupServiceImpl implements GroupService {
      * @return a list of groups for which the provided user is a secretary.
      */
     public List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups) {
-        User userNew = new User(user.getNetId(), user.getRole(),
-                passwordEncoder.encode(user.getPassword()));
-        Optional<List<GroupModel>> groupList = groupRepository.findGroupsBySecretary(userNew);
+        Optional<User> secretary = userRepository.findUserByNetId(user.getLogin());
+        if (secretary.isPresent()) {
+            Optional<List<GroupModel>> groupList = groupRepository.findGroupsBySecretary(secretary.get());
 
-        if (groupList.isPresent()) {
-            List<GroupModel> secretaryGroups = groupList.get();
-            for (GroupModel group : secretaryGroups) {
-                if (!groups.contains(group)) {
-                    groups.add(group);
+            if (groupList.isPresent()) {
+                List<GroupModel> secretaryGroups = groupList.get();
+                for (GroupModel group : secretaryGroups) {
+                    if (!groups.contains(group)) {
+                        groups.add(group);
+                    }
                 }
             }
         }
@@ -110,10 +111,14 @@ public class GroupServiceImpl implements GroupService {
      */
     public GroupModel addGroup(String name, UserModel secretary, List<Long> groupMembers)
             throws ApiException, InvalidGroupCredentialsException {
+        User tempSecretary;
         if (secretary == null) {
             UserModel secretaryModel;
             secretaryModel = userService.currentUser();
-            secretary = userRepository.findUserByNetId(secretaryModel.getLogin()).get();
+            tempSecretary = userRepository.findUserByNetId(secretaryModel.getLogin()).get();
+            secretary = tempSecretary.toModel();
+        } else {
+            tempSecretary = userRepository.findUserByNetId(secretary.getLogin()).get();
         }
         try {
             verifyUsers(groupMembers);
@@ -121,8 +126,7 @@ public class GroupServiceImpl implements GroupService {
             throw new InvalidGroupCredentialsException("At least one provided member "
                     + "is not registered in the system yet");
         }
-        Group group = new Group(name, new User(secretary.getNetId(), secretary.getRole(),
-                passwordEncoder.encode(secretary.getPassword())), groupMembers);
+        Group group = new Group(name, tempSecretary, groupMembers);
         saveGroup(group);
         return new GroupModel(group.getName(), secretary, groupMembers);
     }
@@ -136,7 +140,7 @@ public class GroupServiceImpl implements GroupService {
      */
     public void verifyUsers(List<Long> groupMembers) throws InvalidGroupCredentialsException {
         for (Long member : groupMembers) {
-            Optional<UserModel> user = userRepository.findUserById(member);
+            Optional<User> user = userRepository.findUserById(member);
             if (user.isEmpty()) {
                 throw new InvalidGroupCredentialsException("At least one of the provided users "
                         + "is not registered in the system");
