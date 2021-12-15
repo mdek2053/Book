@@ -41,26 +41,6 @@ public class Building {
     @OneToMany(mappedBy = "building")
     private Set<Room> rooms;
 
-    /**
-     * Constructor for Building with all fields.
-     *
-     * @param id        The building id
-     * @param prefix    The building prefix
-     * @param name      The name of the building
-     * @param opening   The opening time of the building
-     * @param closing   The closing time of the building
-     * @param rooms     The set of rooms in the building
-     */
-    public Building(long id, String prefix, String name, ApiTime opening, ApiTime closing,
-                    Set<Room> rooms) {
-        this.id = id;
-        this.prefix = prefix;
-        this.name = name;
-        this.opening = opening;
-        this.closing = closing;
-        this.rooms = rooms;
-    }
-
     public Building() {
 
     }

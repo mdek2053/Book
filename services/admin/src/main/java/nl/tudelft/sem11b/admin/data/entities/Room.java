@@ -32,25 +32,6 @@ public class Room {
     @Embedded
     private Closure closure;
 
-    /**
-     * Constructor for Room with all fields.
-     * @param id        The room id
-     * @param suffix    The suffix of the room
-     * @param name      The name of the room
-     * @param capacity  The capacity of the room
-     * @param closure   The closure of the room
-     * @param building  The building
-     */
-    public Room(long id, String suffix, String name, int capacity, Closure closure,
-                Building building) {
-        this.id = id;
-        this.suffix = suffix;
-        this.name = name;
-        this.capacity = capacity;
-        this.closure = closure;
-        this.building = building;
-    }
-
     public Room() {
 
     }
