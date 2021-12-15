@@ -183,8 +183,7 @@ public class ReservationServiceImpl implements ReservationService {
      * @return a boolean value whether the current user has the correct rights
      * @throws ApiException Thrown when a remote API encountered an error
      */
-    @Override
-    public boolean verifySecretary(Long getForUser) throws ApiException {
+    private boolean verifySecretary(Long getForUser) throws ApiException {
         List<GroupModel> groupList =
                 groups.getGroupsOfSecretary(users.currentUser(), new ArrayList<>());
         for (GroupModel groupModel : groupList) {
@@ -204,8 +203,13 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void editReservation(long reservationId, String title, ApiDateTime since,
-                                ApiDateTime until)
+                                ApiDateTime until, Long forUser)
             throws ApiException, EntityNotFound, InvalidData {
+        if (forUser != null) {
+            if (!verifySecretary(forUser)) {
+                return;
+            }
+        }
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {

@@ -94,7 +94,8 @@ class ReservationControllerTest {
         String response = mvcResult.getResponse().getContentAsString();
 
         // assert
-        var page = mapper.readValue(response, new TypeReference<PageData<ReservationModel>>() {});
+        var page = mapper.readValue(response,
+                new TypeReference<PageData<ReservationModel>>() {});
         assertEquals(Optional.of(subject), page.getData().findFirst());
     }
 
@@ -104,7 +105,7 @@ class ReservationControllerTest {
 
         // arrange
         doNothing().when(reservationService).editReservation(
-            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil());
+            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil(), null);
         var req = new ReservationRequestModel(
             subject.getRoomId(), subject.getTitle() + "!",
             subject.getSince(), subject.getUntil(), null);
@@ -118,7 +119,7 @@ class ReservationControllerTest {
 
         // assert
         verify(reservationService, times(1)).editReservation(
-            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil());
+            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil(), null);
     }
 
 }

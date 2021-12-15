@@ -200,7 +200,7 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(EntityNotFound.class, () -> service.editReservation(
             id, reservationModel.getTitle(),
-            reservationModel.getSince(), reservationModel.getUntil()));
+            reservationModel.getSince(), reservationModel.getUntil(), null));
     }
 
     @Test
@@ -244,7 +244,8 @@ class ReservationServiceImplTest {
 
 
         // action
-        service.editReservation(reservation.getId(), reservationModel.getTitle() + "!", null, null);
+        service.editReservation(reservation.getId(), reservationModel.getTitle() + "!",
+                null, null, null);
 
         // assert
         final var entity = captor.getValue();

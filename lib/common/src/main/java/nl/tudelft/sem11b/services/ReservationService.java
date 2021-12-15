@@ -48,14 +48,6 @@ public interface ReservationService {
                              ApiDateTime since, ApiDateTime until)
             throws ApiException, EntityNotFound, InvalidGroupCredentialsException, InvalidData;
 
-    /**
-     * Verifies whether the current user is a secretary of the provided user.
-     *
-     * @param forUser Id of user for whom the specific reservation is
-     * @return boolean value of whether the current user has the correct rights
-     * @throws ApiException Thrown when a remote API encountered an error
-     */
-    boolean verifySecretary(Long forUser) throws ApiException;
 
     /**
      * Lists a page of reservations created by/for the current user.
@@ -81,6 +73,7 @@ public interface ReservationService {
      * @throws EntityNotFound Thrown when the given reservation was not found
      * @throws InvalidData    Thrown when the given data is invalid
      */
-    void editReservation(long reservationId, String title, ApiDateTime since, ApiDateTime until)
+    void editReservation(long reservationId, String title, ApiDateTime since,
+                         ApiDateTime until, Long forUser)
             throws ApiException, EntityNotFound, InvalidData;
 }

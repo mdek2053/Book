@@ -109,20 +109,20 @@ public class ReservationController {
 
         if (req.getForUser() != null) {
             try {
-                if (reservationService.verifySecretary(req.getForUser())) {
-                    reservationService.editReservation(id, req.getTitle(),
-                            req.getSince(), req.getUntil());
-                }
+                reservationService.editReservation(id, req.getTitle(),
+                            req.getSince(), req.getUntil(), req.getForUser());
             } catch (ServiceException ex) {
                 throw ex.toResponseException();
             }
         } else {
             try {
                 reservationService.editReservation(id, req.getTitle(),
-                        req.getSince(), req.getUntil());
+                        req.getSince(), req.getUntil(), null);
             } catch (ServiceException ex) {
                 throw ex.toResponseException();
             }
         }
     }
+
+
 }
