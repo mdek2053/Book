@@ -1,7 +1,9 @@
 package nl.tudelft.sem11b.admin.data.controllers;
 
+import java.util.Map;
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
@@ -72,6 +74,27 @@ public class RoomController {
             return rooms.listRooms(index, id);
         } catch (ServiceException e) {
             throw e.toResponseException();
+        }
+    }
+
+    @GetMapping("/rooms/filter")
+    public PageData<RoomStudModel> searchRooms(
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<Integer> limit,
+            @RequestParam Optional<Map<String, Object>> filters) {
+        var index = PageIndex.fromQuery(page, limit);
+
+        if(filters.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "filters not provided!");
+        }
+
+        try {
+            return rooms.searchRooms(index, filters.get());
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        } catch (InvalidFilterException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
