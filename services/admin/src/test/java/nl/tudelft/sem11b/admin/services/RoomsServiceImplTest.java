@@ -1,31 +1,54 @@
 package nl.tudelft.sem11b.admin.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Building;
+import nl.tudelft.sem11b.admin.data.entities.Fault;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
+import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiTime;
+import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.FaultRequestModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.UserService;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
 class RoomsServiceImplTest {
@@ -35,6 +58,9 @@ class RoomsServiceImplTest {
 
     @Mock
     RoomRepository rooms;
+
+    @Mock
+    FaultRepository faults;
 
     @Mock
     UserService users;
@@ -64,7 +90,7 @@ class RoomsServiceImplTest {
 
     @BeforeEach
     void initService() {
-        service = new RoomsServiceImpl(buildings, rooms, users);
+        service = new RoomsServiceImpl(buildings, rooms, faults, users);
     }
 
     @Test
@@ -194,15 +220,15 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsNoFilterTest() {
         List<RoomStudModel> models = List.of(room1StudModel);
-        PageData<RoomStudModel> expected = new PageData<RoomStudModel>(1, models);
-        Map<String, Object> filters = new HashMap<String, Object>();
+        PageData<RoomStudModel> expected = new PageData<>(1, models);
+        Map<String, Object> filters = new HashMap<>();
         PageIndex index = new PageIndex(0, 10);
 
         when(rooms.findAll(index.getPage(Sort.by("id"))))
-                .thenReturn(new PageImpl<Room>(List.of(room1)));
+                .thenReturn(new PageImpl<>(List.of(room1)));
 
         try {
-            Assert.assertEquals(expected, service.searchRooms(index, filters));
+            assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -210,14 +236,13 @@ class RoomsServiceImplTest {
 
     @Test
     public void searchRoomsInvalidCapacityFilterTest() {
-        Map<String, Object> filters = new HashMap<String, Object>();
+        Map<String, Object> filters = new HashMap<>();
         filters.put("capacity", "String");
 
         PageIndex index = new PageIndex(0, 10);
 
-        Assert.assertThrows(InvalidFilterException.class, () -> {
-            service.searchRooms(index, filters);
-        });
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
     }
 
     @Test
@@ -233,7 +258,7 @@ class RoomsServiceImplTest {
                 .thenReturn(new PageImpl<>(List.of(room1, room2)));
 
         try {
-            Assert.assertEquals(expected, service.searchRooms(index, filters));
+            assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -241,35 +266,32 @@ class RoomsServiceImplTest {
 
     @Test
     public void searchRoomsInvalidBuildingFilterTest() {
-        Map<String, Object> filters = new HashMap<String, Object>();
+        Map<String, Object> filters = new HashMap<>();
         filters.put("building", "String");
 
         PageIndex index = new PageIndex(0, 10);
 
-        Assert.assertThrows(InvalidFilterException.class, () -> {
-            service.searchRooms(index, filters);
-        });
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
     }
 
     @Test
     public void searchRoomsNonExistentBuildingFilterTest() {
-        Map<String, Object> filters = new HashMap<String, Object>();
+        Map<String, Object> filters = new HashMap<>();
         filters.put("building", 3L);
 
         when(buildings.existsById(3L)).thenReturn(false);
 
         PageIndex index = new PageIndex(0, 10);
 
-        Assert.assertThrows(EntityNotFound.class, () -> {
-            service.searchRooms(index, filters);
-        });
+        Assert.assertThrows(EntityNotFound.class, () -> service.searchRooms(index, filters));
     }
 
     @Test
     public void searchRoomsBuildingFilterTest() {
         List<RoomStudModel> models = List.of(room1StudModel, room2StudModel);
         PageData<RoomStudModel> expected = new PageData<>(2, models);
-        Map<String, Object> filters = new HashMap<String, Object>();
+        Map<String, Object> filters = new HashMap<>();
         filters.put("building", 1L);
 
         PageIndex index = new PageIndex(0, 10);
@@ -281,7 +303,7 @@ class RoomsServiceImplTest {
                 .thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
 
         try {
-            Assert.assertEquals(expected, service.searchRooms(index, filters));
+            assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -291,7 +313,7 @@ class RoomsServiceImplTest {
     public void searchRoomsTwoFiltersTest() {
         List<RoomStudModel> models = List.of(room2StudModel);
         PageData<RoomStudModel> expected = new PageData<>(1, models);
-        Map<String, Object> filters = new HashMap<String, Object>();
+        Map<String, Object> filters = new HashMap<>();
         filters.put("capacity", 40);
         filters.put("building", 1L);
 
@@ -304,7 +326,7 @@ class RoomsServiceImplTest {
                 .thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
 
         try {
-            Assert.assertEquals(expected, service.searchRooms(index, filters));
+            assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
             e.printStackTrace();
         }
