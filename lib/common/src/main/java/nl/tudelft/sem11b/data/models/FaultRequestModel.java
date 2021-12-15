@@ -1,5 +1,9 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Objects;
+
+import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+
 /**
  * Model used to create fault reports.
  */
@@ -25,7 +29,34 @@ public class FaultRequestModel {
         return description;
     }
 
-    private FaultRequestModel() {
-        // default constructor for model materialization
+    public FaultRequestModel() {
+    }
+
+    /**
+     * Instantiates the {@link FaultRequestModel} class.
+     *
+     * @param reservationId ID of the reservation during which the fault was observed
+     * @param description   description of the fault
+     */
+    public FaultRequestModel(long reservationId, String description) {
+        this.reservationId = reservationId;
+        this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof FaultRequestModel)) {
+            return false;
+        }
+
+        FaultRequestModel that = (FaultRequestModel) o;
+
+        if (reservationId != that.reservationId) {
+            return false;
+        }
+        return Objects.equals(description, that.description);
     }
 }

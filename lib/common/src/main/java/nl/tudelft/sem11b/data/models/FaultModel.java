@@ -1,5 +1,7 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Objects;
+
 /**
  * Holds information about a reported room fault.
  */
@@ -43,4 +45,28 @@ public class FaultModel {
     public long getRoomId() {
         return roomId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof FaultModel)) {
+            return false;
+        }
+
+        FaultModel that = (FaultModel) o;
+
+        if (id != that.id) {
+            return false;
+        }
+        if (reporter != that.reporter) {
+            return false;
+        }
+        if (roomId != that.roomId) {
+            return false;
+        }
+        return Objects.equals(description, that.description);
+    }
+
 }

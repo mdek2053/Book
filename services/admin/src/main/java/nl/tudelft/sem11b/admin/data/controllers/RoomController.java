@@ -180,7 +180,7 @@ public class RoomController {
         try {
             rooms.addFault(id, fault);
         } catch (ServiceException e) {
-            e.toResponseException();
+            throw e.toResponseException();
         }
     }
 

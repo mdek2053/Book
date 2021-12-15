@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import nl.tudelft.sem11b.data.models.FaultModel;
+import nl.tudelft.sem11b.data.models.FaultRequestModel;
 import nl.tudelft.sem11b.data.models.FaultStudModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 
@@ -82,5 +84,32 @@ public class Fault {
 
     public FaultStudModel toStudModel() {
         return new FaultStudModel(id, reporter, description);
+    }
+
+    public FaultRequestModel toRequestModel() {
+        return new FaultRequestModel(id, description);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Fault)) {
+            return false;
+        }
+
+        Fault fault = (Fault) o;
+
+        if (id != fault.id) {
+            return false;
+        }
+        if (reporter != fault.reporter) {
+            return false;
+        }
+        if (!Objects.equals(description, fault.description)) {
+            return false;
+        }
+        return Objects.equals(room, fault.room);
     }
 }
