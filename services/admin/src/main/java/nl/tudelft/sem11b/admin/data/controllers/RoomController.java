@@ -1,16 +1,25 @@
 package nl.tudelft.sem11b.admin.data.controllers;
 
+import java.util.Map;
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.exception.InvalidFilterException;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.exceptions.ServiceException;
+import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.services.RoomsService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -44,7 +53,11 @@ public class RoomController {
         @RequestParam Optional<Integer> limit) {
         var index = PageIndex.fromQuery(page, limit);
 
-        return rooms.listRooms(index);
+        try {
+            return rooms.listRooms(index);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
     }
 
     /**
@@ -64,8 +77,37 @@ public class RoomController {
 
         try {
             return rooms.listRooms(index, id);
-        } catch (EntityNotFound e) {
+        } catch (ServiceException e) {
             throw e.toResponseException();
+        }
+    }
+
+    /**
+     * Lists all rooms that pass the filters.
+     *
+     * @param page Page index (zero-based)
+     * @param limit Maximal size of a page
+     * @param filters The filters and values to be applied
+     * @return Filtered page of rooms
+     */
+    @GetMapping("/rooms/filter")
+    public PageData<RoomStudModel> searchRooms(
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<Integer> limit,
+            @RequestParam Optional<Map<String, Object>> filters) {
+        var index = PageIndex.fromQuery(page, limit);
+
+        if (filters.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "filters not provided!");
+        }
+
+        try {
+            return rooms.searchRooms(index, filters.get());
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        } catch (InvalidFilterException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -77,11 +119,39 @@ public class RoomController {
      */
     @GetMapping("/rooms/{id}")
     public RoomModel getRoom(@PathVariable int id) {
-        var room = rooms.getRoom(id);
+        Optional<RoomModel> room;
+        try {
+            room = rooms.getRoom(id);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
+
         if (room.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found!");
         }
 
         return room.get();
+    }
+
+    /**
+     * Changes or adds a room closure.
+     *
+     * @param id      ID of the room being modified
+     * @param closure closure information
+     */
+    @PostMapping("/room/{id}/closure")
+    public void closeRoom(@PathVariable int id, @RequestBody ClosureModel closure)
+            throws EntityNotFound, ApiException {
+        rooms.closeRoom(id, closure);
+    }
+
+    /**
+     * Removes a room closure, i.e. reopens the room.
+     *
+     * @param id ID of room to reopen
+     */
+    @DeleteMapping("/room/{id}/closure")
+    public void reopenRoom(@PathVariable int id) throws EntityNotFound, ApiException {
+        rooms.reopenRoom(id);
     }
 }

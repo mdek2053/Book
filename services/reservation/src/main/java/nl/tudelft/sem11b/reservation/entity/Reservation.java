@@ -8,6 +8,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.models.ReservationModel;
+
 @Entity
 public class Reservation {
     @Id
@@ -32,6 +35,34 @@ public class Reservation {
 
     @Column(name = "cancel")
     private String cancelReason;
+
+    public long getId() {
+        return id;
+    }
+
+    public long getRoomId() {
+        return roomId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Timestamp getSince() {
+        return since;
+    }
+
+    public Timestamp getUntil() {
+        return until;
+    }
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
 
     public Reservation() {
     }
@@ -72,6 +103,10 @@ public class Reservation {
         this.since = since;
         this.until = until;
         this.cancelReason = null;
+    }
+
+    public ReservationModel toModel() {
+        return new ReservationModel(id, ApiDateTime.from(since), ApiDateTime.from(until), title);
     }
 
     @Override
@@ -118,26 +153,6 @@ public class Reservation {
                 + ", until=" + until
                 + ", cancel_reason='" + cancelReason + '\''
                 + '}';
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public long getRoomId() {
-        return roomId;
-    }
-
-    public Timestamp getSince() {
-        return since;
-    }
-
-    public Timestamp getUntil() {
-        return until;
     }
 
     public void setRoomId(long roomId) {
