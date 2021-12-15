@@ -92,10 +92,16 @@ public class RoomStudModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RoomStudModel that = (RoomStudModel) o;
-        return id == that.id && capacity == that.capacity && suffix.equals(that.suffix) && name.equals(that.name) && Objects.equals(closure, that.closure);
+        return id == that.id && capacity == that.capacity
+                && suffix.equals(that.suffix) && name.equals(that.name)
+                && Objects.equals(closure, that.closure);
     }
 
     @Override
@@ -105,12 +111,12 @@ public class RoomStudModel {
 
     @Override
     public String toString() {
-        return "RoomStudModel{" +
-                "id=" + id +
-                ", suffix='" + suffix + '\'' +
-                ", name='" + name + '\'' +
-                ", capacity=" + capacity +
-                ", closure=" + closure +
-                '}';
+        return "RoomStudModel{"
+                + "id=" + id
+                + ", suffix='" + suffix + '\''
+                + ", name='" + name + '\''
+                + ", capacity=" + capacity
+                + ", closure=" + closure
+                + '}';
     }
 }

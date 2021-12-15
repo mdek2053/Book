@@ -1,16 +1,23 @@
 package nl.tudelft.sem11b.admin.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import nl.tudelft.sem11b.admin.data.entities.Building;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
-import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,11 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -41,8 +43,10 @@ public class RoomsServiceTest {
     @InjectMocks
     RoomsServiceImpl service;
 
-    private final Building building1 = new Building(1, "idk", "drebbelweg", null, null, new HashSet<>());
-    private final Building building2 = new Building(3, "idk", "EWI", null, null, new HashSet<>());
+    private final Building building1 =
+            new Building(1, "idk", "drebbelweg", null, null, new HashSet<>());
+    private final Building building2 =
+            new Building(3, "idk", "EWI", null, null, new HashSet<>());
 
     private final Room room1 = new Room(1, "idk", "PC hall 1", 30, null, building1);
     private final Room room2 = new Room(2,  "idk", "PC hall 2", 50, null, building1);
@@ -54,7 +58,7 @@ public class RoomsServiceTest {
     private final RoomStudModel room3StudModel = room3.toStudModel();
 
     @BeforeEach
-    private void setup(){
+    private void setup() {
         building1.addRoom(room1);
         building1.addRoom(room2);
         building2.addRoom(room3);
@@ -67,7 +71,8 @@ public class RoomsServiceTest {
         Map<String, Object> filters = new HashMap<String, Object>();
         PageIndex index = new PageIndex(0, 10);
 
-        when(roomRepository.findAll(index.getPage(Sort.by("id")))).thenReturn(new PageImpl<Room>(List.of(room1)));
+        when(roomRepository.findAll(index.getPage(Sort.by("id"))))
+                .thenReturn(new PageImpl<Room>(List.of(room1)));
 
         try {
             assertEquals(expected, service.searchRooms(index, filters));
@@ -97,7 +102,8 @@ public class RoomsServiceTest {
 
         PageIndex index = new PageIndex(0, 10);
 
-        when(roomRepository.findAll(index.getPage(Sort.by("id")))).thenReturn(new PageImpl<>(List.of(room1, room2)));
+        when(roomRepository.findAll(index.getPage(Sort.by("id"))))
+                .thenReturn(new PageImpl<>(List.of(room1, room2)));
 
         try {
             assertEquals(expected, service.searchRooms(index, filters));
@@ -144,7 +150,8 @@ public class RoomsServiceTest {
         when(buildingRepository.existsById(1L)).thenReturn(true);
         when(buildingRepository.getById(1L)).thenReturn(building1);
 
-        when(roomRepository.findAll(index.getPage(Sort.by("id")))).thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
+        when(roomRepository.findAll(index.getPage(Sort.by("id"))))
+                .thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
 
         try {
             assertEquals(expected, service.searchRooms(index, filters));
@@ -166,7 +173,8 @@ public class RoomsServiceTest {
         when(buildingRepository.existsById(1L)).thenReturn(true);
         when(buildingRepository.getById(1L)).thenReturn(building1);
 
-        when(roomRepository.findAll(index.getPage(Sort.by("id")))).thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
+        when(roomRepository.findAll(index.getPage(Sort.by("id"))))
+                .thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
 
         try {
             assertEquals(expected, service.searchRooms(index, filters));

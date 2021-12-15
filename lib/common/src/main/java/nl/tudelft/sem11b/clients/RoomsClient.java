@@ -54,7 +54,8 @@ public class RoomsClient implements RoomsService {
     }
 
     @Override
-    public PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues) throws ApiException, EntityNotFound, InvalidFilterException {
+    public PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues)
+            throws ApiException, EntityNotFound, InvalidFilterException {
         return null;
     }
 

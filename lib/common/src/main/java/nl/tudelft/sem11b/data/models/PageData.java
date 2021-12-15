@@ -72,8 +72,12 @@ public class PageData<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PageData<?> pageData = (PageData<?>) o;
         return total == pageData.total && data.equals(pageData.data);
     }
@@ -85,9 +89,9 @@ public class PageData<T> {
 
     @Override
     public String toString() {
-        return "PageData{" +
-                "total=" + total +
-                ", data=" + data +
-                '}';
+        return "PageData{"
+                + "total=" + total
+                + ", data=" + data
+                + '}';
     }
 }

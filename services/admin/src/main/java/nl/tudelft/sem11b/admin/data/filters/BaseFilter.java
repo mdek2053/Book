@@ -10,8 +10,14 @@ public class BaseFilter {
         this.next = next;
     }
 
-    public boolean handle(Room room){
-        if(next == null) {
+    /**
+     * Forwards the room to the next filter in the chain, or returns true if end of chain.
+     *
+     * @param room the room to be filtered
+     * @return the result of the filter method
+     */
+    public boolean handle(Room room) {
+        if (next == null) {
             return true;
         }
         return next.handle(room);

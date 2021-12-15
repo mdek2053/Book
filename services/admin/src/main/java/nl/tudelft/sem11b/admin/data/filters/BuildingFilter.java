@@ -9,6 +9,12 @@ public class BuildingFilter extends BaseFilter {
 
     private Building building;
 
+    /**
+     * Constructor for BuildingFilter, checks whether building actually exists.
+     * @param buildingId    The id of the building
+     * @param buildings     The building repository
+     * @throws EntityNotFound When the building is not in the repository
+     */
     public BuildingFilter(long buildingId, BuildingRepository buildings) throws EntityNotFound {
         if (!buildings.existsById(buildingId)) {
             throw new EntityNotFound("Building");
@@ -18,7 +24,7 @@ public class BuildingFilter extends BaseFilter {
 
     @Override
     public boolean handle(Room room) {
-        if(!room.getBuilding().equals(building)) {
+        if (!room.getBuilding().equals(building)) {
             return false;
         }
 

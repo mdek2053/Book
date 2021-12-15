@@ -41,7 +41,18 @@ public class Building {
     @OneToMany(mappedBy = "building")
     private Set<Room> rooms;
 
-    public Building(long id, String prefix, String name, ApiTime opening, ApiTime closing, Set<Room> rooms) {
+    /**
+     * Constructor for Building with all fields.
+     *
+     * @param id        The building id
+     * @param prefix    The building prefix
+     * @param name      The name of the building
+     * @param opening   The opening time of the building
+     * @param closing   The closing time of the building
+     * @param rooms     The set of rooms in the building
+     */
+    public Building(long id, String prefix, String name, ApiTime opening, ApiTime closing,
+                    Set<Room> rooms) {
         this.id = id;
         this.prefix = prefix;
         this.name = name;
@@ -190,10 +201,18 @@ public class Building {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Building building = (Building) o;
-        return id == building.id && Objects.equals(prefix, building.prefix) && Objects.equals(name, building.name) && Objects.equals(opening, building.opening) && Objects.equals(closing, building.closing) && Objects.equals(rooms, building.rooms);
+        return id == building.id && Objects.equals(prefix, building.prefix)
+                && Objects.equals(name, building.name)
+                && Objects.equals(opening, building.opening)
+                && Objects.equals(closing, building.closing)
+                && Objects.equals(rooms, building.rooms);
     }
 
     @Override

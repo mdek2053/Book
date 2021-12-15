@@ -77,6 +77,14 @@ public class RoomController {
         }
     }
 
+    /**
+     * Lists all rooms that pass the filters.
+     *
+     * @param page Page index (zero-based)
+     * @param limit Maximal size of a page
+     * @param filters The filters and values to be applied
+     * @return Filtered page of rooms
+     */
     @GetMapping("/rooms/filter")
     public PageData<RoomStudModel> searchRooms(
             @RequestParam Optional<Integer> page,
@@ -84,7 +92,7 @@ public class RoomController {
             @RequestParam Optional<Map<String, Object>> filters) {
         var index = PageIndex.fromQuery(page, limit);
 
-        if(filters.isEmpty()) {
+        if (filters.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "filters not provided!");
         }
