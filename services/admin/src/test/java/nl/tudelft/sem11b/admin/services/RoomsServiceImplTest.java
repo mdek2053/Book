@@ -12,6 +12,7 @@ import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Building;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
+import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiTime;
@@ -37,13 +38,16 @@ class RoomsServiceImplTest {
     RoomRepository rooms;
 
     @Mock
+    FaultRepository faults;
+
+    @Mock
     UserService users;
 
     RoomsServiceImpl service;
 
     @BeforeEach
     void initService() {
-        service = new RoomsServiceImpl(buildings, rooms, users);
+        service = new RoomsServiceImpl(buildings, rooms, faults, users);
     }
 
     @Test

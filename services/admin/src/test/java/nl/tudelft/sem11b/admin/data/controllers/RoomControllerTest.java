@@ -44,7 +44,7 @@ class RoomControllerTest {
                 new ApiDate(2021, 9, 13));
 
         // action
-        MvcResult mvcResult = mockMvc.perform(post("/room/1/closure")
+        MvcResult mvcResult = mockMvc.perform(post("/rooms/1/closure")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(closure.toModel())))
                 .andExpect(status().is2xxSuccessful())
@@ -57,7 +57,7 @@ class RoomControllerTest {
     @Test
     void reopenRoom() throws Exception {
         // action
-        MvcResult mvcResult = mockMvc.perform(delete("/room/1/closure"))
+        MvcResult mvcResult = mockMvc.perform(delete("/rooms/1/closure"))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
