@@ -11,6 +11,7 @@ subprojects {
 	apply plugin: 'java'
 	apply plugin: 'jacoco'
 	apply plugin: 'checkstyle'
+	apply plugin: 'pmd'
 
 	configurations {
 		developmentOnly
@@ -73,6 +74,10 @@ subprojects {
 		ignoreFailures = false
 		maxErrors = 0
 		maxWarnings = 0
+	}
+
+	pmd {
+		incrementalAnalysis = true
 	}
 
 	test {

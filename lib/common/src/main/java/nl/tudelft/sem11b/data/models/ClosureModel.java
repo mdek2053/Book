@@ -1,5 +1,7 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Objects;
+
 import nl.tudelft.sem11b.data.ApiDate;
 
 /**
@@ -62,4 +64,25 @@ public class ClosureModel {
     public ApiDate getUntil() {
         return until;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ClosureModel)) {
+            return false;
+        }
+
+        ClosureModel that = (ClosureModel) o;
+
+        if (!Objects.equals(reason, that.reason)) {
+            return false;
+        }
+        if (!Objects.equals(since, that.since)) {
+            return false;
+        }
+        return Objects.equals(until, that.until);
+    }
+
 }

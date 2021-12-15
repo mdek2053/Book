@@ -9,6 +9,7 @@ import nl.tudelft.sem11b.clients.RoomsClient;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
@@ -43,5 +44,15 @@ public class RoomServiceImpl extends AuthenticatedServiceClient<RoomsClient>
     @Override
     public Optional<RoomModel> getRoom(long id) throws ApiException {
         return openClient().getRoom(id);
+    }
+
+    @Override
+    public void closeRoom(long id, ClosureModel closure) throws ApiException {
+        openClient().closeRoom(id, closure);
+    }
+
+    @Override
+    public void reopenRoom(long id) throws ApiException {
+        openClient().reopenRoom(id);
     }
 }
