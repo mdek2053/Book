@@ -1,19 +1,13 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
+
+import java.util.Set;
 
 /**
  * Represents a single room of a {@link Building}.
@@ -31,6 +25,10 @@ public class Room {
     private int capacity;
     @Embedded
     private Closure closure;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable
+    private Set<Equipment> equipment;
 
     public Room() {
 
@@ -135,13 +133,14 @@ public class Room {
      * @param building  object representing the building the room is part of
      */
     public Room(long id, String suffix, String name, int capacity,
-                Closure closure, Building building) {
+                Closure closure, Building building, Set<Equipment> equipment) {
         this.id = id;
         this.suffix = suffix;
         this.name = name;
         this.capacity = capacity;
         this.closure = closure;
         this.building = building;
+        this.equipment = equipment;
     }
 
     /**

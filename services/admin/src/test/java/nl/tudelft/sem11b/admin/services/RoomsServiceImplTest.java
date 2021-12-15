@@ -57,9 +57,9 @@ class RoomsServiceImplTest {
     private final Building building2 =
             new Building(3, "idk", "EWI", null, null, new HashSet<>());
 
-    private final Room room1 = new Room(1, "idk", "PC hall 1", 30, null, building1);
-    private final Room room2 = new Room(2,  "idk", "PC hall 2", 50, null, building1);
-    private final Room room3 = new Room(3,  "idk", "Boole", 50, null, building2);
+    private final Room room1 = new Room(1, "idk", "PC hall 1", 30, null, building1, Set.of());
+    private final Room room2 = new Room(2,  "idk", "PC hall 2", 50, null, building1, Set.of());
+    private final Room room3 = new Room(3,  "idk", "Boole", 50, null, building2, Set.of());
 
 
     private final RoomStudModel room1StudModel = room1.toStudModel();
@@ -125,7 +125,7 @@ class RoomsServiceImplTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
         when(rooms.existsById(1L)).thenReturn(true);
         when(rooms.getById(1L)).thenReturn(room);
         when(rooms.save(captor.capture())).thenAnswer(i -> i.getArgument(0));
@@ -187,7 +187,7 @@ class RoomsServiceImplTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
         when(rooms.existsById(1L)).thenReturn(true);
         when(rooms.getById(1L)).thenReturn(room);
         when(rooms.save(captor.capture())).thenAnswer(i -> i.getArgument(0));
