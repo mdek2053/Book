@@ -38,10 +38,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
 class RoomsServiceImplTest {
@@ -59,6 +55,27 @@ class RoomsServiceImplTest {
     UserService users;
 
     RoomsServiceImpl service;
+
+    private final Building building1 =
+            new Building(1, "idk", "drebbelweg", null, null, new HashSet<>());
+    private final Building building2 =
+            new Building(3, "idk", "EWI", null, null, new HashSet<>());
+
+    private final Room room1 = new Room(1, "idk", "PC hall 1", 30, null, building1);
+    private final Room room2 = new Room(2,  "idk", "PC hall 2", 50, null, building1);
+    private final Room room3 = new Room(3,  "idk", "Boole", 50, null, building2);
+
+
+    private final RoomStudModel room1StudModel = room1.toStudModel();
+    private final RoomStudModel room2StudModel = room2.toStudModel();
+    private final RoomStudModel room3StudModel = room3.toStudModel();
+
+    @BeforeEach
+    private void setup() {
+        building1.addRoom(room1);
+        building1.addRoom(room2);
+        building2.addRoom(room3);
+    }
 
     @BeforeEach
     void initService() {

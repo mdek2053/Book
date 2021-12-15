@@ -1,8 +1,10 @@
 package nl.tudelft.sem11b.clients;
 
+import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.ClosureModel;
@@ -52,6 +54,12 @@ public class RoomsClient implements RoomsService {
         }
 
         return data.get();
+    }
+
+    @Override
+    public PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues)
+            throws ApiException, EntityNotFound, InvalidFilterException {
+        return null;
     }
 
     @Override

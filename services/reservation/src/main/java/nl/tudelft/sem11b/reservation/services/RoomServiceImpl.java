@@ -1,10 +1,12 @@
 package nl.tudelft.sem11b.reservation.services;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.clients.AuthenticatedServiceClient;
 import nl.tudelft.sem11b.clients.RoomsClient;
+import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.ClosureModel;
@@ -34,6 +36,12 @@ public class RoomServiceImpl extends AuthenticatedServiceClient<RoomsClient>
     public PageData<RoomStudModel> listRooms(PageIndex page, long building)
         throws ApiException, EntityNotFound {
         return openClient().listRooms(page, building);
+    }
+
+    @Override
+    public PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues)
+            throws ApiException, EntityNotFound, InvalidFilterException {
+        return null;
     }
 
     @Override

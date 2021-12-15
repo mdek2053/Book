@@ -1,5 +1,7 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Objects;
+
 /**
  * A summary object for a room used in listings.
  */
@@ -86,5 +88,35 @@ public class RoomStudModel {
      */
     public ClosureModel getClosure() {
         return closure;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RoomStudModel that = (RoomStudModel) o;
+        return id == that.id && capacity == that.capacity
+                && suffix.equals(that.suffix) && name.equals(that.name)
+                && Objects.equals(closure, that.closure);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, suffix, name, capacity, closure);
+    }
+
+    @Override
+    public String toString() {
+        return "RoomStudModel{"
+                + "id=" + id
+                + ", suffix='" + suffix + '\''
+                + ", name='" + name + '\''
+                + ", capacity=" + capacity
+                + ", closure=" + closure
+                + '}';
     }
 }
