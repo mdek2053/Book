@@ -63,7 +63,7 @@ public class RoomsServiceImpl implements RoomsService {
         return new PageData<RoomStudModel>(filteredRooms.size(), filteredRooms);
     }
 
-    private BaseFilter setupChain(Map<String, Object> filterValues) throws InvalidFilterException {
+    private BaseFilter setupChain(Map<String, Object> filterValues) throws InvalidFilterException, EntityNotFound {
         BaseFilter head = new BaseFilter();
         BaseFilter tail = head;
 
@@ -72,7 +72,7 @@ public class RoomsServiceImpl implements RoomsService {
                 BaseFilter filter = new CapacityFilter((Integer)filterValues.get("capacity"));
                 tail.setNext(filter);
                 tail = filter;
-            } catch (Exception e) {
+            } catch (ClassCastException e) {
                 throw new InvalidFilterException("Invalid capacity filter!");
             }
         }
@@ -82,7 +82,7 @@ public class RoomsServiceImpl implements RoomsService {
                 BaseFilter filter = new EquipmentFilter();
                 tail.setNext(filter);
                 tail = filter;
-            } catch (Exception e) {
+            } catch (ClassCastException e) {
                 throw new InvalidFilterException("Invalid equipment filter!");
             }
         }
@@ -92,17 +92,17 @@ public class RoomsServiceImpl implements RoomsService {
                 BaseFilter filter = new AvailabilityFilter((String)filterValues.get("from"), (String)filterValues.get("until"));
                 tail.setNext(filter);
                 tail = filter;
-            } catch (Exception e) {
+            } catch (ClassCastException e) {
                 throw new InvalidFilterException("Invalid availability filter!");
             }
         }
 
         if(filterValues.containsKey("building")){
             try {
-                BaseFilter filter = new BuildingFilter((Integer)filterValues.get("building"));
+                BaseFilter filter = new BuildingFilter((Long)filterValues.get("building"), buildings);
                 tail.setNext(filter);
                 tail = filter;
-            } catch (Exception e) {
+            } catch (ClassCastException e) {
                 throw new InvalidFilterException("Invalid building filter!");
             }
         }

@@ -32,6 +32,19 @@ public class Room {
     @Embedded
     private Closure closure;
 
+    public Room(long id, String suffix, String name, int capacity, Closure closure, Building building) {
+        this.id = id;
+        this.suffix = suffix;
+        this.name = name;
+        this.capacity = capacity;
+        this.closure = closure;
+        this.building = building;
+    }
+
+    public Room() {
+
+    }
+
     @JoinColumn(name = "building_id", nullable = false)
     @ManyToOne(cascade = CascadeType.ALL)
     private Building building;
