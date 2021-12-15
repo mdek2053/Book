@@ -49,6 +49,15 @@ public interface ReservationService {
             throws ApiException, EntityNotFound, InvalidGroupCredentialsException, InvalidData;
 
     /**
+     * Verifies whether the current user is a secretary of the provided user.
+     *
+     * @param forUser Id of user for whom the specific reservation is
+     * @return boolean value of whether the current user has the correct rights
+     * @throws ApiException Thrown when a remote API encountered an error
+     */
+    boolean verifySecretary(Long forUser) throws ApiException;
+
+    /**
      * Lists a page of reservations created by/for the current user.
      *
      * @param page Page index to fetch

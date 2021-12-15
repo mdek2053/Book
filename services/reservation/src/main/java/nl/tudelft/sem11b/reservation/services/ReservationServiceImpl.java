@@ -183,6 +183,7 @@ public class ReservationServiceImpl implements ReservationService {
      * @return a boolean value whether the current user has the correct rights
      * @throws ApiException Thrown when a remote API encountered an error
      */
+    @Override
     public boolean verifySecretary(Long getForUser) throws ApiException {
         List<GroupModel> groupList =
                 groups.getGroupsOfSecretary(users.currentUser(), new ArrayList<>());

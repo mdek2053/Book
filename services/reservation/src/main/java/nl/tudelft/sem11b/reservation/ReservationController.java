@@ -107,10 +107,22 @@ public class ReservationController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body empty");
         }
 
-        try {
-            reservationService.editReservation(id, req.getTitle(), req.getSince(), req.getUntil());
-        } catch (ServiceException ex) {
-            throw ex.toResponseException();
+        if (req.getForUser() != null) {
+            try {
+                if (reservationService.verifySecretary(req.getForUser())) {
+                    reservationService.editReservation(id, req.getTitle(),
+                            req.getSince(), req.getUntil());
+                }
+            } catch (ServiceException ex) {
+                throw ex.toResponseException();
+            }
+        } else {
+            try {
+                reservationService.editReservation(id, req.getTitle(),
+                        req.getSince(), req.getUntil());
+            } catch (ServiceException ex) {
+                throw ex.toResponseException();
+            }
         }
     }
 }
