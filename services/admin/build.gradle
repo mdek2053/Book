@@ -1,1 +1,5 @@
 mainClassName = 'nl.tudelft.sem11b.admin.MainApplication'
+
+dependencies {
+    implementation 'junit:junit:4.13.2' //IntelliJ added this and it works for now, tests break when I try to change it
+}
