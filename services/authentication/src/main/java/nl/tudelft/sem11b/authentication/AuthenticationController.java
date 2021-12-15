@@ -1,12 +1,16 @@
 package nl.tudelft.sem11b.authentication;
 
+import java.util.List;
+
 import nl.tudelft.sem11b.data.Roles;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.data.models.UserRequestModel;
 import nl.tudelft.sem11b.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +48,7 @@ public class AuthenticationController {
      * @return an object with the new User.
      */
     @PostMapping(value = "/")
+    @PreAuthorize("hasRole('Admin')")
     public IdModel<Long> postUser(@RequestBody UserRequestModel model) {
         long id;
         try {
@@ -56,5 +61,9 @@ public class AuthenticationController {
         return new IdModel<>(id);
     }
 
-
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('Admin')")
+    public List<UserModel> getAllUsers() throws ApiException {
+        return service.getAllUsers();
+    }
 }

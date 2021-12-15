@@ -8,6 +8,8 @@ import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
+import nl.tudelft.sem11b.data.Roles;
+import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
@@ -146,12 +148,21 @@ public class GroupServiceImpl implements GroupService {
      * @throws InvalidGroupCredentialsException when there is no group
      *      connected to the provided groupId.
      */
-    public GroupModel getGroupInfo(Long groupId) throws InvalidGroupCredentialsException {
+    public GroupModel getGroupInfo(Long groupId) throws InvalidGroupCredentialsException,
+            ApiException, InvalidCredentialsException {
         Optional<Group> group = groupRepository.findGroupByGroupId(groupId);
         if (group.isPresent()) {
             Group presentGroup = group.get();
-            return new GroupModel(presentGroup.getName(), presentGroup.getSecretary(),
+            UserModel currentUser = userService.currentUser();
+            if (currentUser.inRole(Roles.Admin)
+                    || currentUser.getId() == presentGroup.getSecretary()
+                    || presentGroup.getGroupMembers().contains(currentUser.getId())) {
+                return new GroupModel(presentGroup.getName(), presentGroup.getSecretary(),
                     presentGroup.getGroupMembers(), presentGroup.getGroupId());
+            } else {
+                throw new InvalidCredentialsException("User not allowed to "
+                        + "access this group's info.");
+            }
         } else {
             throw new InvalidGroupCredentialsException(
                     "There is no group with the provided group id");

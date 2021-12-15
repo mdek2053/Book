@@ -42,8 +42,8 @@ public class GroupController {
      * @throws InvalidGroupCredentialsException when the provided credentials
      *                                          of the group are not valid.
      */
-    //@PreAuthorize("hasRole('Admin')")
     @PostMapping("")
+    @PreAuthorize("hasRole('Admin')")
     public GroupModel postGroup(@RequestBody GroupModel model)
             throws InvalidGroupCredentialsException {
         try {
@@ -61,7 +61,8 @@ public class GroupController {
     }
 
     @GetMapping(value = "/{id}")
-    public GroupModel getGroupInfo(@PathVariable Long id) throws InvalidGroupCredentialsException {
+    public GroupModel getGroupInfo(@PathVariable Long id) throws InvalidGroupCredentialsException,
+            ApiException, InvalidCredentialsException {
         return groupService.getGroupInfo(id);
     }
 
@@ -73,7 +74,8 @@ public class GroupController {
      * @throws InvalidGroupCredentialsException when provided credentials
      *                                          of the group are not valid.
      */
-    @PostMapping(value = "/groupmembers")
+    @PreAuthorize("hasRole('Admin')")
+    @PostMapping(value = "/members")
     public void addGroupMember(@RequestBody List<Long> users, @RequestBody GroupModel group)
             throws InvalidGroupCredentialsException {
         groupService.addGroupMembers(users, group);
