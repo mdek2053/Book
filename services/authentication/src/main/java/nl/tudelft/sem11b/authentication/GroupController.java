@@ -10,6 +10,7 @@ import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.GroupModel;
+import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,9 +56,21 @@ public class GroupController {
     }
 
     @GetMapping(value = "/mine")
-    public List<GroupModel> getGroupsOfEmployee()
+    public List<GroupModel> getGroupsOfCurrentUser()
             throws NoAssignedGroupException, ApiException {
         return groupService.getGroupsOfUser(userService.currentUser());
+    }
+
+    @GetMapping(value = "")
+    public List<GroupModel> getGroupsOfUser(@RequestBody UserModel user)
+            throws NoAssignedGroupException {
+        return groupService.getGroupsOfUser(user);
+    }
+
+    @GetMapping(value = "")
+    public List<GroupModel> getGroupsOfSecretary(@RequestBody UserModel user,
+                                                 @RequestBody List<GroupModel> groups) {
+        return groupService.getGroupsOfSecretary(user, groups);
     }
 
     @GetMapping(value = "/{id}")

@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.services;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -26,7 +27,26 @@ public interface ReservationService {
      * @throws InvalidData    Thrown when the given data is invalid
      */
     long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData;
+            throws ApiException, EntityNotFound, InvalidData;
+
+
+    /**
+     * Creates a new reservation for a provided user, which can be made by a secretary or admin.
+     *
+     * @param roomId  Unique numeric identifier of the room where the reservation takes place
+     * @param forUser Id of user for whom the reservation will be made
+     * @param title   Title of the reservation
+     * @param since   Beginning date and time of the reservation
+     * @param until   Ending date and time of the reservation
+     * @return Unique numeric identifier of the newly created reservation
+     * @throws ApiException                     Thrown when a remote API encountered an error
+     * @throws EntityNotFound                   Thrown when the given room was not found
+     * @throws InvalidGroupCredentialsException Thrown when the current user is not a secretary
+     * @throws InvalidData                      Thrown when the given data is invalid
+     */
+    long makeUserReservation(long roomId, Long forUser, String title,
+                             ApiDateTime since, ApiDateTime until)
+            throws ApiException, EntityNotFound, InvalidGroupCredentialsException, InvalidData;
 
     /**
      * Lists a page of reservations created by/for the current user.
@@ -53,5 +73,5 @@ public interface ReservationService {
      * @throws InvalidData    Thrown when the given data is invalid
      */
     void editReservation(long reservationId, String title, ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData;
+            throws ApiException, EntityNotFound, InvalidData;
 }
