@@ -52,13 +52,14 @@ public class GroupServiceImpl implements GroupService {
             List<GroupModel> userGroupList = new ArrayList<>();
             for (Group group : groupList) {
                 if (group.getGroupMembers().contains(user.getId())) {
-                    GroupModel model = new GroupModel(group.getName(), group.getSecretary(),
-                            group.getGroupMembers(), group.getGroupId());
+                    GroupModel model = group.createGroupModel();
                     userGroupList.add(model);
                 }
             }
-            if (userGroupList.size() >= 0) {
-                userGroupList = getGroupsOfSecretary(user, userGroupList);
+
+            userGroupList = getGroupsOfSecretary(user, userGroupList);
+
+            if (!userGroupList.isEmpty()) {
                 return userGroupList;
             } else {
                 throw new NoAssignedGroupException("User is not assigned to any group");
@@ -83,8 +84,7 @@ public class GroupServiceImpl implements GroupService {
             if (groupList.isPresent()) {
                 List<Group> secretaryGroups = groupList.get();
                 for (Group group : secretaryGroups) {
-                    GroupModel model = new GroupModel(group.getName(), group.getSecretary(),
-                            group.getGroupMembers(), group.getGroupId());
+                    GroupModel model = group.createGroupModel();
                     if (!groups.contains(model)) {
                         groups.add(model);
                     }
@@ -92,15 +92,6 @@ public class GroupServiceImpl implements GroupService {
             }
         }
         return groups;
-    }
-
-    /**
-     * Saves the input object to the groupRepository.
-     *
-     * @param group of type Group which needs to be saved in the groupRepository.
-     */
-    public Group saveGroup(Group group) {
-        return groupRepository.save(group);
     }
 
     /**
@@ -126,7 +117,7 @@ public class GroupServiceImpl implements GroupService {
         verifyUsers(groupMembers);
 
         Group group = new Group(name, secretary.getId(), groupMembers);
-        group = saveGroup(group);
+        group = groupRepository.save(group);
         return new GroupModel(group.getName(), secretaryId, groupMembers, group.getGroupId());
     }
 

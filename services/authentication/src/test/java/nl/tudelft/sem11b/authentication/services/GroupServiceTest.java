@@ -98,12 +98,6 @@ class GroupServiceTest {
     }
 
     @Test
-    void saveGroup() {
-        groupService.saveGroup(group);
-        verify(groupRepository, times(1)).save(group);
-    }
-
-    @Test
     void addGroupNoPreviousGroupId() throws InvalidGroupCredentialsException,
         ApiException {
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(user1));
