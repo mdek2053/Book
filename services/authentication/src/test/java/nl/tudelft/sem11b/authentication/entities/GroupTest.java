@@ -18,9 +18,9 @@ class GroupTest {
     User user3 = new User("netId3", "employee", "abc3");
     List<Long> members = new ArrayList<>();
     List<Long> newMembers = new ArrayList<>();
-    Group group = new Group("group", user, members, 2);
-    Group group1 = new Group("group", user, members, 2);
-    Group group2 = new Group("group1", user1, newMembers, 3);
+    Group group = new Group("group", user.getId(), members, 2L);
+    Group group1 = new Group("group", user.getId(), members, 2L);
+    Group group2 = new Group("group1", user1.getId(), newMembers, 3L);
 
     @BeforeEach
     void setup() {
@@ -37,7 +37,7 @@ class GroupTest {
 
     @Test
     void getSecretary() {
-        assertEquals(user, group.getSecretary());
+        assertEquals(user.getId(), group.getSecretary());
     }
 
     @Test
@@ -52,8 +52,8 @@ class GroupTest {
 
     @Test
     void setSecretary() {
-        group.setSecretary(user1);
-        assertEquals(user1, group.getSecretary());
+        group.setSecretary(user1.getId());
+        assertEquals(user1.getId(), group.getSecretary());
     }
 
     @Test
