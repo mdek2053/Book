@@ -5,7 +5,6 @@ import java.util.List;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
-import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 
 /**

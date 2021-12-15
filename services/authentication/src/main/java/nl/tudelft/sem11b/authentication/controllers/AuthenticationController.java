@@ -1,4 +1,4 @@
-package nl.tudelft.sem11b.authentication;
+package nl.tudelft.sem11b.authentication.controllers;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class AuthenticationController {
     @Autowired
-    UserService service;
+    transient UserService service;
 
     /**
      * Gets the current user.
@@ -47,18 +47,16 @@ public class AuthenticationController {
      * @param model an object of type User.
      * @return an object with the new User.
      */
-    @PostMapping(value = "/")
+    @PostMapping(value = "")
     @PreAuthorize("hasRole('Admin')")
     public IdModel<Long> postUser(@RequestBody UserRequestModel model) {
-        long id;
         try {
-            id = service.addUser(model.getLogin(), model.getPassword(),
+            long id = service.addUser(model.getLogin(), model.getPassword(),
                 Roles.valueOf(model.getRole()));
+            return new IdModel<>(id);
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }
-
-        return new IdModel<>(id);
     }
 
     @GetMapping("/all")

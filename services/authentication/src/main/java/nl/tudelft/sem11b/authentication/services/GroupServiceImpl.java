@@ -27,13 +27,13 @@ import org.springframework.stereotype.Service;
 public class GroupServiceImpl implements GroupService {
 
     @Autowired
-    GroupRepository groupRepository;
+    transient GroupRepository groupRepository;
 
     @Autowired
-    UserRepository userRepository;
+    transient UserRepository userRepository;
 
     @Autowired
-    UserServiceImpl userService;
+    transient UserServiceImpl userService;
 
     @Autowired
     PasswordEncoder passwordEncoder;

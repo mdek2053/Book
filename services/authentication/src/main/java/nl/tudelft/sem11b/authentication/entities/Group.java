@@ -95,6 +95,10 @@ public class Group {
         this.name = name;
     }
 
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
+
     /**
      * Adds a new user to the members of a specific group.
      *
@@ -121,7 +125,7 @@ public class Group {
             return false;
         }
         Group group = (Group) o;
-        return getGroupId() == group.getGroupId()
+        return Objects.equals(getGroupId(), group.getGroupId())
                 && Objects.equals(getName(), group.getName())
                 && Objects.equals(getSecretary(), group.getSecretary())
                 && Objects.equals(getGroupMembers(), group.getGroupMembers());
