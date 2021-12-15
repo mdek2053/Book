@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import nl.tudelft.sem11b.admin.data.Closure;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 
@@ -21,7 +22,7 @@ import nl.tudelft.sem11b.data.models.RoomStudModel;
 @Table(indexes = {@Index(columnList = "suffix, building_id", unique = true)})
 public class Room {
     @Id @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
     @Column(name = "suffix", nullable = false)
     private String suffix;
     @Column(name = "name", nullable = false)
@@ -116,6 +117,26 @@ public class Room {
     }
 
     /**
+     * Constructs a room object.
+     *
+     * @param id        the room's id
+     * @param suffix    the suffix of the room
+     * @param name      name of the room
+     * @param capacity  capacity
+     * @param closure   object which specifies the closure, or null if open
+     * @param building  object representing the building the room is part of
+     */
+    public Room(long id, String suffix, String name, int capacity,
+                Closure closure, Building building) {
+        this.id = id;
+        this.suffix = suffix;
+        this.name = name;
+        this.capacity = capacity;
+        this.closure = closure;
+        this.building = building;
+    }
+
+    /**
      * Converts the entity into its equivalent stud (partial) model.
      *
      * @return Stud model
@@ -132,6 +153,6 @@ public class Room {
      */
     public RoomModel toModel() {
         return new RoomModel(id, suffix, name, capacity,
-            building.toModel(), closure == null ? null : closure.toModel());
+            building.toModel(), new EquipmentModel[0], closure == null ? null : closure.toModel());
     }
 }

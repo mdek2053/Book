@@ -1,32 +1,34 @@
 package nl.tudelft.sem11b.admin.services;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import java.text.ParseException;
-import java.util.Optional;
+import java.util.Set;
 
 import nl.tudelft.sem11b.admin.data.Closure;
+import nl.tudelft.sem11b.admin.data.entities.Building;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
-import nl.tudelft.sem11b.data.Day;
-import nl.tudelft.sem11b.data.models.ClosureObject;
-import nl.tudelft.sem11b.services.RoomsService;
-import org.junit.jupiter.api.BeforeAll;
+import nl.tudelft.sem11b.data.ApiDate;
+import nl.tudelft.sem11b.data.ApiTime;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class RoomsServiceImplTest {
-    RoomsService roomService;
 
     @Mock
     BuildingRepository buildings;
@@ -34,49 +36,137 @@ class RoomsServiceImplTest {
     @Mock
     RoomRepository rooms;
 
+    @Mock
+    UserService users;
+
+    RoomsServiceImpl service;
+
     @BeforeEach
-    void before() {
-        rooms = Mockito.mock(RoomRepository.class);
-        roomService = new RoomsServiceImpl(buildings, rooms);
+    void initService() {
+        service = new RoomsServiceImpl(buildings, rooms, users);
     }
 
     @Test
-    void closeRoom() throws ParseException {
-        ClosureObject closure = new ClosureObject("a banana fell",
-                "2021-09-21", "2021-09-22");
+    void closeRoomTestNotAdmin() throws Exception {
+        // arrange
+        UserModel simplyEmployee = new UserModel(1, "jjansen", new String[]{"employee"});
+        when(users.currentUser()).thenReturn(simplyEmployee);
 
-        Room roomOpen = new Room();
+        ClosureModel closure = new ClosureModel("blue ball machine broke",
+                new ApiDate(2021, 9, 1),
+                new ApiDate(2021, 9, 13));
 
-        when(rooms.findById(1)).thenReturn(Optional.of(roomOpen));
-
-        assertDoesNotThrow(() -> roomService.closeRoom(1, closure));
-
-        Closure clo = new Closure(closure.getDescription(),
-                Day.parse(closure.getSince()),
-                Day.parse(closure.getUntil()));
-        
-        ArgumentCaptor<Room> argumentCaptor = ArgumentCaptor.forClass(Room.class);
-        verify(rooms, times(1)).save(argumentCaptor.capture());
-        assertSame(argumentCaptor.getValue().getClosure().getReason(), clo.getReason());
+        // action + assert
+        ApiException exception = assertThrows(ApiException.class,
+                () -> service.closeRoom(1, closure));
+        assertEquals(exception.getService(), "Rooms");
     }
 
     @Test
-    void reopenRoom() throws ParseException {
-        ClosureObject closure = new ClosureObject("a banana fell",
-                "2021-09-21", "2021-09-22");
+    void closeRoomTestNoRoom() throws Exception {
+        // arrange
+        UserModel admin = new UserModel(1, "jjansen", new String[]{"admin"});
+        when(users.currentUser()).thenReturn(admin);
 
-        Room roomClosed = new Room();
-        Closure clo = new Closure(closure.getDescription(),
-                Day.parse(closure.getSince()),
-                Day.parse(closure.getUntil()));
-        roomClosed.setClosure(clo);
+        ClosureModel closure = new ClosureModel("blue ball machine broke",
+                new ApiDate(2021, 9, 1),
+                new ApiDate(2021, 9, 13));
 
-        when(rooms.findById(1)).thenReturn(Optional.of(roomClosed));
+        when(rooms.existsById(1L)).thenReturn(false);
 
-        assertDoesNotThrow(() -> roomService.reopenRoom(1));
+        // action + assert
+        EntityNotFound exception = assertThrows(EntityNotFound.class,
+                () -> service.closeRoom(1, closure));
+        assertEquals(exception.getEntityName(), "Room");
+    }
 
-        ArgumentCaptor<Room> argumentCaptor = ArgumentCaptor.forClass(Room.class);
-        verify(rooms, times(1)).save(argumentCaptor.capture());
-        assertNull(argumentCaptor.getValue().getClosure());
+    @Test
+    void closeRoomTestSuccess() throws Exception {
+        final var captor = ArgumentCaptor.forClass(Room.class);
+
+        // arrange
+        UserModel admin = new UserModel(1, "jjansen", new String[]{"admin"});
+        when(users.currentUser()).thenReturn(admin);
+
+        Room room = new Room(1L,"BOL", "Boole", 100,
+                null,
+                new Building(
+                        1L, "EWI", "EEMCS building",
+                        new ApiTime(8, 0), new ApiTime(22, 0),
+                        Set.of()));
+        when(rooms.existsById(1L)).thenReturn(true);
+        when(rooms.getById(1L)).thenReturn(room);
+        when(rooms.save(captor.capture())).thenAnswer(i -> i.getArgument(0));
+
+        Closure closure = new Closure("blue ball machine broke",
+                new ApiDate(2021, 9, 1),
+                new ApiDate(2021, 9, 13));
+
+        // action
+        service.closeRoom(1, closure.toModel());
+
+        // assert
+        final var entity = captor.getValue();
+        assertNotNull(entity);
+        assertEquals(entity.getId(), room.getId());
+        assertEquals(entity.getClosure(), closure);
+    }
+
+    @Test
+    void reopenRoomTestNotAdmin() throws Exception {
+        // arrange
+        UserModel simplyEmployee = new UserModel(1, "jjansen", new String[]{"employee"});
+        when(users.currentUser()).thenReturn(simplyEmployee);
+
+        // action + assert
+        ApiException exception = assertThrows(ApiException.class,
+                () -> service.reopenRoom(1));
+        assertEquals(exception.getService(), "Rooms");
+    }
+
+    @Test
+    void reopenRoomTestNoRoom() throws Exception {
+        // arrange
+        UserModel admin = new UserModel(1, "jjansen", new String[]{"admin"});
+        when(users.currentUser()).thenReturn(admin);
+
+        when(rooms.existsById(1L)).thenReturn(false);
+
+        // action + assert
+        EntityNotFound exception = assertThrows(EntityNotFound.class,
+                () -> service.reopenRoom(1));
+        assertEquals(exception.getEntityName(), "Room");
+    }
+
+    @Test
+    void reopenRoomTestSuccess() throws Exception {
+        final var captor = ArgumentCaptor.forClass(Room.class);
+
+        // arrange
+        UserModel admin = new UserModel(1, "jjansen", new String[]{"admin"});
+        when(users.currentUser()).thenReturn(admin);
+
+        Closure closure = new Closure("blue ball machine broke",
+                new ApiDate(2021, 9, 1),
+                new ApiDate(2021, 9, 13));
+
+        Room room = new Room(1L,"BOL", "Boole", 100,
+                closure,
+                new Building(
+                        1L, "EWI", "EEMCS building",
+                        new ApiTime(8, 0), new ApiTime(22, 0),
+                        Set.of()));
+        when(rooms.existsById(1L)).thenReturn(true);
+        when(rooms.getById(1L)).thenReturn(room);
+        when(rooms.save(captor.capture())).thenAnswer(i -> i.getArgument(0));
+
+        // action
+        service.reopenRoom(1);
+
+        // assert
+        final var entity = captor.getValue();
+        assertNotNull(entity);
+        assertEquals(entity.getId(), room.getId());
+        assertNull(entity.getClosure());
     }
 }

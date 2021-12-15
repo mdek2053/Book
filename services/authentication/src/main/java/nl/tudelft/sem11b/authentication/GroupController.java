@@ -9,6 +9,8 @@ import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,8 +50,12 @@ public class GroupController {
     @PostMapping()
     public Group postGroup(@RequestBody String name, @RequestBody User secretary,
                            @RequestBody List<Long> groupMembers)
-            throws InvalidGroupCredentialsException, InvalidCredentialsException {
-        return groupService.addGroup(name, secretary, groupMembers);
+            throws InvalidGroupCredentialsException {
+        try {
+            return groupService.addGroup(name, secretary, groupMembers);
+        } catch (ServiceException ex) {
+            throw ex.toResponseException();
+        }
     }
 
     @GetMapping(value = "/mine")
