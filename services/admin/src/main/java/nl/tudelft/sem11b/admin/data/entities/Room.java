@@ -32,6 +32,10 @@ public class Room {
     @Embedded
     private Closure closure;
 
+    public Room() {
+
+    }
+
     @JoinColumn(name = "building_id", nullable = false)
     @ManyToOne(cascade = CascadeType.ALL)
     private Building building;
@@ -116,6 +120,10 @@ public class Room {
         return building;
     }
 
+    public int getCapacity() {
+        return capacity;
+    }
+
     /**
      * Constructs a room object.
      *
@@ -155,4 +163,5 @@ public class Room {
         return new RoomModel(id, suffix, name, capacity,
             building.toModel(), new EquipmentModel[0], closure == null ? null : closure.toModel());
     }
+
 }
