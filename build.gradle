@@ -20,7 +20,6 @@ subprojects {
 	dependencies {
 		// Jackson JSON serialization/deserialization API bindings
 		implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
-        implementation 'junit:junit:4.13.1'
 
         // JUnit5 unit testing framework
 		testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
