@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.data.models;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.springframework.data.domain.Page;
@@ -11,14 +12,14 @@ import org.springframework.data.domain.Page;
  * @param <T> Type of items
  */
 public class PageData<T> {
-    private final long total;
-    private final List<T> data;
+    private long total;
+    private List<T> data;
 
     /**
      * Instantiates the {@link PageData} class.
      *
      * @param total Total number of items that match the query
-     * @param data Page items
+     * @param data  Page items
      */
     public PageData(long total, List<T> data) {
         if (total < 0) {
@@ -47,6 +48,10 @@ public class PageData<T> {
         this(page.getTotalElements(), page.getContent());
     }
 
+    private PageData() {
+        // default constructor for model materialization
+    }
+
     /**
      * Gets the total number of items that match the search criteria.
      *
@@ -63,5 +68,26 @@ public class PageData<T> {
      */
     public Stream<T> getData() {
         return data.stream();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PageData<?> pageData = (PageData<?>) o;
+        return total == pageData.total && data.equals(pageData.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(total, data);
+    }
+
+    @Override
+    public String toString() {
+        return "PageData{" +
+                "total=" + total +
+                ", data=" + data +
+                '}';
     }
 }

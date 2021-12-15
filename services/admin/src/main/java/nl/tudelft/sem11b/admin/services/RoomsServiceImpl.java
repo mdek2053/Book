@@ -1,16 +1,22 @@
 package nl.tudelft.sem11b.admin.services;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import nl.tudelft.sem11b.admin.data.entities.Building;
 import nl.tudelft.sem11b.admin.data.entities.Room;
+import nl.tudelft.sem11b.admin.data.filters.*;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
+import nl.tudelft.sem11b.data.exception.InvalidFilterException;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.*;
 import nl.tudelft.sem11b.services.RoomsService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +36,7 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public PageData<RoomStudModel> listRooms(PageIndex page, int building) throws EntityNotFound {
+    public PageData<RoomStudModel> listRooms(PageIndex page, long building) throws EntityNotFound {
         if (!buildings.existsById(building)) {
             throw new EntityNotFound("Building");
         }
@@ -40,44 +46,70 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public List<RoomModel> searchRooms(PageIndex page, Integer capacity, EquipmentObject[] equipment,
-                                       String availableSince, String availableUntil, Integer building) throws EntityNotFound{
-        if (building != null && !buildings.existsById(building)) {
-            throw new EntityNotFound("Building");
+    public PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues) throws ApiException, EntityNotFound, InvalidFilterException {
+
+        BaseFilter chain = setupChain(filterValues);
+
+        Page<Room> roomPage = rooms.findAll(page.getPage(Sort.by("id")));
+        List<RoomStudModel> filteredRooms = new ArrayList<RoomStudModel>();
+        for(Room room : roomPage){
+            if(chain.handle(room)) {
+                filteredRooms.add(room.toStudModel());
+            }
         }
 
-        List<Room> roomList = rooms.findAll();
-        List<RoomModel> roomModels = roomList.stream()
-                .filter(room -> filterCapacity(room, capacity))
-                .filter(room -> filterEquipment(room, equipment))
-                .filter(room -> filterAvailability(room, availableSince, availableUntil))
-                .filter(room -> filterBuilding(room, building))
-                .map(Room::toModel)
-                .collect(Collectors.toList());
-        return roomModels;
+        return new PageData<RoomStudModel>(filteredRooms.size(), filteredRooms);
     }
 
-    private boolean filterCapacity(Room r, Integer capacity) {
-        return capacity == null || r.getCapacity() <= capacity;
-    }
+    private BaseFilter setupChain(Map<String, Object> filterValues) throws InvalidFilterException, EntityNotFound {
+        BaseFilter head = new BaseFilter();
+        BaseFilter tail = head;
 
-    //TODO: implement this
-    private boolean filterEquipment(Room r, EquipmentObject[] equipment){
-        return true;
-    }
+        if(filterValues.containsKey("capacity")){
+            try {
+                BaseFilter filter = new CapacityFilter((Integer)filterValues.get("capacity"));
+                tail.setNext(filter);
+                tail = filter;
+            } catch (ClassCastException e) {
+                throw new InvalidFilterException("Invalid capacity filter!");
+            }
+        }
 
-    //TODO: implement this
-    private boolean filterAvailability(Room r, String availableSince, String availableUntil) {
-        return true;
-    }
+        if(filterValues.containsKey("equipment")){
+            try {
+                BaseFilter filter = new EquipmentFilter();
+                tail.setNext(filter);
+                tail = filter;
+            } catch (ClassCastException e) {
+                throw new InvalidFilterException("Invalid equipment filter!");
+            }
+        }
 
-    private boolean filterBuilding(Room r, Integer building){
-        if(building == null) return true;
-        return buildings.findById(building).get().equals(r.getBuilding());
+        if(filterValues.containsKey("from") || filterValues.containsKey("until")){
+            try {
+                BaseFilter filter = new AvailabilityFilter((String)filterValues.get("from"), (String)filterValues.get("until"));
+                tail.setNext(filter);
+                tail = filter;
+            } catch (ClassCastException e) {
+                throw new InvalidFilterException("Invalid availability filter!");
+            }
+        }
+
+        if(filterValues.containsKey("building")){
+            try {
+                BaseFilter filter = new BuildingFilter((Long)filterValues.get("building"), buildings);
+                tail.setNext(filter);
+                tail = filter;
+            } catch (ClassCastException e) {
+                throw new InvalidFilterException("Invalid building filter!");
+            }
+        }
+
+        return head;
     }
 
     @Override
-    public Optional<RoomModel> getRoom(int id) {
+    public Optional<RoomModel> getRoom(long id) {
         return rooms.findById(id).map(Room::toModel);
     }
 }
