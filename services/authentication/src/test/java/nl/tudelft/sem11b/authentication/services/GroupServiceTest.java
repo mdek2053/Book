@@ -16,11 +16,13 @@ import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
+import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +40,8 @@ class GroupServiceTest {
     transient GroupRepository groupRepository = mock(GroupRepository.class);
 
     transient UserRepository userRepository = mock(UserRepository.class);
+
+    transient UserServiceImpl userService = mock(UserServiceImpl.class);
 
     transient PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
 
@@ -106,12 +110,24 @@ class GroupServiceTest {
     void addGroupNoPreviousGroupId() throws InvalidGroupCredentialsException,
         ApiException {
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(user1));
-        Group group = new Group("name", userModel1.getId(),
-                users1, 1L);
+
         when(groupRepository.save(Mockito.any(Group.class))).thenReturn(group);
         GroupModel expected = new GroupModel(group.getName(), group.getSecretary(),
                 group.getGroupMembers(), group.getGroupId());
-        assertEquals(expected, groupService.addGroup(group.getName(), userModel1.getId(), users1));
+        assertEquals(expected, groupService.addGroup(group.getName(), userModel1.getId(),
+                group.getGroupMembers()));
+    }
+
+    @Test
+    void addGroupSecretaryIdNull() throws ApiException, InvalidGroupCredentialsException {
+        when(userService.currentUser()).thenReturn(userModel1);
+        when(userRepository.findUserByNetId(userModel1.getLogin())).thenReturn(Optional.of(user1));
+        when(userRepository.findUserById(anyLong())).thenReturn(Optional.of(user1));
+
+        when(groupRepository.save(Mockito.any(Group.class))).thenReturn(group1);
+        GroupModel expected = new GroupModel(group1.getName(), group1.getSecretary(),
+                group1.getGroupMembers(), group1.getGroupId());
+        assertEquals(expected, groupService.addGroup(group.getName(), null, users1));
     }
 
     @Test
@@ -119,5 +135,29 @@ class GroupServiceTest {
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.empty());
         assertThrows(InvalidGroupCredentialsException.class, () -> groupService
                 .verifyUsers(users1));
+    }
+
+    @Test
+    void getInfoOfNonExistingGroup() {
+        when(groupRepository.findGroupByGroupId(10L)).thenReturn(Optional.empty());
+        assertThrows(InvalidGroupCredentialsException.class, () -> groupService.getGroupInfo(10L));
+    }
+
+    @Test
+    void getGroupInfo() throws ApiException,
+            InvalidCredentialsException, InvalidGroupCredentialsException {
+        when(groupRepository.findGroupByGroupId(group1.getGroupId()))
+                .thenReturn(Optional.of(group1));
+        when(userService.currentUser()).thenReturn(userModel2);
+
+        assertEquals(groupModel1, groupService.getGroupInfo(group1.getGroupId()));
+    }
+
+    @Test
+    void getGroupsOfSecretary() {
+        when(userRepository.findUserByNetId(user1.getNetId())).thenReturn(Optional.of(user1));
+        when(groupRepository.findGroupsBySecretary(user1.getId())).thenReturn(Optional.of(groups));
+
+        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1, new ArrayList<>()));
     }
 }
