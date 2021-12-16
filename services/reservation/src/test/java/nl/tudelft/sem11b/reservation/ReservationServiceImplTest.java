@@ -214,7 +214,8 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void secretaryReservation() throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
+    void secretaryReservation()
+            throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
         final var captor = ArgumentCaptor.forClass(Reservation.class);
 
         // arrange
@@ -224,7 +225,8 @@ class ReservationServiceImplTest {
         when(reservations.save(captor.capture())).thenAnswer(i -> i.getArgument(0));
 
         // action
-        service.makeUserReservation(reservationModel.getRoomId(), USER_B.getId(), reservationModel.getTitle(),
+        service.makeUserReservation(reservationModel.getRoomId(),
+                USER_B.getId(), reservationModel.getTitle(),
                 reservationModel.getSince(), reservationModel.getUntil());
 
         // assert
@@ -247,14 +249,16 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void invalidSecretaryVerification() throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
+    void invalidSecretaryVerification()
+            throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
         when(users.currentUser()).thenReturn(USER_A);
         when(groups.getGroupsOfSecretary(any(), any())).thenReturn(new ArrayList<>());
         assertFalse(service.verifySecretary(USER_B.getId()));
     }
 
     @Test
-    void validSecretaryVerification() throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
+    void validSecretaryVerification()
+            throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
         when(users.currentUser()).thenReturn(USER_A);
         when(groups.getGroupsOfSecretary(any(), any())).thenReturn(GROUPS);
         assertTrue(service.verifySecretary(USER_B.getId()));

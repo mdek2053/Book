@@ -28,6 +28,8 @@ public class Constants {
     public static final UserModel USER_A = new UserModel(1L, "jgeneric", new String[0]);
     public static final UserModel USER_B = new UserModel(2L, "jsmith", new String[0]);
     public static List<GroupModel> GROUPS = new ArrayList<>();
-    public static final GroupModel GROUP_A = new GroupModel("Research", USER_A.getId(), new ArrayList<>());
-    public static final GroupModel GROUP_B = new GroupModel("MathGroup", USER_B.getId(), new ArrayList<>());
+    public static final GroupModel GROUP_A = new GroupModel(
+            "Research", USER_A.getId(), new ArrayList<>());
+    public static final GroupModel GROUP_B = new GroupModel(
+            "MathGroup", USER_B.getId(), new ArrayList<>());
 }
