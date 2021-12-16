@@ -3,6 +3,9 @@ package nl.tudelft.sem11b.authentication.filters;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -12,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import nl.tudelft.sem11b.data.models.UserRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -32,6 +38,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final transient AuthenticationManager authenticationManager;
 
     private final transient String secret;
+
+    private final transient Gson gson = new Gson();
 
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager, String secret) {
         this.authenticationManager = authenticationManager;
@@ -49,13 +57,17 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response)
                                                 throws AuthenticationException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(username, password);
-        //System.out.println("??? password " + authenticationToken.getCredentials().toString());
-        //System.out.println("is auth = " + auth.isAuthenticated());
-        return authenticationManager.authenticate(authenticationToken);
+        try {
+            UserRequestModel user = gson.fromJson(request.getReader(), UserRequestModel.class);
+            String username = user.getLogin();
+            String password = user.getPassword();
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(username, password);
+            return authenticationManager.authenticate(authenticationToken);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        throw new UsernameNotFoundException("Incorrect credentials");
     }
 
     /**
@@ -79,6 +91,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                         .collect(Collectors.toList()))
                 .sign(Algorithm.HMAC256(secret));
         response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), "token: " + token);
+        Map<String, String> map = new HashMap<>();
+        map.put("token", token);
+        new ObjectMapper().writeValue(response.getOutputStream(), map);
     }
 }
