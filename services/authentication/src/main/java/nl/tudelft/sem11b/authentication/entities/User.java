@@ -82,6 +82,18 @@ public class User {
         return role;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setNetId(String netId) {
+        this.netId = netId;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     /**
      * First checks whether the provided role is valid.
      * After that, sets the role of the user.
@@ -102,13 +114,7 @@ public class User {
      * @return Model of this entity
      */
     public UserModel toModel() {
-        String[] roles;
-        if (role == null || role.equalsIgnoreCase("employee")) {
-            roles = null;
-        } else {
-            roles = new String[]{role};
-        }
-
+        String[] roles = new String[]{role};
         return new UserModel(id, netId, roles);
     }
 

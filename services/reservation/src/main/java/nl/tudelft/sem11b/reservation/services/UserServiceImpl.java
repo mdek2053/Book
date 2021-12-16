@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.reservation.services;
 
 import java.net.URI;
+import java.util.List;
 
 import nl.tudelft.sem11b.clients.AuthenticatedServiceClient;
 import nl.tudelft.sem11b.clients.UserClient;
@@ -26,5 +27,10 @@ public class UserServiceImpl extends AuthenticatedServiceClient<UserClient> impl
     public long addUser(String netId, String password, Roles role)
         throws ApiException, InvalidData {
         return openClient().addUser(netId, password, role);
+    }
+
+    @Override
+    public List<UserModel> getAllUsers() throws ApiException {
+        return openClient().getAllUsers();
     }
 }

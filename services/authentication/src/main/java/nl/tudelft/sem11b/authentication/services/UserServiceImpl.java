@@ -2,7 +2,9 @@ package nl.tudelft.sem11b.authentication.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
@@ -30,9 +32,9 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    transient PasswordEncoder passwordEncoder;
     @Autowired
-    UserRepository userRepository;
+    transient UserRepository userRepository;
 
     /**
      * Finds a user by providing the netId/username as input.
@@ -91,5 +93,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         saveUser(newUser);
 
         return newUser.getId();
+    }
+
+    public List<UserModel> getAllUsers() {
+        return userRepository.findAll().stream().map(User::toModel).collect(Collectors.toList());
     }
 }

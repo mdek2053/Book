@@ -18,7 +18,8 @@ public interface GroupService {
     GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException;
 
-    GroupModel getGroupInfo(Long groupId) throws InvalidGroupCredentialsException;
+    GroupModel getGroupInfo(Long groupId) throws InvalidGroupCredentialsException,
+            ApiException, InvalidCredentialsException;
 
     void addGroupMembers(List<Long> users, GroupModel group)
             throws InvalidGroupCredentialsException;
