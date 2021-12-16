@@ -3,12 +3,8 @@ package nl.tudelft.sem11b.clients;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
-import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.models.GroupModel;
-import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.http.ApiClient;
 import nl.tudelft.sem11b.http.Authenticated;
 import nl.tudelft.sem11b.services.GroupService;
@@ -27,33 +23,34 @@ public class GroupClient implements GroupService {
     }
 
     @Override
-    public List<GroupModel> getGroupsOfUser(UserModel user)
-            throws NoAssignedGroupException, ApiException {
-        return api.get("/groups?user=" + user,
+    public List<GroupModel> getGroupsOfUser(Long id)
+            throws ApiException {
+        return api.get("/groups/" + id,
                 new TypeReference<List<GroupModel>>() {
                 }).unwrap();
     }
 
     @Override
-    public List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups)
+    public List<GroupModel> getGroupsOfSecretary(Long id, List<GroupModel> groups)
             throws ApiException {
-        return api.get("/groups/secretary?user=" + user + "&groups=" + groups,
+        return api.get("/groups/secretary/" + id,
                 new TypeReference<List<GroupModel>>() {
                 }).unwrap();
     }
 
     @Override
     public GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
-            throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException {
+            throws ApiException {
         GroupModel groupModel = new GroupModel(name, secretaryId, groupMembers);
-        return api.get("/groups?model=" + groupModel,
-                new TypeReference<GroupModel>() {
+        api.post("/groups/" + groupModel.getGroupId(), groupModel,
+                new TypeReference<>() {
                 }).unwrap();
+        return groupModel;
     }
 
     @Override
     public GroupModel getGroupInfo(Long groupId)
-            throws InvalidGroupCredentialsException, ApiException, InvalidCredentialsException {
+            throws ApiException {
         return api.get("/groups/" + groupId,
                 new TypeReference<GroupModel>() {
                 }).unwrap();
@@ -61,7 +58,7 @@ public class GroupClient implements GroupService {
 
     @Override
     public void addGroupMembers(List<Long> users, GroupModel group)
-            throws InvalidGroupCredentialsException, ApiException {
+            throws ApiException {
         api.get("/groups/members?users=" + users + "&group=" + group,
                 new TypeReference<GroupModel>() {
                 }).unwrap();

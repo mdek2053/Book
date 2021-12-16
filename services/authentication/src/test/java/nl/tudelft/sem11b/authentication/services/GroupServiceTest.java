@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -86,7 +84,7 @@ class GroupServiceTest {
     void getGroupsOfUserNoGroups() {
         when(groupRepository.findAll()).thenReturn(new ArrayList<>());
         assertThrows(NoAssignedGroupException.class, () -> groupService
-                .getGroupsOfUser(userModel1));
+                .getGroupsOfUser(userModel1.getId()));
     }
 
     @Test
@@ -94,7 +92,7 @@ class GroupServiceTest {
         when(groupRepository.findAll()).thenReturn(groups);
         List<GroupModel> result = new ArrayList<>();
         result.add(groupModel1);
-        assertEquals(result, groupService.getGroupsOfUser(userModel4));
+        assertEquals(result, groupService.getGroupsOfUser(userModel4.getId()));
     }
 
     @Test

@@ -10,7 +10,6 @@ import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.models.GroupModel;
-import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.GroupService;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +22,15 @@ public class GroupServiceImpl extends AuthenticatedServiceClient<GroupService>
     }
 
     @Override
-    public List<GroupModel> getGroupsOfUser(UserModel user)
+    public List<GroupModel> getGroupsOfUser(Long id)
             throws NoAssignedGroupException, ApiException {
-        return openClient().getGroupsOfUser(user);
+        return openClient().getGroupsOfUser(id);
     }
 
     @Override
-    public List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups)
+    public List<GroupModel> getGroupsOfSecretary(Long id, List<GroupModel> groups)
             throws ApiException {
-        return openClient().getGroupsOfSecretary(user, groups);
+        return openClient().getGroupsOfSecretary(id, groups);
     }
 
     @Override

@@ -185,7 +185,7 @@ public class ReservationServiceImpl implements ReservationService {
      */
     public boolean verifySecretary(Long getForUser) throws ApiException {
         List<GroupModel> groupList =
-                groups.getGroupsOfSecretary(users.currentUser(), new ArrayList<>());
+                groups.getGroupsOfSecretary(users.currentUser().getId(), new ArrayList<>());
         for (GroupModel groupModel : groupList) {
             if (groupModel.getGroupMembers().contains(getForUser)) {
                 return true;
