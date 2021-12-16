@@ -218,6 +218,15 @@ public class ReservationServiceImpl implements ReservationService {
         reservations.save(reservation);
     }
 
+    /**
+     * Deletes reservations if the person has permissions do it.
+     * The person has permission to delete reservation only when they are admin
+     * or when they created the reservation.
+     * @param reservationId   The id of reservation to be deleted
+     * @throws EntityNotFound is thrown when the reservation doesn't exist.
+     * @throws ApiException is thrown when user is not authorized to
+     *     delete reservation.
+     */
     @Override
     public void deleteReservation(long reservationId) throws EntityNotFound, ApiException {
         var reservationOpt = reservations.findById(reservationId);

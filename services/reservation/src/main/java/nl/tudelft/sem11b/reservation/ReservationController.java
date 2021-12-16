@@ -107,6 +107,10 @@ public class ReservationController {
         }
     }
 
+    /**
+     * Deletes reservation with given id.
+     * @param id of reservation that should be deleted.
+     */
     @DeleteMapping("/{id}")
     void deleteReservation(@PathVariable long id) {
         try {
