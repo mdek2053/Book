@@ -223,18 +223,19 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public boolean checkAvailability(RoomModel roomModel, ReservationRequestModel requestModel) {
-        if (roomModel == null || requestModel == null) {
+    public boolean checkAvailability(Long roomModelId, ReservationRequestModel requestModel) {
+        if (roomModelId == null || requestModel == null) {
             return false;
         }
         try {
+            RoomModel roomModel = rooms.getRoom(roomModelId).get();
             validateTime(requestModel.getSince(), requestModel.getUntil());
             validateRoom(roomModel, requestModel.getSince(), requestModel.getUntil());
             validateConflicts(requestModel.getForUser(), requestModel.getRoomId(),
                     Timestamp.valueOf(requestModel.getSince().toLocal()),
                     Timestamp.valueOf(requestModel.getUntil().toLocal()));
             return true;
-        } catch (InvalidData ex) {
+        } catch (InvalidData | ApiException ex) {
             ex.toResponseException();
             return false;
         }

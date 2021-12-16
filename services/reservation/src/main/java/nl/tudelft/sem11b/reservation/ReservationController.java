@@ -10,7 +10,6 @@ import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
-import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,16 +90,16 @@ public class ReservationController {
     /**
      * Checks availability of room compared to the request sent.
      *
-     * @param roomModel    RoomModel of the room which we want to check the availability for
+     * @param roomModelId  id of a RoomModel for which the availability needs to be checked
      * @param requestModel of type ReservationRequestModel which contains the reservation request
      * @return a boolean value whether to request is valid and
      *      does not collide with any other reservations
      */
     @GetMapping("")
-    public boolean checkAvailability(@RequestBody RoomModel roomModel,
-                                     @RequestBody ReservationRequestModel requestModel) {
+    public boolean checkAvailability(@RequestParam Optional<Long> roomModelId,
+                                     @RequestParam Optional<ReservationRequestModel> requestModel) {
         try {
-            return reservationService.checkAvailability(roomModel, requestModel);
+            return reservationService.checkAvailability(roomModelId.get(), requestModel.get());
         } catch (InvalidData | ApiException invalidData) {
             invalidData.toResponseException();
         }

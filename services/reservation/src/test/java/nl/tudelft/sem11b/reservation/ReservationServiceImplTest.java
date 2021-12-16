@@ -272,14 +272,14 @@ class ReservationServiceImplTest {
     void checkValidAvailability() throws ApiException {
         when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
         when(users.currentUser()).thenReturn(USER_A);
-        assertTrue(service.checkAvailability(ROOM_A, requestModel));
+        assertTrue(service.checkAvailability(ROOM_A.getId(), requestModel));
     }
 
     @Test
     void checkInvalidTimeAvailability() throws ApiException {
         when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
         when(users.currentUser()).thenReturn(USER_A);
-        assertFalse(service.checkAvailability(ROOM_A,
+        assertFalse(service.checkAvailability(ROOM_A.getId(),
                 new ReservationRequestModel(requestModel.getRoomId(), requestModel.getTitle(),
                         ApiDate.yesterday().at(new ApiTime(8,0)),
                         ApiDate.yesterday().at(new ApiTime(9,0)),
