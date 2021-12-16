@@ -67,7 +67,7 @@ public class GroupController {
         return groupService.getGroupsOfUser(id);
     }
 
-    @GetMapping(value = "/secretary/{id}")
+    @GetMapping(value = "/{id}")
     public List<GroupModel> getGroupsOfSecretary(@PathVariable Long id) {
         return groupService.getGroupsOfSecretary(id, new ArrayList<>());
     }

@@ -33,7 +33,7 @@ public class GroupClient implements GroupService {
     @Override
     public List<GroupModel> getGroupsOfSecretary(Long id, List<GroupModel> groups)
             throws ApiException {
-        return api.get("/groups/secretary/" + id,
+        return api.get("/groups/" + id,
                 new TypeReference<List<GroupModel>>() {
                 }).unwrap();
     }
