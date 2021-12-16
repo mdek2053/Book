@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.persistence.AttributeOverride;
@@ -10,7 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import nl.tudelft.sem11b.data.TimeOfDay;
+import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.models.BuildingModel;
 
 /**
@@ -19,7 +20,7 @@ import nl.tudelft.sem11b.data.models.BuildingModel;
 @Entity
 public class Building {
     @Id @Column(name = "id", nullable = false)
-    private int id;
+    private long id;
     @Column(name = "prefix", nullable = false, unique = true)
     private String prefix;
     @Column(name = "name", nullable = false)
@@ -30,15 +31,19 @@ public class Building {
     @AttributeOverrides({
         @AttributeOverride(name = "timestamp", column = @Column(name = "opening_timestamp"))
     })
-    private TimeOfDay opening;
+    private ApiTime opening;
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "timestamp", column = @Column(name = "closing_timestamp"))
     })
-    private TimeOfDay closing;
+    private ApiTime closing;
 
     @OneToMany(mappedBy = "building")
     private Set<Room> rooms;
+
+    public Building() {
+
+    }
 
     /**
      * Gets the unique numeric identifier of the building.
@@ -98,7 +103,7 @@ public class Building {
      *
      * @return Opening time of the building
      */
-    public TimeOfDay getOpening() {
+    public ApiTime getOpening() {
         return opening;
     }
 
@@ -108,7 +113,7 @@ public class Building {
      *
      * @param opening New opening time of the building
      */
-    public void setOpening(TimeOfDay opening) {
+    public void setOpening(ApiTime opening) {
         setHours(opening, closing);
     }
 
@@ -117,7 +122,7 @@ public class Building {
      *
      * @return Closing time of the building
      */
-    public TimeOfDay getClosing() {
+    public ApiTime getClosing() {
         return closing;
     }
 
@@ -127,7 +132,7 @@ public class Building {
      *
      * @param closing New closing time of the building
      */
-    public void setClosing(TimeOfDay closing) {
+    public void setClosing(ApiTime closing) {
         setHours(opening, closing);
     }
 
@@ -138,7 +143,7 @@ public class Building {
      * @param opening New opening hours
      * @param closing New closing hours
      */
-    public void setHours(TimeOfDay opening, TimeOfDay closing) {
+    public void setHours(ApiTime opening, ApiTime closing) {
         if (opening.compareTo(closing) >= 0) {
             throw new IllegalArgumentException("Opening hours must be before closing hours!");
         }
@@ -166,11 +171,52 @@ public class Building {
     }
 
     /**
+     * Creates a building object.
+     *
+     * @param id       building's id
+     * @param prefix   prefix of building
+     * @param name     name of building
+     * @param opening  time the building opens
+     * @param closing  time the building closes
+     * @param rooms    rooms contained in the building
+     */
+    public Building(long id, String prefix, String name,
+                    ApiTime opening, ApiTime closing, Set<Room> rooms) {
+        this.id = id;
+        this.prefix = prefix;
+        this.name = name;
+        this.opening = opening;
+        this.closing = closing;
+        this.rooms = rooms;
+    }
+
+    /**
      * Converts the building entity into its equivalent model.
      *
      * @return Building model
      */
     public BuildingModel toModel() {
         return new BuildingModel(id, prefix, name, opening, closing);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Building building = (Building) o;
+        return id == building.id && Objects.equals(prefix, building.prefix)
+                && Objects.equals(name, building.name)
+                && Objects.equals(opening, building.opening)
+                && Objects.equals(closing, building.closing)
+                && Objects.equals(rooms, building.rooms);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, prefix, name, opening, closing, rooms);
     }
 }

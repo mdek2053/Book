@@ -12,15 +12,16 @@ import org.junit.jupiter.api.Test;
 
 class GroupTest {
 
-    User user = new User("netId", "employee", "abc");
-    User user1 = new User("netId1", "employee", "abc1");
-    User user2 = new User("netId2", "employee", "abc2");
-    User user3 = new User("netId3", "employee", "abc3");
-    List<Long> members = new ArrayList<>();
-    List<Long> newMembers = new ArrayList<>();
-    Group group = new Group("group", user, members, 2);
-    Group group1 = new Group("group", user, members, 2);
-    Group group2 = new Group("group1", user1, newMembers, 3);
+    transient String role = "employee";
+    transient User user = new User("netId", role, "abc");
+    transient User user1 = new User("netId1", role, "abc1");
+    transient User user2 = new User("netId2", role, "abc2");
+    transient User user3 = new User("netId3", role, "abc3");
+    transient List<Long> members = new ArrayList<>();
+    transient List<Long> newMembers = new ArrayList<>();
+    transient Group group = new Group("group", user.getId(), members, 2L);
+    transient Group group1 = new Group("group", user.getId(), members, 2L);
+    transient Group group2 = new Group("group1", user1.getId(), newMembers, 3L);
 
     @BeforeEach
     void setup() {
@@ -37,7 +38,7 @@ class GroupTest {
 
     @Test
     void getSecretary() {
-        assertEquals(user, group.getSecretary());
+        assertEquals(user.getId(), group.getSecretary());
     }
 
     @Test
@@ -52,8 +53,8 @@ class GroupTest {
 
     @Test
     void setSecretary() {
-        group.setSecretary(user1);
-        assertEquals(user1, group.getSecretary());
+        group.setSecretary(user1.getId());
+        assertEquals(user1.getId(), group.getSecretary());
     }
 
     @Test

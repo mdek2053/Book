@@ -1,14 +1,16 @@
 package nl.tudelft.sem11b.data.models;
 
-import nl.tudelft.sem11b.data.Day;
+import java.util.Objects;
+
+import nl.tudelft.sem11b.data.ApiDate;
 
 /**
  * Represents a closure of a room.
  */
 public class ClosureModel {
-    private final String reason;
-    private final Day since;
-    private final Day until;
+    private String reason;
+    private ApiDate since;
+    private ApiDate until;
 
     /**
      * Instantiates the {@link ClosureModel} class.
@@ -26,10 +28,14 @@ public class ClosureModel {
      * @param since  Time when closure begins
      * @param until  Time when closure ends
      */
-    public ClosureModel(String reason, Day since, Day until) {
+    public ClosureModel(String reason, ApiDate since, ApiDate until) {
         this.reason = reason;
         this.since = since;
         this.until = until;
+    }
+
+    private ClosureModel() {
+        // default constructor for model materialization
     }
 
     /**
@@ -46,7 +52,7 @@ public class ClosureModel {
      *
      * @return Beginning date of the closure (or null)
      */
-    public Day getSince() {
+    public ApiDate getSince() {
         return since;
     }
 
@@ -55,7 +61,28 @@ public class ClosureModel {
      *
      * @return Ending date of the closure (or null)
      */
-    public Day getUntil() {
+    public ApiDate getUntil() {
         return until;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ClosureModel)) {
+            return false;
+        }
+
+        ClosureModel that = (ClosureModel) o;
+
+        if (!Objects.equals(reason, that.reason)) {
+            return false;
+        }
+        if (!Objects.equals(since, that.since)) {
+            return false;
+        }
+        return Objects.equals(until, that.until);
+    }
+
 }

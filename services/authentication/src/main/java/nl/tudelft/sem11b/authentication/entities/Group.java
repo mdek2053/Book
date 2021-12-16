@@ -1,27 +1,38 @@
 package nl.tudelft.sem11b.authentication.entities;
 
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import nl.tudelft.sem11b.data.models.GroupModel;
 
 @Entity
+@Table(name = "groups")
 public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "groupId")
-    private int groupId;
+    private long groupId;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "secretary")
-    private User secretary;
+    //@ManyToOne
+    private Long secretary;
 
+    @ElementCollection
     private List<Long> groupMembers;
 
     /**
@@ -32,7 +43,7 @@ public class Group {
      * @param groupMembers of type List, contains a list of users who are part of the group.
      * @param groupId      contains the groupId.
      */
-    public Group(String name, User secretary, List<Long> groupMembers, int groupId) {
+    public Group(String name, Long secretary, List<Long> groupMembers, Long groupId) {
         this.name = name;
         this.secretary = secretary;
         this.groupMembers = groupMembers;
@@ -46,17 +57,21 @@ public class Group {
      * @param secretary     of type User, who is the secretary of the group
      * @param groupMembers  of type List, contains a list of users who are part of the group.
      */
-    public Group(String name, User secretary, List<Long> groupMembers) {
+    public Group(String name, Long secretary, List<Long> groupMembers) {
         this.name = name;
         this.secretary = secretary;
         this.groupMembers = groupMembers;
     }
 
-    public int getGroupId() {
+    public Group() {
+
+    }
+
+    public Long getGroupId() {
         return groupId;
     }
 
-    public User getSecretary() {
+    public Long getSecretary() {
         return secretary;
     }
 
@@ -68,7 +83,7 @@ public class Group {
         return name;
     }
 
-    public void setSecretary(User secretary) {
+    public void setSecretary(Long secretary) {
         this.secretary = secretary;
     }
 
@@ -78,6 +93,10 @@ public class Group {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
     }
 
     /**
@@ -93,6 +112,10 @@ public class Group {
         }
     }
 
+    public GroupModel createGroupModel() {
+        return new GroupModel(this.name, this.secretary, this.groupMembers, this.groupId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -102,7 +125,7 @@ public class Group {
             return false;
         }
         Group group = (Group) o;
-        return getGroupId() == group.getGroupId()
+        return Objects.equals(getGroupId(), group.getGroupId())
                 && Objects.equals(getName(), group.getName())
                 && Objects.equals(getSecretary(), group.getSecretary())
                 && Objects.equals(getGroupMembers(), group.getGroupMembers());

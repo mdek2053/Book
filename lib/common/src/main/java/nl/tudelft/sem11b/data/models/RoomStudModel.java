@@ -1,25 +1,27 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Objects;
+
 /**
  * A summary object for a room used in listings.
  */
 public class RoomStudModel {
-    private final int id;
-    private final String suffix;
-    private final String name;
-    private final int capacity;
-    private final ClosureModel closure;
+    private long id;
+    private String suffix;
+    private String name;
+    private int capacity;
+    private ClosureModel closure;
 
     /**
      * Instantiates the {@link RoomStudModel} class.
      *
-     * @param id Unique numeric identifier of the room
-     * @param suffix Room suffix
-     * @param name Room name
+     * @param id       Unique numeric identifier of the room
+     * @param suffix   Room suffix
+     * @param name     Room name
      * @param capacity Maximal room capacity
-     * @param closure Room closure object (if any)
+     * @param closure  Room closure object (if any)
      */
-    public RoomStudModel(int id, String suffix, String name, int capacity, ClosureModel closure) {
+    public RoomStudModel(long id, String suffix, String name, int capacity, ClosureModel closure) {
         this.id = id;
         this.suffix = suffix;
         this.name = name;
@@ -30,13 +32,17 @@ public class RoomStudModel {
     /**
      * Instantiates the {@link RoomStudModel} class.
      *
-     * @param id Unique numeric identifier of the room
-     * @param suffix Room suffix
-     * @param name Room name
+     * @param id       Unique numeric identifier of the room
+     * @param suffix   Room suffix
+     * @param name     Room name
      * @param capacity Maximal room capacity
      */
-    public RoomStudModel(int id, String suffix, String name, int capacity) {
+    public RoomStudModel(long id, String suffix, String name, int capacity) {
         this(id, suffix, name, capacity, null);
+    }
+
+    private RoomStudModel() {
+        // default constructor for model materialization
     }
 
     /**
@@ -44,7 +50,7 @@ public class RoomStudModel {
      *
      * @return ID of the room
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -82,5 +88,35 @@ public class RoomStudModel {
      */
     public ClosureModel getClosure() {
         return closure;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RoomStudModel that = (RoomStudModel) o;
+        return id == that.id && capacity == that.capacity
+                && suffix.equals(that.suffix) && name.equals(that.name)
+                && Objects.equals(closure, that.closure);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, suffix, name, capacity, closure);
+    }
+
+    @Override
+    public String toString() {
+        return "RoomStudModel{"
+                + "id=" + id
+                + ", suffix='" + suffix + '\''
+                + ", name='" + name + '\''
+                + ", capacity=" + capacity
+                + ", closure=" + closure
+                + '}';
     }
 }
