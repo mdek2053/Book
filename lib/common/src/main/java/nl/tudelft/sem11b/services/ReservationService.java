@@ -7,6 +7,8 @@ import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
+import nl.tudelft.sem11b.data.models.RoomModel;
 
 /**
  * API definition of the reservation service. This service is responsible for management of
@@ -54,4 +56,7 @@ public interface ReservationService {
      */
     void editReservation(long reservationId, String title, ApiDateTime since, ApiDateTime until)
         throws ApiException, EntityNotFound, InvalidData;
+
+    boolean checkAvailability(RoomModel roomModel, ReservationRequestModel requestModel)
+            throws InvalidData, ApiException;
 }

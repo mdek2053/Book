@@ -2,13 +2,15 @@ package nl.tudelft.sem11b.reservation;
 
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
-import nl.tudelft.sem11b.services.BuildingService;
+import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,7 +52,7 @@ public class ReservationController {
     IdModel<Long> makeReservation(@RequestBody ReservationRequestModel req) {
         if (req == null || !req.validate()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Request body empty or doesn't contain all required fields");
+                    "Request body empty or doesn't contain all required fields");
         }
 
         if (req.getForUser() != null) {
@@ -59,7 +61,7 @@ public class ReservationController {
 
         try {
             long reservationId = reservationService.makeOwnReservation(req.getRoomId(),
-                req.getTitle(), req.getSince(), req.getUntil());
+                    req.getTitle(), req.getSince(), req.getUntil());
             return new IdModel<>(reservationId);
         } catch (ServiceException ex) {
             throw ex.toResponseException();
@@ -75,8 +77,8 @@ public class ReservationController {
      */
     @GetMapping("/mine")
     public PageData<ReservationModel> inspectOwnReservation(
-        @RequestParam Optional<Integer> page,
-        @RequestParam Optional<Integer> limit) {
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<Integer> limit) {
         var index = PageIndex.fromQuery(page, limit);
 
         try {
@@ -84,6 +86,25 @@ public class ReservationController {
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }
+    }
+
+    /**
+     * Checks availability of room compared to the request sent.
+     *
+     * @param roomModel    RoomModel of the room which we want to check the availability for
+     * @param requestModel of type ReservationRequestModel which contains the reservation request
+     * @return a boolean value whether to request is valid and
+     *      does not collide with any other reservations
+     */
+    @GetMapping("")
+    public boolean checkAvailability(@RequestBody RoomModel roomModel,
+                                     @RequestBody ReservationRequestModel requestModel) {
+        try {
+            return reservationService.checkAvailability(roomModel, requestModel);
+        } catch (InvalidData | ApiException invalidData) {
+            invalidData.toResponseException();
+        }
+        return false;
     }
 
     /**

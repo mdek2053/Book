@@ -3,8 +3,10 @@ package nl.tudelft.sem11b.reservation;
 import static nl.tudelft.sem11b.reservation.Constants.ROOM_A;
 import static nl.tudelft.sem11b.reservation.Constants.USER_A;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,11 +16,13 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiTime;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
@@ -42,6 +46,14 @@ class ReservationServiceImplTest {
         ApiDate.tomorrow().at(new ApiTime(14, 0)),
         ApiDate.tomorrow().at(new ApiTime(18, 0)),
         "Meeting"
+    );
+
+    private final ReservationRequestModel requestModel = new ReservationRequestModel(
+            ROOM_A.getId(),
+            "Meeting2",
+            ApiDate.tomorrow().at(new ApiTime(13, 30)),
+            ApiDate.tomorrow().at(new ApiTime(15, 30)),
+            USER_A.getId()
     );
 
     @Autowired
@@ -254,5 +266,24 @@ class ReservationServiceImplTest {
         assertEquals(reservationModel.getSince().toLocal(), entity.getSince().toLocalDateTime());
         assertEquals(reservationModel.getUntil().toLocal(), entity.getUntil().toLocalDateTime());
         assertEquals(USER_A.getId(), entity.getUserId());
+    }
+
+    @Test
+    void checkValidAvailability() throws ApiException {
+        when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
+        when(users.currentUser()).thenReturn(USER_A);
+        assertTrue(service.checkAvailability(ROOM_A, requestModel));
+    }
+
+    @Test
+    void checkInvalidTimeAvailability() throws ApiException {
+        when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
+        when(users.currentUser()).thenReturn(USER_A);
+        assertFalse(service.checkAvailability(ROOM_A,
+                new ReservationRequestModel(requestModel.getRoomId(), requestModel.getTitle(),
+                        ApiDate.yesterday().at(new ApiTime(8,0)),
+                        ApiDate.yesterday().at(new ApiTime(9,0)),
+                        requestModel.getForUser()
+                )));
     }
 }

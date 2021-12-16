@@ -1,8 +1,6 @@
 package nl.tudelft.sem11b.reservation.repository;
 
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Optional;
 import javax.transaction.Transactional;
 
 import nl.tudelft.sem11b.reservation.entity.Reservation;
@@ -12,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository("ReservationRepository")
+@Repository()
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     // two intervals A and B overlap iff
     // StartA < EndB or StartB < EndA
