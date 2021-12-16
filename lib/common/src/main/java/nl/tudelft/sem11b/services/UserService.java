@@ -1,9 +1,10 @@
 package nl.tudelft.sem11b.services;
 
+import java.util.List;
+
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
-import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 
 /**
@@ -20,4 +21,6 @@ public interface UserService {
     UserModel currentUser() throws ApiException;
 
     long addUser(String netId, String password, Roles role) throws ApiException, InvalidData;
+
+    List<UserModel> getAllUsers() throws ApiException;
 }

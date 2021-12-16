@@ -32,6 +32,10 @@ public class Room {
     @Embedded
     private Closure closure;
 
+    public Room() {
+
+    }
+
     @JoinColumn(name = "building_id", nullable = false)
     @ManyToOne(cascade = CascadeType.ALL)
     private Building building;
@@ -90,12 +94,54 @@ public class Room {
     }
 
     /**
+     * Sets the room closed.
+     *
+     * @param closure Closure object
+     */
+    public void setClosure(Closure closure) {
+        this.closure = closure;
+    }
+
+    /**
+     * Gets the closure..
+     *
+     * @return Closure object
+     */
+    public Closure getClosure() {
+        return closure;
+    }
+
+    /**
      * Gets the entity of the parent building.
      *
      * @return Parent building
      */
     public Building getBuilding() {
         return building;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    /**
+     * Constructs a room object.
+     *
+     * @param id        the room's id
+     * @param suffix    the suffix of the room
+     * @param name      name of the room
+     * @param capacity  capacity
+     * @param closure   object which specifies the closure, or null if open
+     * @param building  object representing the building the room is part of
+     */
+    public Room(long id, String suffix, String name, int capacity,
+                Closure closure, Building building) {
+        this.id = id;
+        this.suffix = suffix;
+        this.name = name;
+        this.capacity = capacity;
+        this.closure = closure;
+        this.building = building;
     }
 
     /**
@@ -117,4 +163,5 @@ public class Room {
         return new RoomModel(id, suffix, name, capacity,
             building.toModel(), new EquipmentModel[0], closure == null ? null : closure.toModel());
     }
+
 }

@@ -8,29 +8,35 @@ import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
+import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
-import nl.tudelft.sem11b.data.exceptions.ServiceException;
+import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
  * Provides a service to handle different requests with groups.
  */
 @Service
-public class GroupServiceImpl {
+public class GroupServiceImpl implements GroupService {
 
     @Autowired
-    GroupRepository groupRepository;
+    transient GroupRepository groupRepository;
 
     @Autowired
-    UserRepository userRepository;
+    transient UserRepository userRepository;
 
     @Autowired
-    UserServiceImpl userService;
+    transient UserServiceImpl userService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     /**
      * Retrieves all groups where the provided user is part of.
@@ -39,43 +45,51 @@ public class GroupServiceImpl {
      * @return a list of all groups which the current user is part of.
      * @throws NoAssignedGroupException when the user is not part of any group.
      */
-    public List<Group> getGroupsOfUser(User user)
+    public List<GroupModel> getGroupsOfUser(UserModel user)
             throws NoAssignedGroupException {
-        Optional<List<Group>> groupList = groupRepository.findAllByGroupIdExists();
+        List<Group> groupList = groupRepository.findAll();
 
-        if (groupList.isPresent()) {
-            List<Group> presentGroupList = groupList.get();
-            List<Group> userGroupList = new ArrayList<>();
-            for (Group group : presentGroupList) {
+        if (!groupList.isEmpty()) {
+
+            List<GroupModel> userGroupList = new ArrayList<>();
+            for (Group group : groupList) {
                 if (group.getGroupMembers().contains(user.getId())) {
-                    userGroupList.add(group);
+                    GroupModel model = group.createGroupModel();
+                    userGroupList.add(model);
                 }
             }
-            if (userGroupList.size() > 0) {
-                userGroupList = getGroupsOfSecretary(user, userGroupList);
+
+            userGroupList = getGroupsOfSecretary(user, userGroupList);
+
+            if (!userGroupList.isEmpty()) {
                 return userGroupList;
             } else {
-                throw new NoAssignedGroupException("User is not assigned to any groups");
+                throw new NoAssignedGroupException("User is not assigned to any group");
             }
         } else {
-            throw new NoAssignedGroupException("There are no group in the system");
+            throw new NoAssignedGroupException("There are no groups in the system");
         }
     }
 
     /**
      * Tries to get the groups of a specific secretary.
      *
-     * @param user of type User.
+     * @param user of type UserModel.
      * @return a list of groups for which the provided user is a secretary.
      */
-    public List<Group> getGroupsOfSecretary(User user, List<Group> groups) {
-        Optional<List<Group>> groupList = groupRepository.findGroupsBySecretary(user);
+    public List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups) {
+        Optional<User> secretary = userRepository.findUserByNetId(user.getLogin());
+        if (secretary.isPresent()) {
+            Optional<List<Group>> groupList =
+                    groupRepository.findGroupsBySecretary(secretary.get().getId());
 
-        if (groupList.isPresent()) {
-            List<Group> secretaryGroups = groupList.get();
-            for (Group group : secretaryGroups) {
-                if (!groups.contains(group)) {
-                    groups.add(group);
+            if (groupList.isPresent()) {
+                List<Group> secretaryGroups = groupList.get();
+                for (Group group : secretaryGroups) {
+                    GroupModel model = group.createGroupModel();
+                    if (!groups.contains(model)) {
+                        groups.add(model);
+                    }
                 }
             }
         }
@@ -83,39 +97,30 @@ public class GroupServiceImpl {
     }
 
     /**
-     * Saves the input object to the groupRepository.
-     *
-     * @param group of type Group which needs to be saved in the groupRepository.
-     */
-    public void saveGroup(Group group) {
-        groupRepository.save(group);
-    }
-
-    /**
      * Adds a new group to the system after checking the validity of the input.
      *
-     * @param secretary    of type User, who is the secretary of the new group.
+     * @param secretaryId    of type Long, if of the secretary of the new group.
      * @param groupMembers of type List, contains a list of users who will be part of the group.
      * @return the group after it is added
      * @throws InvalidGroupCredentialsException when a group already exists
      *      with the specific groupId or when the credentials are invalid.
      */
-    public Group addGroup(String name, User secretary, List<Long> groupMembers)
+    public GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
             throws ApiException, InvalidGroupCredentialsException {
-        if (secretary == null) {
+        User secretary;
+        if (secretaryId == null) {
             UserModel secretaryModel;
             secretaryModel = userService.currentUser();
             secretary = userRepository.findUserByNetId(secretaryModel.getLogin()).get();
+        } else {
+            secretary = userRepository.findUserById(secretaryId).get();
         }
-        try {
-            verifyUsers(groupMembers);
-        } catch (InvalidGroupCredentialsException e) {
-            throw new InvalidGroupCredentialsException("At least one provided member "
-                    + "is not registered in the system yet");
-        }
-        Group group = new Group(name, secretary, groupMembers);
-        saveGroup(group);
-        return group;
+
+        verifyUsers(groupMembers);
+
+        Group group = new Group(name, secretary.getId(), groupMembers);
+        group = groupRepository.save(group);
+        return new GroupModel(group.getName(), secretary.getId(), groupMembers, group.getGroupId());
     }
 
     /**
@@ -143,10 +148,21 @@ public class GroupServiceImpl {
      * @throws InvalidGroupCredentialsException when there is no group
      *      connected to the provided groupId.
      */
-    public Group getGroupInfo(int groupId) throws InvalidGroupCredentialsException {
+    public GroupModel getGroupInfo(Long groupId) throws InvalidGroupCredentialsException,
+            ApiException, InvalidCredentialsException {
         Optional<Group> group = groupRepository.findGroupByGroupId(groupId);
         if (group.isPresent()) {
-            return group.get();
+            Group presentGroup = group.get();
+            UserModel currentUser = userService.currentUser();
+            if (currentUser.inRole(Roles.Admin)
+                    || currentUser.getId() == presentGroup.getSecretary()
+                    || presentGroup.getGroupMembers().contains(currentUser.getId())) {
+                return new GroupModel(presentGroup.getName(), presentGroup.getSecretary(),
+                    presentGroup.getGroupMembers(), presentGroup.getGroupId());
+            } else {
+                throw new InvalidCredentialsException("User not allowed to "
+                        + "access this group's info.");
+            }
         } else {
             throw new InvalidGroupCredentialsException(
                     "There is no group with the provided group id");
@@ -157,11 +173,11 @@ public class GroupServiceImpl {
      * Tries to add new members to an existing group.
      *
      * @param users of type List containing new members.
-     * @param group of type Group containing the group where we want to add the new members to.
+     * @param group of type GroupModel containing the group where we want to add the new members to.
      * @throws InvalidGroupCredentialsException when at least one provided user
      *      is not specified in the system.
      */
-    public void addGroupMembers(List<Long> users, Group group)
+    public void addGroupMembers(List<Long> users, GroupModel group)
             throws InvalidGroupCredentialsException {
         try {
             verifyUsers(users);

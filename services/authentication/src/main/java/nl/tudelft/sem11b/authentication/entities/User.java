@@ -36,6 +36,21 @@ public class User {
 
     }
 
+    /**
+     * Constructor for testing purposes of creating users.
+     *
+     * @param id       provides the id of the user.
+     * @param netId    provides the username of the user in the system.
+     * @param role     provides which role the user has in the system,
+     *                 can be a employee, secretary or admin.
+     * @param password provides the password of the user which the user can log in with.
+     */
+    public User(Long id, String netId, String role, String password) {
+        this.id = id;
+        this.netId = netId;
+        this.role = role;
+        this.password = password;
+    }
 
     /**
      * Constructor for creating new users.
@@ -67,6 +82,18 @@ public class User {
         return role;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setNetId(String netId) {
+        this.netId = netId;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     /**
      * First checks whether the provided role is valid.
      * After that, sets the role of the user.
@@ -87,13 +114,7 @@ public class User {
      * @return Model of this entity
      */
     public UserModel toModel() {
-        String[] roles;
-        if (role == null || role.equalsIgnoreCase("employee")) {
-            roles = null;
-        } else {
-            roles = new String[]{role};
-        }
-
+        String[] roles = new String[]{role};
         return new UserModel(id, netId, roles);
     }
 

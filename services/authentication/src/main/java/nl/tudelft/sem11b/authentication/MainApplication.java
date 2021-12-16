@@ -26,6 +26,7 @@ public class MainApplication {
             try {
                 // add admin if it doesn't exist in system already
                 userService.addUser("SystemAdmin", "password", Roles.Admin);
+                userService.addUser("Employee", "password", Roles.Employee);
             } catch (Exception e) {
                 System.out.println("Admin already exists.");
             }

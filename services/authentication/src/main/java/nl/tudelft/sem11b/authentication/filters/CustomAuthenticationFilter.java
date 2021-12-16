@@ -29,9 +29,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+    private final transient AuthenticationManager authenticationManager;
 
-    private final String secret;
+    private final transient String secret;
 
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager, String secret) {
         this.authenticationManager = authenticationManager;
@@ -54,9 +54,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
         //System.out.println("??? password " + authenticationToken.getCredentials().toString());
-        Authentication auth =  authenticationManager.authenticate(authenticationToken);
         //System.out.println("is auth = " + auth.isAuthenticated());
-        return auth;
+        return authenticationManager.authenticate(authenticationToken);
     }
 
     /**
@@ -66,13 +65,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
      * @param chain contains a chain of filters which can be applied in order.
      * @param authResult contains info which was generated from the successful authentication.
      * @throws IOException when input or output functions do not function as expected.
-     * @throws ServletException when a servlet encounters difficulty functioning in the method.
      */
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response, FilterChain chain,
                                             Authentication authResult)
-                                            throws IOException, ServletException {
+                                            throws IOException {
         User user = (User) authResult.getPrincipal();
         String token = JWT.create()
                 .withSubject(user.getUsername())
