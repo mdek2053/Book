@@ -1,5 +1,8 @@
 package nl.tudelft.sem11b.clients;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
@@ -34,5 +37,10 @@ public class UserClient implements UserService {
     public long addUser(String netId, String password, Roles role)
         throws ApiException, InvalidData {
         return -1; // TODO: Implement
+    }
+
+    @Override
+    public List<UserModel> getAllUsers() throws ApiException {
+        return api.get("/users/all", new TypeReference<List<UserModel>>() {}).unwrap();
     }
 }

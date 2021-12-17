@@ -11,5 +11,9 @@ public enum Roles {
     /**
      * Secretary role grants the user the ability to act on behalf of research groups.
      */
-    Secretary
+    Secretary,
+    /**
+     * Employees can make reservations and modify them.
+     */
+    Employee
 }

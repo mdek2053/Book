@@ -31,9 +31,9 @@ service-authentication-checkstyle:
       - .gradle/
   allow_failure: true
 
-#service-authentication-pmd:
-#  stage: validate
-#  script: ./gradlew :services:authentication:pmdMain :services:authentication:pmdTest
+service-authentication-pmd:
+  stage: validate
+  script: ./gradlew :services:authentication:pmdMain :services:authentication:pmdTest
 
 service-authentication-test:
   stage: test

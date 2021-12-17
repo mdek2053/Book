@@ -193,7 +193,7 @@ public class ApiDate implements Comparable<ApiDate> {
      * @return The day after
      */
     public ApiDate after() {
-        if (day >= daysIn(year)) {
+        if (day >= daysIn(year) - 1) {
             return new ApiDate(year + 1, 1);
         }
 
@@ -338,7 +338,7 @@ public class ApiDate implements Comparable<ApiDate> {
     public static class Deserializer extends JsonDeserializer<ApiDate> {
         @Override
         public ApiDate deserialize(JsonParser p, DeserializationContext ctxt)
-            throws IOException, JacksonException {
+            throws IOException {
             var value = p.getValueAsString();
             if (value == null) {
                 throw new ApiDateDeserializeException("Date requires a string JSON value!",
