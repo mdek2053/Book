@@ -2,6 +2,8 @@ package nl.tudelft.sem11b.data.models;
 
 import nl.tudelft.sem11b.data.ApiTime;
 
+import java.util.Objects;
+
 /**
  * Holds all building information.
  */
@@ -76,5 +78,18 @@ public class BuildingModel {
      */
     public ApiTime getClose() {
         return close;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BuildingModel that = (BuildingModel) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, prefix, name, open, close);
     }
 }

@@ -150,7 +150,7 @@ class RoomControllerTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
 
         Fault fault = new Fault(1, "Blue ball machine broke", room);
 
@@ -178,7 +178,7 @@ class RoomControllerTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
 
         Fault fault = new Fault(1L, "Blue ball machine broke", room);
 
@@ -230,7 +230,7 @@ class RoomControllerTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
 
         Fault fault = new Fault(1L, "Blue ball machine broke", room);
 

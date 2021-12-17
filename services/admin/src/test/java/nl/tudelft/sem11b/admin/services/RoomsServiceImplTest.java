@@ -21,6 +21,7 @@ import java.util.Set;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Building;
+import nl.tudelft.sem11b.admin.data.entities.Equipment;
 import nl.tudelft.sem11b.admin.data.entities.Fault;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
@@ -31,12 +32,7 @@ import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.ClosureModel;
-import nl.tudelft.sem11b.data.models.FaultRequestModel;
-import nl.tudelft.sem11b.data.models.PageData;
-import nl.tudelft.sem11b.data.models.PageIndex;
-import nl.tudelft.sem11b.data.models.RoomStudModel;
-import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.data.models.*;
 import nl.tudelft.sem11b.services.UserService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -72,10 +69,14 @@ class RoomsServiceImplTest {
     private final Building building2 =
             new Building(3, "idk", "EWI", null, null, new HashSet<>());
 
+    private final Equipment beamer = new Equipment(1L, "Beamer");
+    private final EquipmentModel beamerModel = beamer.toModel();
+
     private final Room room1 = new Room(1, "idk", "PC hall 1", 30, null, building1, Set.of());
     private final Room room2 = new Room(2,  "idk", "PC hall 2", 50, null, building1, Set.of());
     private final Room room3 = new Room(3,  "idk", "Boole", 50, null, building2, Set.of());
 
+    private final RoomModel roomModel1 = room1.toModel();
 
     private final RoomStudModel room1StudModel = room1.toStudModel();
     private final RoomStudModel room2StudModel = room2.toStudModel();
@@ -359,7 +360,7 @@ class RoomsServiceImplTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
         when(rooms.existsById(1L)).thenReturn(true);
         when(rooms.getById(1L)).thenReturn(room);
 
@@ -399,7 +400,7 @@ class RoomsServiceImplTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
 
         Fault faultA = new Fault(1L, "A", room);
         Fault faultB = new Fault(2L, "B", room);
@@ -423,7 +424,7 @@ class RoomsServiceImplTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
 
         Fault faultA = new Fault(1L, "A", room);
         Fault faultB = new Fault(2L, "B", room);
@@ -459,7 +460,7 @@ class RoomsServiceImplTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
 
         Fault fault = new Fault(1L, "Blue ball machine broke", room);
         when(faults.findById(1L)).thenReturn(Optional.of(fault));
@@ -509,7 +510,7 @@ class RoomsServiceImplTest {
                 new Building(
                         1L, "EWI", "EEMCS building",
                         new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()));
+                        Set.of()), Set.of());
 
         Fault fault = new Fault(1L, "Blue ball machine broke", room);
 
@@ -521,5 +522,14 @@ class RoomsServiceImplTest {
 
         // assert
         verify(faults, times(1)).delete(fault);
+    }
+
+    @Test
+    public void getRoomTest(){
+        RoomModel expected = roomModel1;
+
+        when(rooms.findById(1L)).thenReturn(Optional.of(room1));
+
+        assertEquals(Optional.of(expected), service.getRoom(1L));
     }
 }

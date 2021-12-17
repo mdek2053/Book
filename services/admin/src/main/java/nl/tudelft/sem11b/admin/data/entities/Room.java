@@ -7,6 +7,7 @@ import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -159,8 +160,34 @@ public class Room {
      * @return Room model
      */
     public RoomModel toModel() {
+        EquipmentModel[] equipmentModels = equipment.stream().map(x -> x.toModel()).toArray(EquipmentModel[]::new);
         return new RoomModel(id, suffix, name, capacity,
-            building.toModel(), new EquipmentModel[0], closure == null ? null : closure.toModel());
+            building.toModel(), equipmentModels, closure == null ? null : closure.toModel());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Room room = (Room) o;
+        return id == room.id && capacity == room.capacity && suffix.equals(room.suffix) && name.equals(room.name) && Objects.equals(closure, room.closure) && equipment.equals(room.equipment) && building.equals(room.building);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, suffix, name, capacity, closure, equipment);
+    }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", suffix='" + suffix + '\'' +
+                ", name='" + name + '\'' +
+                ", capacity=" + capacity +
+                ", closure=" + closure +
+                ", equipment=" + equipment +
+                ", building=" + building +
+                '}';
+    }
 }
