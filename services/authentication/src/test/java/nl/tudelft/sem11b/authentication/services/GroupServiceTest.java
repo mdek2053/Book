@@ -20,7 +20,6 @@ import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.UserModel;
-import nl.tudelft.sem11b.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -156,6 +155,7 @@ class GroupServiceTest {
         when(userRepository.findUserByNetId(user1.getNetId())).thenReturn(Optional.of(user1));
         when(groupRepository.findGroupsBySecretary(user1.getId())).thenReturn(Optional.of(groups));
 
-        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1, new ArrayList<>()));
+        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1.getId(),
+                new ArrayList<>()));
     }
 }
