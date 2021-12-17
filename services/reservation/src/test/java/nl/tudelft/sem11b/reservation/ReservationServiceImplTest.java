@@ -249,22 +249,6 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void invalidSecretaryVerification()
-            throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
-        when(users.currentUser()).thenReturn(USER_A);
-        when(groups.getGroupsOfSecretary(any(), any())).thenReturn(new ArrayList<>());
-        assertFalse(service.verifySecretary(USER_B.getId()));
-    }
-
-    @Test
-    void validSecretaryVerification()
-            throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
-        when(users.currentUser()).thenReturn(USER_A);
-        when(groups.getGroupsOfSecretary(any(), any())).thenReturn(GROUPS);
-        assertTrue(service.verifySecretary(USER_B.getId()));
-    }
-
-    @Test
     void editNonexistentReservation() throws Exception {
         final var id = 2L;
 
