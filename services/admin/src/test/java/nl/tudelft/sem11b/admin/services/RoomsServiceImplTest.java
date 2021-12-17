@@ -35,6 +35,7 @@ import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.FaultRequestModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.UserService;
@@ -76,10 +77,16 @@ class RoomsServiceImplTest {
     private final Room room2 = new Room(2,  "idk", "PC hall 2", 50, null, building1);
     private final Room room3 = new Room(3,  "idk", "Boole", 50, null, building2);
 
+    private final RoomModel roomModel1 = room1.toModel();
 
     private final RoomStudModel room1StudModel = room1.toStudModel();
     private final RoomStudModel room2StudModel = room2.toStudModel();
     private final RoomStudModel room3StudModel = room3.toStudModel();
+
+    private final String[] adminRoles = {"admin"};
+    private final String[] employeeRoles = {"employee"};
+    private final UserModel admin = new UserModel(1, "appel", adminRoles);
+    private final UserModel employee = new UserModel(2, "banaan", employeeRoles);
 
     @BeforeEach
     private void setup() {
@@ -331,6 +338,46 @@ class RoomsServiceImplTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void addRoomUnauthorizedTest() throws ApiException {
+        when(users.currentUser()).thenReturn(employee);
+
+        assertThrows(ApiException.class, () -> {
+            service.addRoom(roomModel1);
+        });
+    }
+
+    @Test
+    public void addRoomAlreadyExistsTest() throws ApiException {
+        when(users.currentUser()).thenReturn(admin);
+        when(rooms.existsById(1L)).thenReturn(true);
+
+        assertThrows(ApiException.class, () -> {
+            service.addRoom(roomModel1);
+        });
+    }
+
+    @Test
+    public void addRoomBuildingDoesntExistTest() throws ApiException {
+        when(users.currentUser()).thenReturn(admin);
+        when(rooms.existsById(1L)).thenReturn(true);
+        when(buildings.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ApiException.class, () -> {
+            service.addRoom(roomModel1);
+        });
+    }
+
+    @Test
+    public void addRoomSuccessfulTest() throws ApiException {
+        when(users.currentUser()).thenReturn(admin);
+        when(rooms.existsById(1L)).thenReturn(true);
+        when(buildings.findById(1L)).thenReturn(Optional.of(building1));
+
+        verify(rooms, times(1)).save(room1);
+    }
+
 
     @Test
     void addFaultTestNoRoom() {

@@ -136,6 +136,15 @@ public class RoomController {
         return room.get();
     }
 
+    @PostMapping("/rooms")
+    public void addRoom(RoomModel model) {
+        try {
+            rooms.addRoom(model);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
+    }
+
     /**
      * Changes or adds a room closure.
      *
