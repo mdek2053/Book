@@ -32,7 +32,14 @@ import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.*;
+import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
+import nl.tudelft.sem11b.data.models.FaultRequestModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.RoomStudModel;
+import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.UserService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +47,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -525,7 +531,7 @@ class RoomsServiceImplTest {
     }
 
     @Test
-    public void getRoomTest(){
+    public void getRoomTest() {
         RoomModel expected = roomModel1;
 
         when(rooms.findById(1L)).thenReturn(Optional.of(room1));

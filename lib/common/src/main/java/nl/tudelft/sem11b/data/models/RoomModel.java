@@ -115,10 +115,18 @@ public class RoomModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RoomModel roomModel = (RoomModel) o;
-        return id == roomModel.id && capacity == roomModel.capacity && suffix.equals(roomModel.suffix) && name.equals(roomModel.name) && building.equals(roomModel.building) && Arrays.equals(equipment, roomModel.equipment) && Objects.equals(closure, roomModel.closure);
+        return id == roomModel.id && capacity == roomModel.capacity
+                && suffix.equals(roomModel.suffix) && name.equals(roomModel.name)
+                && building.equals(roomModel.building)
+                && Arrays.equals(equipment, roomModel.equipment)
+                && Objects.equals(closure, roomModel.closure);
     }
 
     @Override
@@ -130,14 +138,14 @@ public class RoomModel {
 
     @Override
     public String toString() {
-        return "RoomModel{" +
-                "id=" + id +
-                ", suffix='" + suffix + '\'' +
-                ", name='" + name + '\'' +
-                ", capacity=" + capacity +
-                ", building=" + building +
-                ", equipment=" + Arrays.toString(equipment) +
-                ", closure=" + closure +
-                '}';
+        return "RoomModel{"
+                + "id=" + id
+                + ", suffix='" + suffix + '\''
+                + ", name='" + name + '\''
+                + ", capacity=" + capacity
+                + ", building=" + building
+                + ", equipment=" + Arrays.toString(equipment)
+                + ", closure=" + closure
+                + '}';
     }
 }

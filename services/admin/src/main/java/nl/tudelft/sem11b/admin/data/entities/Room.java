@@ -1,14 +1,23 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
-import javax.persistence.*;
+import java.util.Objects;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
-
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * Represents a single room of a {@link Building}.
@@ -16,7 +25,8 @@ import java.util.Set;
 @Entity
 @Table(indexes = {@Index(columnList = "suffix, building_id", unique = true)})
 public class Room {
-    @Id @Column(name = "id", nullable = false)
+    @Id
+    @Column(name = "id", nullable = false)
     private long id;
     @Column(name = "suffix", nullable = false)
     private String suffix;
@@ -160,17 +170,25 @@ public class Room {
      * @return Room model
      */
     public RoomModel toModel() {
-        EquipmentModel[] equipmentModels = equipment.stream().map(x -> x.toModel()).toArray(EquipmentModel[]::new);
+        EquipmentModel[] equipmentModels = equipment.stream().map(x -> x.toModel())
+                .toArray(EquipmentModel[]::new);
         return new RoomModel(id, suffix, name, capacity,
             building.toModel(), equipmentModels, closure == null ? null : closure.toModel());
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Room room = (Room) o;
-        return id == room.id && capacity == room.capacity && suffix.equals(room.suffix) && name.equals(room.name) && Objects.equals(closure, room.closure) && equipment.equals(room.equipment) && building.equals(room.building);
+        return id == room.id && capacity == room.capacity
+                && suffix.equals(room.suffix) && name.equals(room.name)
+                && Objects.equals(closure, room.closure)
+                && equipment.equals(room.equipment) && building.equals(room.building);
     }
 
     @Override
@@ -180,14 +198,14 @@ public class Room {
 
     @Override
     public String toString() {
-        return "Room{" +
-                "id=" + id +
-                ", suffix='" + suffix + '\'' +
-                ", name='" + name + '\'' +
-                ", capacity=" + capacity +
-                ", closure=" + closure +
-                ", equipment=" + equipment +
-                ", building=" + building +
-                '}';
+        return "Room{"
+                + "id=" + id
+                + ", suffix='" + suffix + '\''
+                + ", name='" + name + '\''
+                + ", capacity=" + capacity
+                + ", closure=" + closure
+                + ", equipment=" + equipment
+                + ", building=" + building
+                + '}';
     }
 }

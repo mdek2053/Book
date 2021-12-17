@@ -1,8 +1,8 @@
 package nl.tudelft.sem11b.data.models;
 
-import nl.tudelft.sem11b.data.ApiTime;
-
 import java.util.Objects;
+
+import nl.tudelft.sem11b.data.ApiTime;
 
 /**
  * Holds all building information.
@@ -82,8 +82,12 @@ public class BuildingModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BuildingModel that = (BuildingModel) o;
         return id == that.id;
     }

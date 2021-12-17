@@ -1,13 +1,14 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
-import nl.tudelft.sem11b.data.models.EquipmentModel;
-
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import java.util.Objects;
-import java.util.Set;
+
+import nl.tudelft.sem11b.data.models.EquipmentModel;
+
 
 @Entity
 public class Equipment {
@@ -40,8 +41,12 @@ public class Equipment {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Equipment equipment = (Equipment) o;
         return Objects.equals(id, equipment.id);
     }
