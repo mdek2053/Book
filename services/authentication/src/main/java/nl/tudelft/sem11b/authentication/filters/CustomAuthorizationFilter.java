@@ -27,7 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    private final String secret;
+    private final transient String secret;
 
     public CustomAuthorizationFilter(String secret) {
         this.secret = secret;
@@ -49,9 +49,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     String username = decoded.getSubject();
                     String[] roles = decoded.getClaim("roles").asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    stream(roles).forEach(role -> {
-                        authorities.add(new SimpleGrantedAuthority(role));
-                    });
+                    stream(roles).forEach(role ->
+                            authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);

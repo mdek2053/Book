@@ -32,9 +32,9 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    transient PasswordEncoder passwordEncoder;
     @Autowired
-    UserRepository userRepository;
+    transient UserRepository userRepository;
 
     /**
      * Finds a user by providing the netId/username as input.

@@ -9,22 +9,23 @@ import org.junit.jupiter.api.Test;
 
 class UserTest {
 
-    private User user1 = new User("username", "employee", "abc123");
-    private User user2 = new User("Username", "employee", "abc123");
+    String role = "employee";
+    private transient User user1 = new User("username1", role, "abc1");
+    private transient User user2 = new User("Username2", role, "abc2");
 
     @Test
     void getNetId() {
-        assertEquals("username", user1.getNetId());
+        assertEquals("username1", user1.getNetId());
     }
 
     @Test
     void getPassword() {
-        assertEquals("abc123", user1.getPassword());
+        assertEquals("abc1", user1.getPassword());
     }
 
     @Test
     void getRole() {
-        assertEquals("employee", user1.getRole());
+        assertEquals(role, user1.getRole());
     }
 
     @Test
@@ -41,7 +42,7 @@ class UserTest {
 
     @Test
     void testEquals() {
-        User user3 = new User("username", "employee", "abc123");
+        User user3 = new User("username1", role, "abc1");
         assertTrue(user1.equals(user3));
     }
 
