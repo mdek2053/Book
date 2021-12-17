@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -14,6 +15,7 @@ import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
+
 
 /**
  * Represents a single room of a {@link Building}.
@@ -164,4 +166,22 @@ public class Room {
             building.toModel(), new EquipmentModel[0], closure == null ? null : closure.toModel());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Room room = (Room) o;
+        return id == room.id && capacity == room.capacity && suffix.equals(room.suffix)
+                && name.equals(room.name) && Objects.equals(closure, room.closure)
+                && building.equals(room.building);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, suffix, name, capacity, closure);
+    }
 }

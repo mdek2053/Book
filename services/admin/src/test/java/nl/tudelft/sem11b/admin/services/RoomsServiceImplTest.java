@@ -361,7 +361,7 @@ class RoomsServiceImplTest {
     @Test
     public void addRoomBuildingDoesntExistTest() throws ApiException {
         when(users.currentUser()).thenReturn(admin);
-        when(rooms.existsById(1L)).thenReturn(true);
+        when(rooms.existsById(1L)).thenReturn(false);
         when(buildings.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ApiException.class, () -> {
@@ -372,8 +372,10 @@ class RoomsServiceImplTest {
     @Test
     public void addRoomSuccessfulTest() throws ApiException {
         when(users.currentUser()).thenReturn(admin);
-        when(rooms.existsById(1L)).thenReturn(true);
+        when(rooms.existsById(1L)).thenReturn(false);
         when(buildings.findById(1L)).thenReturn(Optional.of(building1));
+
+        service.addRoom(roomModel1);
 
         verify(rooms, times(1)).save(room1);
     }
