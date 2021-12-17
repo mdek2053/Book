@@ -136,6 +136,10 @@ public class RoomController {
         return room.get();
     }
 
+    /**
+     * Adds a room to the system.
+     * @param model The room to be added
+     */
     @PostMapping("/rooms")
     public void addRoom(RoomModel model) {
         try {

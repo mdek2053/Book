@@ -21,7 +21,16 @@ import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.*;
+import nl.tudelft.sem11b.data.models.BuildingModel;
+import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.FaultModel;
+import nl.tudelft.sem11b.data.models.FaultRequestModel;
+import nl.tudelft.sem11b.data.models.FaultStudModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.RoomStudModel;
+import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.RoomsService;
 import nl.tudelft.sem11b.services.UserService;
 import org.springframework.data.domain.Page;
@@ -149,14 +158,15 @@ public class RoomsServiceImpl implements RoomsService {
                     "Room id already exists");
         }
         BuildingModel buildingModel = model.getBuilding();
-        Optional<Building> buildingOptional= buildings.findById(buildingModel.getId());
+        Optional<Building> buildingOptional = buildings.findById(buildingModel.getId());
 
-        if(buildingOptional.isEmpty()) {
+        if (buildingOptional.isEmpty()) {
             throw new ApiException("Rooms",
                     "Building does not exist");
         }
 
-        Room newRoom = new Room(model.getId(), model.getSuffix(), model.getName(), model.getCapacity(), null, buildingOptional.get());
+        Room newRoom = new Room(model.getId(), model.getSuffix(),
+                model.getName(), model.getCapacity(), null, buildingOptional.get());
 
         rooms.save(newRoom);
     }

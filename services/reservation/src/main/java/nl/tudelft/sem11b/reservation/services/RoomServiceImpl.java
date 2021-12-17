@@ -50,6 +50,11 @@ public class RoomServiceImpl extends AuthenticatedServiceClient<RoomsClient>
     }
 
     @Override
+    public void addRoom(RoomModel model) {
+
+    }
+
+    @Override
     public void closeRoom(long id, ClosureModel closure) throws ApiException {
         openClient().closeRoom(id, closure);
     }

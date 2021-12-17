@@ -13,7 +13,6 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.BuildingService;
 import nl.tudelft.sem11b.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +49,9 @@ public class BuildingServiceImpl implements BuildingService {
                     "Building id already exists");
         }
 
-        Building building = new Building(model.getId(), model.getPrefix(), model.getName(), model.getOpen(), model.getClose(), Set.of());
+        Building building =
+                new Building(model.getId(), model.getPrefix(), model.getName(),
+                        model.getOpen(), model.getClose(), Set.of());
         buildings.save(building);
     }
 }
