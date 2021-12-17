@@ -61,13 +61,13 @@ public class GroupController {
         return groupService.getGroupsOfUser(userService.currentUser().getId());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/user/{id}")
     public List<GroupModel> getGroupsOfUser(@PathVariable Long id)
             throws NoAssignedGroupException {
         return groupService.getGroupsOfUser(id);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/secretary/{id}")
     public List<GroupModel> getGroupsOfSecretary(@PathVariable Long id) {
         return groupService.getGroupsOfSecretary(id, new ArrayList<>());
     }

@@ -25,7 +25,7 @@ public class GroupClient implements GroupService {
     @Override
     public List<GroupModel> getGroupsOfUser(Long id)
             throws ApiException {
-        return api.get("/groups/" + id,
+        return api.get("/groups/user/" + id,
                 new TypeReference<List<GroupModel>>() {
                 }).unwrap();
     }
@@ -33,7 +33,7 @@ public class GroupClient implements GroupService {
     @Override
     public List<GroupModel> getGroupsOfSecretary(Long id, List<GroupModel> groups)
             throws ApiException {
-        return api.get("/groups/" + id,
+        return api.get("/groups/secretary/" + id,
                 new TypeReference<List<GroupModel>>() {
                 }).unwrap();
     }
