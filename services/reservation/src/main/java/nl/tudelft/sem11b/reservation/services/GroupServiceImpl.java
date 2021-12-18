@@ -18,7 +18,7 @@ public class GroupServiceImpl extends AuthenticatedServiceClient<GroupService>
         implements GroupService {
 
     public GroupServiceImpl() {
-        super(URI.create("http://localhost:8082/"), "User", GroupClient::new);
+        super(URI.create("http://localhost:8082/"), "Group", GroupClient::new);
     }
 
     @Override
