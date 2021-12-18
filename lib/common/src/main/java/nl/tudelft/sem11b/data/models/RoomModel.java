@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.data.models;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -110,5 +111,41 @@ public class RoomModel {
      */
     public ClosureModel getClosure() {
         return closure;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RoomModel roomModel = (RoomModel) o;
+        return id == roomModel.id && capacity == roomModel.capacity
+                && suffix.equals(roomModel.suffix) && name.equals(roomModel.name)
+                && building.equals(roomModel.building)
+                && Arrays.equals(equipment, roomModel.equipment)
+                && Objects.equals(closure, roomModel.closure);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, suffix, name, capacity, building, closure);
+        result = 31 * result + Arrays.hashCode(equipment);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "RoomModel{"
+                + "id=" + id
+                + ", suffix='" + suffix + '\''
+                + ", name='" + name + '\''
+                + ", capacity=" + capacity
+                + ", building=" + building
+                + ", equipment=" + Arrays.toString(equipment)
+                + ", closure=" + closure
+                + '}';
     }
 }
