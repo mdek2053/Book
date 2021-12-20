@@ -3,7 +3,6 @@ package nl.tudelft.sem11b.reservation;
 import static nl.tudelft.sem11b.reservation.Constants.ROOM_A;
 import static nl.tudelft.sem11b.reservation.Constants.USER_A;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,6 +35,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @SpringBootTest
@@ -279,10 +279,10 @@ class ReservationServiceImplTest {
     void checkInvalidTimeAvailability() throws ApiException {
         when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
         when(users.currentUser()).thenReturn(USER_A);
-        assertFalse(service.checkAvailability(ROOM_A.getId(),
+        assertThrows(ResponseStatusException.class, () -> service.checkAvailability(ROOM_A.getId(),
                 new ReservationRequestModel(requestModel.getRoomId(), requestModel.getTitle(),
-                        ApiDate.yesterday().at(new ApiTime(8,0)),
-                        ApiDate.yesterday().at(new ApiTime(9,0)),
+                        ApiDate.yesterday().at(requestModel.getSince().getTime()),
+                        ApiDate.yesterday().at(requestModel.getUntil().getTime()),
                         requestModel.getForUser()
                 )));
     }
