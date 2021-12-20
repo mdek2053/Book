@@ -8,10 +8,10 @@ import nl.tudelft.sem11b.data.ApiDateTime;
  * Holds all information about a single reservation.
  */
 public class ReservationModel {
-    private transient long roomId;
-    private transient ApiDateTime since;
-    private transient ApiDateTime until;
-    private transient String title;
+    private long roomId;
+    private ApiDateTime since;
+    private ApiDateTime until;
+    private String title;
 
     /**
      * Gets the unique numeric identifier of the room the reservation takes place in.
@@ -47,6 +47,22 @@ public class ReservationModel {
      */
     public String getTitle() {
         return title;
+    }
+
+    public void setRoomId(long roomId) {
+        this.roomId = roomId;
+    }
+
+    public void setSince(ApiDateTime since) {
+        this.since = since;
+    }
+
+    public void setUntil(ApiDateTime until) {
+        this.until = until;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**

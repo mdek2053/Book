@@ -4,9 +4,9 @@ package nl.tudelft.sem11b.data.models;
  * Holds information used to create a new user.
  */
 public class UserRequestModel {
-    private transient String login;
-    private transient String password;
-    private transient String role;
+    private String login;
+    private String password;
+    private String role;
 
     /**
      * Instantiates the {@link UserRequestModel} class.
@@ -50,5 +50,17 @@ public class UserRequestModel {
      */
     public String getRole() {
         return role;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

@@ -6,10 +6,10 @@ import java.util.Objects;
  * Holds information about a reported room fault.
  */
 public class FaultModel {
-    private transient long id;
-    private transient long reporter;
-    private transient String description;
-    private transient long roomId;
+    private long id;
+    private long reporter;
+    private String description;
+    private long roomId;
 
     /**
      * Instantiates the {@link FaultModel} class.
@@ -44,6 +44,22 @@ public class FaultModel {
 
     public long getRoomId() {
         return roomId;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setReporter(long reporter) {
+        this.reporter = reporter;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setRoomId(long roomId) {
+        this.roomId = roomId;
     }
 
     @Override

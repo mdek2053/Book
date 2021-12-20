@@ -9,9 +9,9 @@ import nl.tudelft.sem11b.data.Roles;
  * Holds all information about a user.
  */
 public class UserModel {
-    private transient long id;
-    private transient String login;
-    private transient String[] roles;
+    private long id;
+    private String login;
+    private String[] roles;
 
     /**
      * Instantiates the {@link UserModel} class.
@@ -55,6 +55,18 @@ public class UserModel {
      */
     public Stream<String> getRoles() {
         return roles != null ? Arrays.stream(roles) : Stream.empty();
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setRoles(String[] roles) {
+        this.roles = roles;
     }
 
     /**

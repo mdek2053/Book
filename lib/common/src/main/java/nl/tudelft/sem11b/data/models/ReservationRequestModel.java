@@ -6,11 +6,11 @@ import nl.tudelft.sem11b.data.ApiDateTime;
  * Model used to create and update reservations.
  */
 public class ReservationRequestModel {
-    private transient Long roomId;
-    private transient String title;
-    private transient ApiDateTime since;
-    private transient ApiDateTime until;
-    private transient Long forUser;
+    private Long roomId;
+    private String title;
+    private ApiDateTime since;
+    private ApiDateTime until;
+    private Long forUser;
 
     /**
      * Gets the unique numeric identifier of the room the reservation takes place in.
@@ -56,6 +56,26 @@ public class ReservationRequestModel {
      */
     public Long getForUser() {
         return forUser;
+    }
+
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSince(ApiDateTime since) {
+        this.since = since;
+    }
+
+    public void setUntil(ApiDateTime until) {
+        this.until = until;
+    }
+
+    public void setForUser(Long forUser) {
+        this.forUser = forUser;
     }
 
     /**

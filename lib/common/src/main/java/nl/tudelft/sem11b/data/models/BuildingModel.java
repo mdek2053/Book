@@ -8,11 +8,11 @@ import nl.tudelft.sem11b.data.ApiTime;
  * Holds all building information.
  */
 public class BuildingModel {
-    private transient long id;
-    private transient String prefix;
-    private transient String name;
-    private transient ApiTime open;
-    private transient ApiTime close;
+    private long id;
+    private String prefix;
+    private String name;
+    private ApiTime open;
+    private ApiTime close;
 
     /**
      * Instantiates the {@link BuildingModel}.
@@ -78,6 +78,26 @@ public class BuildingModel {
      */
     public ApiTime getClose() {
         return close;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOpen(ApiTime open) {
+        this.open = open;
+    }
+
+    public void setClose(ApiTime close) {
+        this.close = close;
     }
 
     @Override

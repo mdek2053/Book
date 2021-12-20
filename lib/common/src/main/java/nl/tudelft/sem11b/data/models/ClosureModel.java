@@ -8,9 +8,9 @@ import nl.tudelft.sem11b.data.ApiDate;
  * Represents a closure of a room.
  */
 public class ClosureModel {
-    private transient String reason;
-    private transient ApiDate since;
-    private transient ApiDate until;
+    private String reason;
+    private ApiDate since;
+    private ApiDate until;
 
     /**
      * Instantiates the {@link ClosureModel} class.
@@ -63,6 +63,18 @@ public class ClosureModel {
      */
     public ApiDate getUntil() {
         return until;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public void setSince(ApiDate since) {
+        this.since = since;
+    }
+
+    public void setUntil(ApiDate until) {
+        this.until = until;
     }
 
     @Override

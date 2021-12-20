@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class GroupModel {
 
-    private transient Long groupId;
-    private transient String name;
-    private transient Long secretary;
-    private transient List<Long> groupMembers;
+    private Long groupId;
+    private String name;
+    private Long secretary;
+    private List<Long> groupMembers;
 
     /**
      * Constructor for Group class for generating a new group.
@@ -56,6 +56,10 @@ public class GroupModel {
 
     public String getName() {
         return name;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     public void setSecretary(Long secretary) {

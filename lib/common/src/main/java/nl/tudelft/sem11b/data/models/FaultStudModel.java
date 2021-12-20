@@ -4,9 +4,9 @@ package nl.tudelft.sem11b.data.models;
  * A summary object for a room used in listings.
  */
 public class FaultStudModel {
-    private transient long id;
-    private transient long reporter;
-    private transient String description;
+    private long id;
+    private long reporter;
+    private String description;
 
     /**
      * Instantiates the {@link FaultStudModel} class.
@@ -35,5 +35,17 @@ public class FaultStudModel {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setReporter(long reporter) {
+        this.reporter = reporter;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

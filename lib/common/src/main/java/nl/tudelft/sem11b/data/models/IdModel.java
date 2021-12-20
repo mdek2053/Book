@@ -6,7 +6,7 @@ package nl.tudelft.sem11b.data.models;
  * @param <T> Type of ID
  */
 public class IdModel<T> {
-    private transient T id;
+    private T id;
 
     /**
      * Instantiates the {@link IdModel} class.
@@ -28,5 +28,9 @@ public class IdModel<T> {
      */
     public T getId() {
         return id;
+    }
+
+    public void setId(T id) {
+        this.id = id;
     }
 }

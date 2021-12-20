@@ -4,8 +4,8 @@ package nl.tudelft.sem11b.data.models;
  * Holds information about room equipment.
  */
 public class EquipmentModel {
-    private transient long id;
-    private transient String name;
+    private long id;
+    private String name;
 
     /**
      * Instantiates the {@link EquipmentModel} class.
@@ -38,5 +38,13 @@ public class EquipmentModel {
      */
     public String getName() {
         return name;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

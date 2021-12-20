@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
  * @param <T> Type of items
  */
 public class PageData<T> {
-    private transient long total;
-    private transient List<T> data;
+    private long total;
+    private List<T> data;
 
     /**
      * Instantiates the {@link PageData} class.
@@ -68,6 +68,14 @@ public class PageData<T> {
      */
     public Stream<T> getData() {
         return data.stream();
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public void setData(List<T> data) {
+        this.data = data;
     }
 
     @Override

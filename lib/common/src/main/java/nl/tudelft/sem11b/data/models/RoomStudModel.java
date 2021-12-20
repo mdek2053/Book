@@ -6,11 +6,11 @@ import java.util.Objects;
  * A summary object for a room used in listings.
  */
 public class RoomStudModel {
-    private transient long id;
-    private transient String suffix;
-    private transient String name;
-    private transient int capacity;
-    private transient ClosureModel closure;
+    private long id;
+    private String suffix;
+    private String name;
+    private int capacity;
+    private ClosureModel closure;
 
     /**
      * Instantiates the {@link RoomStudModel} class.
@@ -88,6 +88,26 @@ public class RoomStudModel {
      */
     public ClosureModel getClosure() {
         return closure;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setClosure(ClosureModel closure) {
+        this.closure = closure;
     }
 
     @Override

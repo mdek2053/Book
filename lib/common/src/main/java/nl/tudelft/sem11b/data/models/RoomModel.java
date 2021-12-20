@@ -8,13 +8,13 @@ import java.util.stream.Stream;
  * Holds all room information.
  */
 public class RoomModel {
-    private transient long id;
-    private transient String suffix;
-    private transient String name;
-    private transient int capacity;
-    private transient BuildingModel building;
-    private transient EquipmentModel[] equipment;
-    private transient ClosureModel closure;
+    private long id;
+    private String suffix;
+    private String name;
+    private int capacity;
+    private BuildingModel building;
+    private EquipmentModel[] equipment;
+    private ClosureModel closure;
 
     /**
      * Instantiates the {@link RoomModel} class.
@@ -89,6 +89,34 @@ public class RoomModel {
      */
     public int getCapacity() {
         return capacity;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setBuilding(BuildingModel building) {
+        this.building = building;
+    }
+
+    public void setEquipment(EquipmentModel[] equipment) {
+        this.equipment = equipment;
+    }
+
+    public void setClosure(ClosureModel closure) {
+        this.closure = closure;
     }
 
     /**
