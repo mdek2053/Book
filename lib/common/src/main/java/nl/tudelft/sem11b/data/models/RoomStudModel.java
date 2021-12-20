@@ -6,11 +6,11 @@ import java.util.Objects;
  * A summary object for a room used in listings.
  */
 public class RoomStudModel {
-    private long id;
-    private String suffix;
-    private String name;
-    private int capacity;
-    private ClosureModel closure;
+    private transient long id;
+    private transient String suffix;
+    private transient String name;
+    private transient int capacity;
+    private transient ClosureModel closure;
 
     /**
      * Instantiates the {@link RoomStudModel} class.

@@ -4,9 +4,9 @@ package nl.tudelft.sem11b.data.models;
  * Holds information used to create a new user.
  */
 public class UserRequestModel {
-    private String login;
-    private String password;
-    private String role;
+    private transient String login;
+    private transient String password;
+    private transient String role;
 
     /**
      * Instantiates the {@link UserRequestModel} class.

@@ -9,9 +9,9 @@ import nl.tudelft.sem11b.data.Roles;
  * Holds all information about a user.
  */
 public class UserModel {
-    private long id;
-    private String login;
-    private String[] roles;
+    private transient long id;
+    private transient String login;
+    private transient String[] roles;
 
     /**
      * Instantiates the {@link UserModel} class.

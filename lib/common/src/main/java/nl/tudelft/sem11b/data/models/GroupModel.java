@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class GroupModel {
 
-    private Long groupId;
-    private String name;
-    private Long secretary;
-    private List<Long> groupMembers;
+    private transient Long groupId;
+    private transient String name;
+    private transient Long secretary;
+    private transient List<Long> groupMembers;
 
     /**
      * Constructor for Group class for generating a new group.
@@ -92,7 +92,7 @@ public class GroupModel {
             return false;
         }
         GroupModel that = (GroupModel) o;
-        return getGroupId() == that.getGroupId()
+        return getGroupId().equals(that.getGroupId())
                 && Objects.equals(getName(), that.getName())
                 && getSecretary().equals(that.getSecretary())
                 && Objects.equals(getGroupMembers(), that.getGroupMembers());

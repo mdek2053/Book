@@ -5,6 +5,7 @@ package nl.tudelft.sem11b.http;
  * unreadable format.
  */
 public class DecodeException extends Exception {
+    private static final long serialVersionUID = 1L;
     /**
      * Instantiates the {@link DecodeException} class.
      *

@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.http.HttpRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -17,9 +14,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
  * request (not an exact HTTP request).
  */
 public abstract class ApiRequest {
-    private final String method;
-    private final URI uri;
-    private final Map<String, List<String>> headers;
+    private final transient String method;
+    private final transient URI uri;
+    private final transient Map<String, List<String>> headers;
 
     /**
      * Instantiates the {@link ApiRequest} class.
@@ -44,7 +41,7 @@ public abstract class ApiRequest {
             throw new IllegalArgumentException("Key not given!");
         }
 
-        var name = key.trim().toLowerCase();
+        var name = key.trim().toLowerCase(Locale.ENGLISH);
         if (headers.containsKey(name)) {
             headers.get(name).add(value);
         } else {
@@ -130,8 +127,8 @@ public abstract class ApiRequest {
     }
 
     private static class BodyRequest<T> extends ApiRequest {
-        private final T value;
-        private final TypeReference<T> type;
+        private final transient T value;
+        private final transient TypeReference<T> type;
 
         public BodyRequest(String method, URI uri, T value, TypeReference<T> type) {
             super(method, uri);

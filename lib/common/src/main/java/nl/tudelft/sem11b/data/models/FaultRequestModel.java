@@ -8,8 +8,8 @@ import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
  * Model used to create fault reports.
  */
 public class FaultRequestModel {
-    private long reservationId;
-    private String description;
+    private transient long reservationId;
+    private transient String description;
 
     /**
      * Gets the ID of the reservation during which the fault was discovered.
@@ -58,5 +58,12 @@ public class FaultRequestModel {
             return false;
         }
         return Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (reservationId ^ (reservationId >>> 32));
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
     }
 }

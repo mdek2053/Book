@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
  * @param <T> Type of items
  */
 public class PageData<T> {
-    private long total;
-    private List<T> data;
+    private transient long total;
+    private transient List<T> data;
 
     /**
      * Instantiates the {@link PageData} class.

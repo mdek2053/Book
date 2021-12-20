@@ -8,11 +8,11 @@ import nl.tudelft.sem11b.data.ApiTime;
  * Holds all building information.
  */
 public class BuildingModel {
-    private long id;
-    private String prefix;
-    private String name;
-    private ApiTime open;
-    private ApiTime close;
+    private transient long id;
+    private transient String prefix;
+    private transient String name;
+    private transient ApiTime open;
+    private transient ApiTime close;
 
     /**
      * Instantiates the {@link BuildingModel}.

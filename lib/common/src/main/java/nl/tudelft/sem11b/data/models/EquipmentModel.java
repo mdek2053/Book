@@ -4,8 +4,8 @@ package nl.tudelft.sem11b.data.models;
  * Holds information about room equipment.
  */
 public class EquipmentModel {
-    private long id;
-    private String name;
+    private transient long id;
+    private transient String name;
 
     /**
      * Instantiates the {@link EquipmentModel} class.

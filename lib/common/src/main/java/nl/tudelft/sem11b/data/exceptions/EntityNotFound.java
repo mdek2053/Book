@@ -7,6 +7,8 @@ import org.springframework.web.server.ResponseStatusException;
  * Exception thrown when some entity couldn't be found.
  */
 public class EntityNotFound extends ServiceException {
+    private static final long serialVersionUID = 1L;
+
     private final String entityName;
 
     /**

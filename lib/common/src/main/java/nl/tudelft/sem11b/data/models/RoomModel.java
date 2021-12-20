@@ -8,13 +8,13 @@ import java.util.stream.Stream;
  * Holds all room information.
  */
 public class RoomModel {
-    private long id;
-    private String suffix;
-    private String name;
-    private int capacity;
-    private BuildingModel building;
-    private EquipmentModel[] equipment;
-    private ClosureModel closure;
+    private transient long id;
+    private transient String suffix;
+    private transient String name;
+    private transient int capacity;
+    private transient BuildingModel building;
+    private transient EquipmentModel[] equipment;
+    private transient ClosureModel closure;
 
     /**
      * Instantiates the {@link RoomModel} class.
