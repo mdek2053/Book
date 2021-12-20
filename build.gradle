@@ -78,6 +78,8 @@ subprojects {
 
 	pmd {
 		incrementalAnalysis = true
+
+		ruleSets = [rootProject.file('config/pmd.xml')]
 	}
 
 	test {
