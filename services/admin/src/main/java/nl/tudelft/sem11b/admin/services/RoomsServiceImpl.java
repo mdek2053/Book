@@ -1,9 +1,6 @@
 package nl.tudelft.sem11b.admin.services;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Building;
@@ -165,8 +162,8 @@ public class RoomsServiceImpl implements RoomsService {
                     "Building does not exist");
         }
 
-        Room newRoom = new Room(model.getId(), model.getSuffix(),
-                model.getName(), model.getCapacity(), null, buildingOptional.get());
+        Room newRoom = new Room(model.getSuffix(),
+                model.getName(), model.getCapacity(), null, buildingOptional.get(), Set.of());
 
         rooms.save(newRoom);
     }
