@@ -59,9 +59,9 @@ public class ReservationClient implements ReservationService {
     }
 
     @Override
-    public boolean checkAvailability(Long roomModelId, ReservationRequestModel requestModel)
+    public boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel)
             throws ApiException {
-        return api.get("/reservations?roomModel=" + roomModelId + "&requestModel="
+        return api.get("/reservations/availability/" + roomModelId + "?requestModel="
                         + requestModel, new TypeReference<Boolean>() {}).unwrap();
     }
 }

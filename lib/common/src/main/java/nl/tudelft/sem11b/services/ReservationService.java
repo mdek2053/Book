@@ -67,6 +67,6 @@ public interface ReservationService {
      * @throws InvalidData  Thrown when the given data is invalid
      * @throws ApiException Thrown when a remote API encountered an error
      */
-    boolean checkAvailability(Long roomModelId, ReservationRequestModel requestModel)
+    boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel)
             throws InvalidData, ApiException;
 }

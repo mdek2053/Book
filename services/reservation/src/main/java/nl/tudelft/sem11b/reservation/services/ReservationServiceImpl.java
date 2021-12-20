@@ -4,12 +4,14 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
+import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
@@ -223,22 +225,27 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public boolean checkAvailability(Long roomModelId, ReservationRequestModel requestModel) {
-        if (roomModelId == null || requestModel == null) {
+    public boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel) {
+        if (requestModel == null) {
             return false;
         }
         try {
-            RoomModel roomModel = rooms.getRoom(roomModelId).get();
-            validateTime(requestModel.getSince(), requestModel.getUntil());
-            validateRoom(roomModel, requestModel.getSince(), requestModel.getUntil());
-            validateConflicts(requestModel.getForUser(), requestModel.getRoomId(),
-                    Timestamp.valueOf(requestModel.getSince().toLocal()),
-                    Timestamp.valueOf(requestModel.getUntil().toLocal()));
-            return true;
-        } catch (InvalidData | ApiException ex) {
-            ex.toResponseException();
-            return false;
+            Optional<RoomModel> roomModelOptional = rooms.getRoom(roomModelId);
+
+            if (roomModelOptional.isPresent()) {
+                validateTime(requestModel.getSince(), requestModel.getUntil());
+                validateRoom(roomModelOptional.get(), requestModel.getSince(),
+                        requestModel.getUntil());
+                validateConflicts(requestModel.getForUser(), requestModel.getRoomId(),
+                        Timestamp.valueOf(requestModel.getSince().toLocal()),
+                        Timestamp.valueOf(requestModel.getUntil().toLocal()));
+                return true;
+            }
+
+        } catch (ServiceException ex) {
+            throw ex.toResponseException();
         }
+        return false;
     }
 
     // debug testing method

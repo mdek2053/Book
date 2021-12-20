@@ -90,17 +90,17 @@ public class ReservationController {
     /**
      * Checks availability of room compared to the request sent.
      *
-     * @param roomModelId  id of a RoomModel for which the availability needs to be checked
+     * @param id  id of a RoomModel for which the availability needs to be checked
      * @param requestModel of type ReservationRequestModel which contains the reservation request
      * @return a boolean value whether to request is valid and
      *      does not collide with any other reservations
      */
-    @GetMapping("")
-    public boolean checkAvailability(@RequestParam Optional<Long> roomModelId,
-                                     @RequestParam Optional<ReservationRequestModel> requestModel) {
+    @GetMapping("/availability/{id}")
+    public boolean checkAvailability(@PathVariable long id,
+                                     @RequestParam ReservationRequestModel requestModel) {
         try {
-            return reservationService.checkAvailability(roomModelId.get(), requestModel.get());
-        } catch (InvalidData | ApiException invalidData) {
+            return reservationService.checkAvailability(id, requestModel);
+        } catch (ServiceException invalidData) {
             invalidData.toResponseException();
         }
         return false;
