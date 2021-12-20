@@ -49,12 +49,7 @@ public class BuildingServiceImpl implements BuildingService {
                 new Building(model.getPrefix(), model.getName(),
                         model.getOpen(), model.getClose(), Set.of());
 
-        Building saved1 = buildings.save(building);
-        Building saved2 = buildings.save(building);
-        Building saved3 = buildings.save(building);
-        System.out.println("saved1: " + saved1);
-        System.out.println("saved2: " + saved2);
-        System.out.println("saved3: " + saved3);
-        return saved1.toModel();
+        Building saved = buildings.save(building);
+        return saved.toModel();
     }
 }
