@@ -75,9 +75,9 @@ public class BuildingController {
      * @param model The building to be added
      */
     @PostMapping("/buildings")
-    public void addBuilding(@RequestBody BuildingModel model) {
+    public BuildingModel addBuilding(@RequestBody BuildingModel model) {
         try {
-            buildings.addBuilding(model);
+            return buildings.addBuilding(model);
         } catch (ServiceException e) {
             throw e.toResponseException();
         }

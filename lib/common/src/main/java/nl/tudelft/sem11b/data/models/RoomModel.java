@@ -46,7 +46,7 @@ public class RoomModel {
      * @param capacity Room maximal capacity
      * @param building The building information object
      */
-    public RoomModel(long id, String suffix, String name, int capacity,
+    public RoomModel(Long id, String suffix, String name, int capacity,
                      BuildingModel building, EquipmentModel[] equipment) {
         this(id, suffix, name, capacity, building, equipment, null);
     }
@@ -60,7 +60,7 @@ public class RoomModel {
      *
      * @return ID of the room
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

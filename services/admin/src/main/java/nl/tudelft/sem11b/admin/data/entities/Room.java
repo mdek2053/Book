@@ -46,7 +46,7 @@ public class Room {
      *
      * @return ID of the room
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
