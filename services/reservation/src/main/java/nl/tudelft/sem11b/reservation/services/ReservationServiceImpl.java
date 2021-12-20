@@ -187,7 +187,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         var user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {//NOPMD
+        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
             throw new ApiException("Reservation",
                 "User not authorized to change given reservation.");
         }

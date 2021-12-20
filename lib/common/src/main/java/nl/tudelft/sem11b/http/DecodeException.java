@@ -6,6 +6,7 @@ package nl.tudelft.sem11b.http;
  */
 public class DecodeException extends Exception {
     private static final long serialVersionUID = 1L;
+
     /**
      * Instantiates the {@link DecodeException} class.
      *
