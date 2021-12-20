@@ -1,7 +1,10 @@
 package nl.tudelft.sem11b.admin.services;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Building;
@@ -19,7 +22,17 @@ import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.*;
+import nl.tudelft.sem11b.data.models.BuildingModel;
+import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
+import nl.tudelft.sem11b.data.models.FaultModel;
+import nl.tudelft.sem11b.data.models.FaultRequestModel;
+import nl.tudelft.sem11b.data.models.FaultStudModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.RoomStudModel;
+import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.RoomsService;
 import nl.tudelft.sem11b.services.UserService;
 import org.springframework.data.domain.Page;
@@ -156,10 +169,13 @@ public class RoomsServiceImpl implements RoomsService {
         Room saved = rooms.save(newRoom);
 
         //Only convert the closure to a model if it is not null
-        ClosureModel savedClosure = saved.getClosure() == null ? null : saved.getClosure().toModel();
+        ClosureModel savedClosure =
+                saved.getClosure() == null ? null : saved.getClosure().toModel();
 
-        RoomModel result = new RoomModel(saved.getId(), saved.getSuffix(), saved.getName(), saved.getCapacity(),
-                saved.getBuilding().toModel(), saved.getEquipment().toArray(EquipmentModel[]::new), savedClosure);
+        RoomModel result = new RoomModel(saved.getId(), saved.getSuffix(),
+                saved.getName(), saved.getCapacity(),
+                saved.getBuilding().toModel(),
+                saved.getEquipment().toArray(EquipmentModel[]::new), savedClosure);
 
         return result;
     }

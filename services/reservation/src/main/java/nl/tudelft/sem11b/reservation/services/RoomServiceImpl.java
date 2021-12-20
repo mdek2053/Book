@@ -50,8 +50,8 @@ public class RoomServiceImpl extends AuthenticatedServiceClient<RoomsClient>
     }
 
     @Override
-    public void addRoom(RoomModel model) {
-
+    public RoomModel addRoom(RoomModel model) {
+        return null;
     }
 
     @Override

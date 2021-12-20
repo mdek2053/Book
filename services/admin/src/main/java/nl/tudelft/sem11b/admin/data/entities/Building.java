@@ -3,7 +3,15 @@ package nl.tudelft.sem11b.admin.data.entities;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
-import javax.persistence.*;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.models.BuildingModel;
@@ -186,6 +194,15 @@ public class Building {
         this.rooms = rooms;
     }
 
+    /**
+     * Creates a building object with id null.
+     *
+     * @param prefix   prefix of building
+     * @param name     name of building
+     * @param opening  time the building opens
+     * @param closing  time the building closes
+     * @param rooms    rooms contained in the building
+     */
     public Building(String prefix, String name,
                     ApiTime opening, ApiTime closing, Set<Room> rooms) {
         this.prefix = prefix;
@@ -227,13 +244,13 @@ public class Building {
 
     @Override
     public String toString() {
-        return "Building{" +
-                "id=" + id +
-                ", prefix='" + prefix + '\'' +
-                ", name='" + name + '\'' +
-                ", opening=" + opening +
-                ", closing=" + closing +
-                ", rooms=" + rooms +
-                '}';
+        return "Building{"
+                + "id=" + id
+                + ", prefix='" + prefix + '\''
+                + ", name='" + name + '\''
+                + ", opening=" + opening
+                + ", closing=" + closing
+                + ", rooms=" + rooms
+                + '}';
     }
 }

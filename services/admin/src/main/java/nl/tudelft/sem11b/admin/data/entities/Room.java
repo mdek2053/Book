@@ -2,7 +2,19 @@ package nl.tudelft.sem11b.admin.data.entities;
 
 import java.util.Objects;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
@@ -150,6 +162,15 @@ public class Room {
         this.equipment = equipment;
     }
 
+    /**
+     * Constructs a room object with id null.
+     *
+     * @param suffix    the suffix of the room
+     * @param name      name of the room
+     * @param capacity  capacity
+     * @param closure   object which specifies the closure, or null if open
+     * @param building  object representing the building the room is part of
+     */
     public Room(String suffix, String name, int capacity,
                 Closure closure, Building building, Set<Equipment> equipment) {
         this.suffix = suffix;
