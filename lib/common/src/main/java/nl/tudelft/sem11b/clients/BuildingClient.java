@@ -38,6 +38,7 @@ public class BuildingClient implements BuildingService {
     }
 
     @Override
-    public void addBuilding(BuildingModel model) {
+    public BuildingModel addBuilding(BuildingModel model) {
+        return null;
     }
 }

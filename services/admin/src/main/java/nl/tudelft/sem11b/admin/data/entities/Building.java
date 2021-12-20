@@ -3,13 +3,7 @@ package nl.tudelft.sem11b.admin.data.entities;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.models.BuildingModel;
@@ -19,8 +13,10 @@ import nl.tudelft.sem11b.data.models.BuildingModel;
  */
 @Entity
 public class Building {
-    @Id @Column(name = "id", nullable = false)
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
     @Column(name = "prefix", nullable = false, unique = true)
     private String prefix;
     @Column(name = "name", nullable = false)
@@ -50,7 +46,7 @@ public class Building {
      *
      * @return ID of the building
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -181,8 +177,17 @@ public class Building {
      * @param rooms    rooms contained in the building
      */
     public Building(long id, String prefix, String name,
-                    ApiTime opening, ApiTime closing, Set<Room> rooms) {
+                     ApiTime opening, ApiTime closing, Set<Room> rooms) {
         this.id = id;
+        this.prefix = prefix;
+        this.name = name;
+        this.opening = opening;
+        this.closing = closing;
+        this.rooms = rooms;
+    }
+
+    public Building(String prefix, String name,
+                    ApiTime opening, ApiTime closing, Set<Room> rooms) {
         this.prefix = prefix;
         this.name = name;
         this.opening = opening;
@@ -208,7 +213,7 @@ public class Building {
             return false;
         }
         Building building = (Building) o;
-        return id == building.id && Objects.equals(prefix, building.prefix)
+        return Objects.equals(id, building.id) && Objects.equals(prefix, building.prefix)
                 && Objects.equals(name, building.name)
                 && Objects.equals(opening, building.opening)
                 && Objects.equals(closing, building.closing)
@@ -218,5 +223,17 @@ public class Building {
     @Override
     public int hashCode() {
         return Objects.hash(id, prefix, name, opening, closing, rooms);
+    }
+
+    @Override
+    public String toString() {
+        return "Building{" +
+                "id=" + id +
+                ", prefix='" + prefix + '\'' +
+                ", name='" + name + '\'' +
+                ", opening=" + opening +
+                ", closing=" + closing +
+                ", rooms=" + rooms +
+                '}';
     }
 }

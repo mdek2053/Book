@@ -38,20 +38,23 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public void addBuilding(BuildingModel model) throws ApiException {
+    public BuildingModel addBuilding(BuildingModel model) throws ApiException {
         UserModel user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException("Rooms",
                     "User not authorized to add buildings");
         }
-        if (buildings.existsById(model.getId())) {
-            throw new ApiException("Rooms",
-                    "Building id already exists");
-        }
 
         Building building =
-                new Building(model.getId(), model.getPrefix(), model.getName(),
+                new Building(model.getPrefix(), model.getName(),
                         model.getOpen(), model.getClose(), Set.of());
-        buildings.save(building);
+
+        Building saved1 = buildings.save(building);
+        Building saved2 = buildings.save(building);
+        Building saved3 = buildings.save(building);
+        System.out.println("saved1: " + saved1);
+        System.out.println("saved2: " + saved2);
+        System.out.println("saved3: " + saved3);
+        return saved1.toModel();
     }
 }

@@ -9,11 +9,7 @@ import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.services.BuildingService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -79,7 +75,7 @@ public class BuildingController {
      * @param model The building to be added
      */
     @PostMapping("/buildings")
-    public void addBuilding(@RequestParam BuildingModel model) {
+    public void addBuilding(@RequestBody BuildingModel model) {
         try {
             buildings.addBuilding(model);
         } catch (ServiceException e) {

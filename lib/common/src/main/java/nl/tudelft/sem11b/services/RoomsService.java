@@ -57,7 +57,7 @@ public interface RoomsService {
      */
     Optional<RoomModel> getRoom(long id) throws ApiException;
 
-    void addRoom(RoomModel model) throws ApiException;
+    RoomModel addRoom(RoomModel model) throws ApiException;
 
     /**
      * Adds a closure to a room. The user making the change must have admin rights.

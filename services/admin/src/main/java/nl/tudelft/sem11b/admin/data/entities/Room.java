@@ -103,6 +103,10 @@ public class Room {
         this.name = name.trim();
     }
 
+    public Set<Equipment> getEquipment() {
+        return equipment;
+    }
+
     /**
      * Sets the room closed.
      *

@@ -85,6 +85,7 @@ class RoomsServiceImplTest {
     private final Room room1withoutId = new Room("idk", "PC hall 1", 30, null, building1, Set.of());
 
     private final RoomModel roomModel1 = room1.toModel();
+    private final RoomModel roomModel1withoutId = room1withoutId.toModel();
 
     private final RoomStudModel room1StudModel = room1.toStudModel();
     private final RoomStudModel room2StudModel = room2.toStudModel();
@@ -351,38 +352,28 @@ class RoomsServiceImplTest {
         when(users.currentUser()).thenReturn(employee);
 
         assertThrows(ApiException.class, () -> {
-            service.addRoom(roomModel1);
-        });
-    }
-
-    @Test
-    public void addRoomAlreadyExistsTest() throws ApiException {
-        when(users.currentUser()).thenReturn(admin);
-        when(rooms.existsById(1L)).thenReturn(true);
-
-        assertThrows(ApiException.class, () -> {
-            service.addRoom(roomModel1);
+            service.addRoom(roomModel1withoutId);
         });
     }
 
     @Test
     public void addRoomBuildingDoesntExistTest() throws ApiException {
         when(users.currentUser()).thenReturn(admin);
-        when(rooms.existsById(1L)).thenReturn(false);
         when(buildings.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ApiException.class, () -> {
-            service.addRoom(roomModel1);
+            service.addRoom(roomModel1withoutId);
         });
     }
 
     @Test
     public void addRoomSuccessfulTest() throws ApiException {
         when(users.currentUser()).thenReturn(admin);
-        when(rooms.existsById(1L)).thenReturn(false);
         when(buildings.findById(1L)).thenReturn(Optional.of(building1));
+        when(rooms.save(room1withoutId)).thenReturn(room1);
 
-        service.addRoom(roomModel1);
+
+        assertEquals(roomModel1, service.addRoom(roomModel1withoutId));
 
         verify(rooms, times(1)).save(room1withoutId);
     }

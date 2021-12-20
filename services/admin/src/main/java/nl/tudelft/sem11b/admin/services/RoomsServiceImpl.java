@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.admin.services;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Building;
@@ -18,16 +19,7 @@ import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.BuildingModel;
-import nl.tudelft.sem11b.data.models.ClosureModel;
-import nl.tudelft.sem11b.data.models.FaultModel;
-import nl.tudelft.sem11b.data.models.FaultRequestModel;
-import nl.tudelft.sem11b.data.models.FaultStudModel;
-import nl.tudelft.sem11b.data.models.PageData;
-import nl.tudelft.sem11b.data.models.PageIndex;
-import nl.tudelft.sem11b.data.models.RoomModel;
-import nl.tudelft.sem11b.data.models.RoomStudModel;
-import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.data.models.*;
 import nl.tudelft.sem11b.services.RoomsService;
 import nl.tudelft.sem11b.services.UserService;
 import org.springframework.data.domain.Page;
@@ -144,15 +136,11 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public void addRoom(RoomModel model) throws ApiException {
+    public RoomModel addRoom(RoomModel model) throws ApiException {
         UserModel user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException("Rooms",
                     "User not authorized to add rooms");
-        }
-        if (rooms.existsById(model.getId())) {
-            throw new ApiException("Rooms",
-                    "Room id already exists");
         }
         BuildingModel buildingModel = model.getBuilding();
         Optional<Building> buildingOptional = buildings.findById(buildingModel.getId());
@@ -165,7 +153,15 @@ public class RoomsServiceImpl implements RoomsService {
         Room newRoom = new Room(model.getSuffix(),
                 model.getName(), model.getCapacity(), null, buildingOptional.get(), Set.of());
 
-        rooms.save(newRoom);
+        Room saved = rooms.save(newRoom);
+
+        //Only convert the closure to a model if it is not null
+        ClosureModel savedClosure = saved.getClosure() == null ? null : saved.getClosure().toModel();
+
+        RoomModel result = new RoomModel(saved.getId(), saved.getSuffix(), saved.getName(), saved.getCapacity(),
+                saved.getBuilding().toModel(), saved.getEquipment().toArray(EquipmentModel[]::new), savedClosure);
+
+        return result;
     }
 
     @Override

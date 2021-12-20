@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,8 +34,11 @@ public class BuildingServiceImplTest {
 
     private final Building building1 =
             new Building(1, "idk", "drebbelweg", null, null, new HashSet<>());
+    private final Building building1withoutId =
+            new Building("idk", "drebbelweg", null, null, new HashSet<>());
 
     private final BuildingModel buildingModel1 = building1.toModel();
+    private final BuildingModel buildingModel1withoutId = building1withoutId.toModel();
 
     private final String[] adminRoles = {"admin"};
     private final String[] employeeRoles = {"employee"};
@@ -52,29 +56,18 @@ public class BuildingServiceImplTest {
         when(users.currentUser()).thenReturn(employee);
 
         assertThrows(ApiException.class, () -> {
-            service.addBuilding(buildingModel1);
+            service.addBuilding(buildingModel1withoutId);
         });
     }
 
-    @Test
-    public void addBuildingAlreadyExistsTest() throws ApiException {
-
-        when(users.currentUser()).thenReturn(admin);
-        when(buildings.existsById(1L)).thenReturn(true);
-
-        assertThrows(ApiException.class, () -> {
-            service.addBuilding(buildingModel1);
-        });
-    }
 
     @Test
     public void addBuildingSuccessfulTest() throws ApiException {
-
         when(users.currentUser()).thenReturn(admin);
-        when(buildings.existsById(1L)).thenReturn(false);
+        when(buildings.save(building1withoutId)).thenReturn(building1);
 
-        service.addBuilding(buildingModel1);
+        assertEquals(buildingModel1, service.addBuilding(buildingModel1withoutId));
 
-        verify(buildings, times(1)).save(building1);
+        verify(buildings, times(1)).save(building1withoutId);
     }
 }

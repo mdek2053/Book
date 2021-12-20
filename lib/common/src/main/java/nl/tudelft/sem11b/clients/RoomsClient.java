@@ -68,8 +68,8 @@ public class RoomsClient implements RoomsService {
     }
 
     @Override
-    public void addRoom(RoomModel model) {
-
+    public RoomModel addRoom(RoomModel model) {
+        return null;
     }
 
     @Override

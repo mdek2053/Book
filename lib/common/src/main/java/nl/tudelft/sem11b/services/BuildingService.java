@@ -31,5 +31,5 @@ public interface BuildingService {
      */
     Optional<BuildingModel> getBuilding(long id) throws ApiException;
 
-    void addBuilding(BuildingModel model) throws ApiException;
+    BuildingModel addBuilding(BuildingModel model) throws ApiException;
 }

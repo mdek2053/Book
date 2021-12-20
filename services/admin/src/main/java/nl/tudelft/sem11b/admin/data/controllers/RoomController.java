@@ -141,9 +141,9 @@ public class RoomController {
      * @param model The room to be added
      */
     @PostMapping("/rooms")
-    public void addRoom(RoomModel model) {
+    public RoomModel addRoom(@RequestBody RoomModel model) {
         try {
-            rooms.addRoom(model);
+            return rooms.addRoom(model);
         } catch (ServiceException e) {
             throw e.toResponseException();
         }
