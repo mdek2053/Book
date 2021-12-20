@@ -3,8 +3,8 @@ package nl.tudelft.sem11b.admin.data.filters;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 
 public class AvailabilityFilter extends BaseFilter {
-    private String from;
-    private String until;
+    private transient String from;
+    private transient String until;
 
     public AvailabilityFilter(String from, String until) {
         this.from = from;

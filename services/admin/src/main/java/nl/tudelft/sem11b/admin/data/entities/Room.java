@@ -133,6 +133,30 @@ public class Room {
         return capacity;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public Set<Equipment> getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(Set<Equipment> equipment) {
+        this.equipment = equipment;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
+
     /**
      * Constructs a room object.
      *

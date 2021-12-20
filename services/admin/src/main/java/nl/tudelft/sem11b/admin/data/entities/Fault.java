@@ -112,4 +112,13 @@ public class Fault {
         }
         return Objects.equals(room, fault.room);
     }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (int) (reporter ^ (reporter >>> 32));
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (room != null ? room.hashCode() : 0);
+        return result;
+    }
 }
