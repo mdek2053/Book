@@ -28,6 +28,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final transient ReservationRepository reservations;
     private final transient RoomsService rooms;
     private final transient UserService users;
+    private final transient String serviceName = "Reservation";
 
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
@@ -59,7 +60,7 @@ public class ReservationServiceImpl implements ReservationService {
      */
     public long makeReservation(long roomId, long userId,
                                 String title, ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData {
+            throws ApiException, EntityNotFound, InvalidData {
 
         // fetch room information (includes building information)
         var roomOpt = rooms.getRoom(roomId);
@@ -114,10 +115,10 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void validateRoom(RoomModel room, ApiDateTime since, ApiDateTime until)
-        throws InvalidData {
+            throws InvalidData {
         // check if in business hours
         if (room.getBuilding().getOpen().compareTo(since.getTime()) > 0
-            || room.getBuilding().getClose().compareTo(until.getTime()) < 0) {
+                || room.getBuilding().getClose().compareTo(until.getTime()) < 0) {
             throw new InvalidData("Reservation not between room opening hours");
         }
 
@@ -131,7 +132,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (closure.getUntil() == null || closure.getUntil().compareTo(since.getDate()) >= 0) {
             if (closure.getUntil() != null) {
                 throw new InvalidData(
-                    "Room is under maintenance (until " + closure.getUntil() + ")");
+                        "Room is under maintenance (until " + closure.getUntil() + ")");
             }
 
             throw new InvalidData("Room is under maintenance");
@@ -141,7 +142,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void validateConflicts(long userId, long roomId, Timestamp since, Timestamp until)
-        throws InvalidData {
+            throws InvalidData {
         // check if it doesn't conflict with user's other reservations
         if (reservations.hasUserConflict(userId, since, until)) {
             throw new InvalidData("Reservation conflicts with user's existing reservations");
@@ -156,25 +157,25 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public long makeOwnReservation(long roomId, String title,
                                    ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData {
+            throws ApiException, EntityNotFound, InvalidData {
         return makeReservation(roomId, users.currentUser().getId(), title, since, until);
     }
 
     @Override
     public PageData<ReservationModel> inspectOwnReservation(PageIndex page) throws ApiException {
         var data =
-            reservations.findByUserId(users.currentUser().getId(), page.getPage(Sort.by("id")));
+                reservations.findByUserId(users.currentUser().getId(), page.getPage(Sort.by("id")));
         return new PageData<>(data.map(Reservation::toModel));
     }
 
     @Override
     public void editReservation(long reservationId, String title, ApiDateTime since,
                                 ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData {
+            throws ApiException, EntityNotFound, InvalidData {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound("Reservation");
+            throw new EntityNotFound(serviceName);
         }
         var reservation = reservationOpt.get();
 
@@ -188,8 +189,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         var user = users.currentUser();
         if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
-            throw new ApiException("Reservation",
-                "User not authorized to change given reservation.");
+            throw new ApiException(serviceName,
+                    "User not authorized to change given reservation.");
         }
 
         var roomOpt = rooms.getRoom(reservation.getRoomId());
@@ -233,13 +234,14 @@ public class ReservationServiceImpl implements ReservationService {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound("Reservation");
+            throw new EntityNotFound(serviceName);
         }
         var reservation = reservationOpt.get();
 
         var user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
-            throw new ApiException("Reservation",
+        if (!((Long)user.getId()).equals(reservation.getUserId())
+                && !user.inRole(Roles.Admin)) {
+            throw new ApiException(serviceName,
                     "User not authorized to change given reservation.");
         }
 
