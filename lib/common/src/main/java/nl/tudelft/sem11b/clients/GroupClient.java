@@ -3,12 +3,8 @@ package nl.tudelft.sem11b.clients;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
-import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.models.GroupModel;
-import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.http.ApiClient;
 import nl.tudelft.sem11b.http.Authenticated;
 import nl.tudelft.sem11b.services.GroupService;
@@ -27,17 +23,24 @@ public class GroupClient implements GroupService {
     }
 
     @Override
-    public List<GroupModel> getGroupsOfUser(UserModel user)
+    public List<GroupModel> getGroupsOfUser(Long id)
             throws ApiException {
-        return api.get("/groups?user=" + user,
+        return api.get("/groups/user/" + id,
                 new TypeReference<List<GroupModel>>() {
                 }).unwrap();
     }
 
     @Override
-    public List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups)
+    public List<GroupModel> getGroupsOfSecretary(Long id)
             throws ApiException {
-        return api.get("/groups/secretary?user=" + user + "&groups=" + groups,
+        return api.get("/groups/secretary/" + id,
+                new TypeReference<List<GroupModel>>() {
+                }).unwrap();
+    }
+
+    @Override
+    public List<GroupModel> getGroupsOfCurrentUser(Long id) throws ApiException {
+        return api.get("/groups/mine",
                 new TypeReference<List<GroupModel>>() {
                 }).unwrap();
     }

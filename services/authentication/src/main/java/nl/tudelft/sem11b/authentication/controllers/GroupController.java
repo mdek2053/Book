@@ -6,11 +6,10 @@ import nl.tudelft.sem11b.authentication.services.GroupServiceImpl;
 import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.GroupModel;
-import nl.tudelft.sem11b.data.models.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,20 +56,18 @@ public class GroupController {
 
     @GetMapping(value = "/mine")
     public List<GroupModel> getGroupsOfCurrentUser()
-            throws NoAssignedGroupException, ApiException {
-        return groupService.getGroupsOfUser(userService.currentUser());
+            throws ApiException, InvalidData {
+        return groupService.getGroupsOfCurrentUser(userService.currentUser().getId());
     }
 
-    @GetMapping(value = "")
-    public List<GroupModel> getGroupsOfUser(@RequestBody UserModel user)
-            throws NoAssignedGroupException {
-        return groupService.getGroupsOfUser(user);
+    @GetMapping(value = "/user/{id}")
+    public List<GroupModel> getGroupsOfUser(@PathVariable Long id) {
+        return groupService.getGroupsOfUser(id);
     }
 
-    @GetMapping(value = "")
-    public List<GroupModel> getGroupsOfSecretary(@RequestBody UserModel user,
-                                                 @RequestBody List<GroupModel> groups) {
-        return groupService.getGroupsOfSecretary(user, groups);
+    @GetMapping(value = "/secretary/{id}")
+    public List<GroupModel> getGroupsOfSecretary(@PathVariable Long id) {
+        return groupService.getGroupsOfSecretary(id);
     }
 
     @GetMapping(value = "/{id}")

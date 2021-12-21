@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -22,7 +20,6 @@ import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.UserModel;
-import nl.tudelft.sem11b.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,16 +91,15 @@ class GroupServiceTest {
     @Test
     void getGroupsOfUserNoGroups() {
         when(groupRepository.findAll()).thenReturn(new ArrayList<>());
-        assertThrows(NoAssignedGroupException.class, () -> groupService
-                .getGroupsOfUser(userModel1));
+        assertEquals(new ArrayList<>(), groupService.getGroupsOfUser(userModel1.getId()));
     }
 
     @Test
-    void getGroupsOfUserExistingGroups() throws NoAssignedGroupException {
+    void getGroupsOfUserExistingGroups() {
         when(groupRepository.findAll()).thenReturn(groups);
         List<GroupModel> result = new ArrayList<>();
         result.add(groupModel1);
-        assertEquals(result, groupService.getGroupsOfUser(userModel4));
+        assertEquals(result, groupService.getGroupsOfUser(userModel4.getId()));
     }
 
     @Test
@@ -155,9 +151,9 @@ class GroupServiceTest {
 
     @Test
     void getGroupsOfSecretary() {
-        when(userRepository.findUserByNetId(user1.getNetId())).thenReturn(Optional.of(user1));
+        when(userRepository.findUserById(user1.getId())).thenReturn(Optional.of(user1));
         when(groupRepository.findGroupsBySecretary(user1.getId())).thenReturn(Optional.of(groups));
 
-        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1, new ArrayList<>()));
+        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1.getId()));
     }
 }

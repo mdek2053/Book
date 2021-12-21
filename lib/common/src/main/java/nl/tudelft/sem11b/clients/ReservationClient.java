@@ -1,13 +1,9 @@
 package nl.tudelft.sem11b.clients;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
@@ -79,8 +75,8 @@ public class ReservationClient implements ReservationService {
 
     @Override
     public void editReservation(long reservationId, String title, ApiDateTime since,
-                                ApiDateTime until, Long forUser) throws ApiException {
-        var model = new ReservationRequestModel(null, title, since, until, forUser);
+                                ApiDateTime until) throws ApiException {
+        var model = new ReservationModel(reservationId, since, until, title);
         api.post("/reservations/" + reservationId, model, new TypeReference<>() {
         }).unwrap();
     }

@@ -17,8 +17,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import nl.tudelft.sem11b.data.ApiDateTime;
-import nl.tudelft.sem11b.data.exceptions.ApiException;
-import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
@@ -108,7 +106,7 @@ class ReservationControllerTest {
 
         // arrange
         doNothing().when(reservationService).editReservation(
-            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil(), null);
+            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil());
         var req = new ReservationRequestModel(
             subject.getRoomId(), subject.getTitle() + "!",
             subject.getSince(), subject.getUntil(), null);
@@ -122,7 +120,7 @@ class ReservationControllerTest {
 
         // assert
         verify(reservationService, times(1)).editReservation(
-            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil(), null);
+            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil());
     }
 
     @Test

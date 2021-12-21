@@ -1,8 +1,12 @@
 package nl.tudelft.sem11b.reservation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.models.BuildingModel;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
+import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 
@@ -23,4 +27,7 @@ public class Constants {
     );
     public static final UserModel USER_A = new UserModel(1L, "jgeneric", new String[0]);
     public static final UserModel USER_B = new UserModel(2L, "jsmith", new String[0]);
+    public static final UserModel USER_C = new UserModel(3L, "jjordan", new String[0]);
+    public static final GroupModel GROUP_A = new GroupModel("Group", USER_A.getId(), null);
+    public static List<GroupModel> groupModelList = new ArrayList<>();
 }

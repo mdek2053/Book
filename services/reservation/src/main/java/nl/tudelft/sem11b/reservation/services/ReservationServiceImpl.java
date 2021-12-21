@@ -3,12 +3,12 @@ package nl.tudelft.sem11b.reservation.services;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
+import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -173,8 +173,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public long makeUserReservation(long roomId, Long getForUser,
                                     String title, ApiDateTime since, ApiDateTime until)
-            throws ApiException, InvalidGroupCredentialsException, InvalidData, EntityNotFound {
-        if (verifySecretary(getForUser)) {
+            throws ApiException, InvalidGroupCredentialsException, InvalidData,
+            EntityNotFound {
+        if (verifySecretary(getForUser) || users.currentUser().inRole(Roles.Admin)) {
             return makeReservation(roomId, getForUser, title, since, until);
         }
         throw new InvalidGroupCredentialsException("You are not a secretary of the provided user");
@@ -188,8 +189,9 @@ public class ReservationServiceImpl implements ReservationService {
      * @throws ApiException Thrown when a remote API encountered an error
      */
     private boolean verifySecretary(Long getForUser) throws ApiException {
+        UserModel user = users.currentUser();
         List<GroupModel> groupList =
-                groups.getGroupsOfSecretary(users.currentUser(), new ArrayList<>());
+                groups.getGroupsOfSecretary(user.getId());
         for (GroupModel groupModel : groupList) {
             if (groupModel.getGroupMembers().contains(getForUser)) {
                 return true;
@@ -207,19 +209,14 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void editReservation(long reservationId, String title, ApiDateTime since,
-                                ApiDateTime until, Long forUser)
+                                ApiDateTime until)
             throws ApiException, EntityNotFound, InvalidData {
-        if (forUser != null) {
-            if (!verifySecretary(forUser)) {
-                return;
-            }
-        }
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
             throw new EntityNotFound(entityName);
         }
-        var reservation = reservationOpt.get();
+        Reservation reservation = reservationOpt.get();
 
         if (since == null) {
             since = ApiDateTime.from(reservation.getSince());
@@ -229,8 +226,9 @@ public class ReservationServiceImpl implements ReservationService {
             until = ApiDateTime.from(reservation.getUntil());
         }
 
-        var user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
+        UserModel user = users.currentUser();
+        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)
+                && !verifySecretary(reservation.getUserId())) {
             throw new ApiException(entityName,
                 "User not authorized to change given reservation.");
         }
@@ -272,7 +270,8 @@ public class ReservationServiceImpl implements ReservationService {
      *     delete reservation.
      */
     @Override
-    public void deleteReservation(long reservationId) throws EntityNotFound, ApiException {
+    public void deleteReservation(long reservationId)
+            throws EntityNotFound, ApiException {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
@@ -281,7 +280,8 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationOpt.get();
 
         UserModel user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
+        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)
+                && !verifySecretary(reservation.getUserId())) {
             throw new ApiException(entityName,
                     "User not authorized to change given reservation.");
         }

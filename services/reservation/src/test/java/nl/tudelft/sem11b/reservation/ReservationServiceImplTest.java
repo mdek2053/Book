@@ -1,16 +1,22 @@
 package nl.tudelft.sem11b.reservation;
 
+import static nl.tudelft.sem11b.reservation.Constants.GROUP_A;
 import static nl.tudelft.sem11b.reservation.Constants.ROOM_A;
 import static nl.tudelft.sem11b.reservation.Constants.USER_A;
 import static nl.tudelft.sem11b.reservation.Constants.USER_B;
+import static nl.tudelft.sem11b.reservation.Constants.USER_C;
+import static nl.tudelft.sem11b.reservation.Constants.groupModelList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.data.ApiDate;
@@ -25,8 +31,10 @@ import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.reservation.services.ReservationServiceImpl;
+import nl.tudelft.sem11b.services.GroupService;
 import nl.tudelft.sem11b.services.RoomsService;
 import nl.tudelft.sem11b.services.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +42,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @SpringBootTest
@@ -57,6 +66,17 @@ class ReservationServiceImplTest {
 
     @MockBean
     UserService users;
+
+    @MockBean
+    GroupService groups;
+
+    @BeforeEach
+    void setup() {
+        List<Long> groupUsers = new ArrayList<>();
+        groupUsers.add(USER_A.getId());
+        GROUP_A.setGroupMembers(groupUsers);
+        groupModelList.add(GROUP_A);
+    }
 
     @Test
     void nonexistentRoom() throws Exception {
@@ -202,7 +222,7 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(EntityNotFound.class, () -> service.editReservation(
             id, reservationModel.getTitle(),
-            reservationModel.getSince(), reservationModel.getUntil(), null));
+            reservationModel.getSince(), reservationModel.getUntil()));
     }
 
     @Test
@@ -247,7 +267,7 @@ class ReservationServiceImplTest {
 
         // action
         service.editReservation(reservation.getId(), reservationModel.getTitle() + "!",
-                null, null, null);
+                null, null);
 
         // assert
         final var entity = captor.getValue();
@@ -286,7 +306,8 @@ class ReservationServiceImplTest {
         when(users.currentUser()).thenReturn(USER_B);
 
         // action + assert
-        assertThrows(ApiException.class, () -> service.deleteReservation(reservation.getId()));
+        assertThrows(ApiException.class,
+                () -> service.deleteReservation(reservation.getId()));
     }
 
     @Test
@@ -300,6 +321,25 @@ class ReservationServiceImplTest {
 
         when(reservations.findById(reservation.getId())).thenReturn(Optional.of(reservation));
         when(users.currentUser()).thenReturn(USER_A);
+
+        // action
+        service.deleteReservation(reservation.getId());
+
+        // verify
+        verify(reservations).delete(reservation);
+    }
+
+    @Test
+    void deleteReservationBySecretary() throws ApiException, EntityNotFound {
+        final var reservation = new Reservation(
+                9, reservationModel.getRoomId(), USER_A.getId(), reservationModel.getTitle(),
+                Timestamp.valueOf(reservationModel.getSince().toLocal()),
+                Timestamp.valueOf(reservationModel.getUntil().toLocal()),
+                null
+        );
+        when(reservations.findById(reservation.getId())).thenReturn(Optional.of(reservation));
+        when(users.currentUser()).thenReturn(USER_C);
+        when(groups.getGroupsOfSecretary(anyLong())).thenReturn(groupModelList);
 
         // action
         service.deleteReservation(reservation.getId());

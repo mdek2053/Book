@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.services;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
+import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -74,7 +75,7 @@ public interface ReservationService {
      * @throws InvalidData    Thrown when the given data is invalid
      */
     void editReservation(long reservationId, String title, ApiDateTime since,
-                         ApiDateTime until, Long forUser)
+                         ApiDateTime until)
             throws ApiException, EntityNotFound, InvalidData;
 
     /**

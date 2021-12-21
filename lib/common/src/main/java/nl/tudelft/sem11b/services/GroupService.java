@@ -4,10 +4,9 @@ import java.util.List;
 
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.GroupModel;
-import nl.tudelft.sem11b.data.models.UserModel;
 
 /**
  * API definition of the group service. This service is responsible for holding the information
@@ -16,10 +15,12 @@ import nl.tudelft.sem11b.data.models.UserModel;
 
 public interface GroupService {
 
-    List<GroupModel> getGroupsOfUser(UserModel user) throws NoAssignedGroupException, ApiException;
+    List<GroupModel> getGroupsOfUser(Long id) throws ApiException;
 
-    List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups)
+    List<GroupModel> getGroupsOfSecretary(Long id)
             throws ApiException;
+
+    List<GroupModel> getGroupsOfCurrentUser(Long id) throws InvalidData, ApiException;
 
     GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException;
