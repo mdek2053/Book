@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.clients;
 
 import java.net.URI;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -20,9 +21,9 @@ import org.springframework.web.server.ResponseStatusException;
  * @param <T> Type of API client
  */
 public abstract class AuthenticatedServiceClient<T> {
-    protected final URI uri;
-    protected final String service;
-    protected final Function<ApiClient<Authenticated>, T> factory;
+    protected final transient URI uri;
+    protected final transient String service;
+    protected final transient Function<ApiClient<Authenticated>, T> factory;
 
     /**
      * Instantiates the {@link AuthenticatedServiceClient} class.
@@ -71,7 +72,8 @@ public abstract class AuthenticatedServiceClient<T> {
 
         var req = att.getRequest();
         var header = req.getHeader("Authorization");
-        if (header == null || header.isBlank() || !header.toLowerCase().startsWith("bearer ")) {
+        if (header == null || header.isBlank()
+                || !header.toLowerCase(Locale.ENGLISH).startsWith("bearer ")) {
             return Optional.empty();
         }
 

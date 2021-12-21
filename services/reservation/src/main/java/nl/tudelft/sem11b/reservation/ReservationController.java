@@ -29,7 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    ReservationService reservationService;
+    transient ReservationService reservationService;
 
     /**
      * Instantiates the {@link ReservationController} class.

@@ -7,7 +7,7 @@ import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 
 public class BuildingFilter extends BaseFilter {
 
-    private Building building;
+    private transient Building building;
 
     /**
      * Constructor for BuildingFilter, checks whether building actually exists.

@@ -25,9 +25,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
-    private final ReservationRepository reservations;
-    private final RoomsService rooms;
-    private final UserService users;
+    private final transient ReservationRepository reservations;
+    private final transient RoomsService rooms;
+    private final transient UserService users;
 
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
@@ -102,7 +102,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // check if the reservation is not too far in the future
-        if (now.until(sinceJava, ChronoUnit.DAYS) >= 14) {
+        int maxDaysInFuture = 14;
+        if (now.until(sinceJava, ChronoUnit.DAYS) >= maxDaysInFuture) {
             throw new InvalidData("Reservation is more than two weeks away");
         }
 
@@ -186,7 +187,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         var user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
+        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
             throw new ApiException("Reservation",
                 "User not authorized to change given reservation.");
         }

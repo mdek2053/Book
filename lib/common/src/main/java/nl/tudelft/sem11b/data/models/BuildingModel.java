@@ -80,6 +80,26 @@ public class BuildingModel {
         return close;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOpen(ApiTime open) {
+        this.open = open;
+    }
+
+    public void setClose(ApiTime close) {
+        this.close = close;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

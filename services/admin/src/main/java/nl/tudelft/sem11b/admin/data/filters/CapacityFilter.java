@@ -4,7 +4,7 @@ import nl.tudelft.sem11b.admin.data.entities.Room;
 
 public class CapacityFilter extends BaseFilter {
 
-    private int minCapacity;
+    private transient int minCapacity;
 
     public CapacityFilter(int minCapacity) {
 

@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
 @WebMvcTest(RoomController.class)
 class RoomControllerTest {
     @Autowired
-    MockMvc mockMvc;
+    MockMvc  mockMvc;
 
     @MockBean
     RoomsService roomsService;

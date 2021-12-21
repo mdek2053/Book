@@ -32,7 +32,7 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 public class RoomController {
-    private final RoomsService rooms;
+    private final transient RoomsService rooms;
 
     /**
      * Instantiates the {@link RoomController} class.
