@@ -62,8 +62,7 @@ public interface ReservationService {
      * @throws EntityNotFound Thrown when the given reservation was not found
      * @throws ApiException   Thrown when the given data is invalid
      */
-    void deleteReservation(long reservationId) throws EntityNotFound, ApiException;
-            throws ApiException, EntityNotFound, InvalidData;
+    void deleteReservation(long reservationId) throws ApiException, EntityNotFound;
 
     /**
      * Checks whether a reservation request is valid and whether the room is available for the
