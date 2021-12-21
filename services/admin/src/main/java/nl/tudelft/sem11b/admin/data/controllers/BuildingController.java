@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 public class BuildingController {
-    private final BuildingService buildings;
+    private final transient BuildingService buildings;
 
     /**
      * Instantiates the {@link BuildingController} class.

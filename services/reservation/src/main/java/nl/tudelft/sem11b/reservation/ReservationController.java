@@ -12,6 +12,7 @@ import nl.tudelft.sem11b.services.BuildingService;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    ReservationService reservationService;
+    transient ReservationService reservationService;
 
     /**
      * Instantiates the {@link ReservationController} class.
@@ -101,6 +102,19 @@ public class ReservationController {
 
         try {
             reservationService.editReservation(id, req.getTitle(), req.getSince(), req.getUntil());
+        } catch (ServiceException ex) {
+            throw ex.toResponseException();
+        }
+    }
+
+    /**
+     * Deletes reservation with given id.
+     * @param id of reservation that should be deleted.
+     */
+    @DeleteMapping("/{id}")
+    void deleteReservation(@PathVariable long id) {
+        try {
+            reservationService.deleteReservation(id);
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }

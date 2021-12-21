@@ -90,6 +90,26 @@ public class RoomStudModel {
         return closure;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setClosure(ClosureModel closure) {
+        this.closure = closure;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

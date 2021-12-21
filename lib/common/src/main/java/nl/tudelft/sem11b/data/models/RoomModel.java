@@ -91,6 +91,34 @@ public class RoomModel {
         return capacity;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setBuilding(BuildingModel building) {
+        this.building = building;
+    }
+
+    public void setEquipment(EquipmentModel[] equipment) {
+        this.equipment = equipment;
+    }
+
+    public void setClosure(ClosureModel closure) {
+        this.closure = closure;
+    }
+
     /**
      * Gets the building information model.
      *

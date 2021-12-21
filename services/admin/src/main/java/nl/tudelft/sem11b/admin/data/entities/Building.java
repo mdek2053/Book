@@ -58,6 +58,14 @@ public class Building {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
+    }
+
     /**
      * Gets the building prefix.
      *

@@ -106,9 +106,6 @@ public class Room {
         this.name = name.trim();
     }
 
-    public Set<Equipment> getEquipment() {
-        return equipment;
-    }
 
     /**
      * Sets the room closed.
@@ -139,6 +136,30 @@ public class Room {
 
     public int getCapacity() {
         return capacity;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public Set<Equipment> getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(Set<Equipment> equipment) {
+        this.equipment = equipment;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
     }
 
     /**
@@ -212,7 +233,7 @@ public class Room {
             return false;
         }
         Room room = (Room) o;
-        return id == room.id && capacity == room.capacity
+        return Objects.equals(id, room.id) && capacity == room.capacity
                 && suffix.equals(room.suffix) && name.equals(room.name)
                 && Objects.equals(closure, room.closure)
                 && equipment.equals(room.equipment) && building.equals(room.building);

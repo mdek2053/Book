@@ -9,8 +9,8 @@ import nl.tudelft.sem11b.data.exceptions.ApiException;
  * @param <S> Type of response body
  */
 public class ApiResponse<S> {
-    private final String service;
-    private final S body;
+    private final transient String service;
+    private final transient S body;
     private final ApiException error;
 
     /**
@@ -21,8 +21,8 @@ public class ApiResponse<S> {
      */
     public ApiResponse(String service) {
         this.service = service;
-        this.body = null;
-        this.error = null;
+        this.body = null; //NOPMD
+        this.error = null; //NOPMD
     }
 
     /**
@@ -35,7 +35,7 @@ public class ApiResponse<S> {
     public ApiResponse(String service, S body) {
         this.service = service;
         this.body = body;
-        this.error = null;
+        this.error = null; //NOPMD
     }
 
     /**
@@ -47,7 +47,7 @@ public class ApiResponse<S> {
      */
     public ApiResponse(String service, ApiException error) {
         this.service = service;
-        this.body = null;
+        this.body = null; //NOPMD
         this.error = error;
     }
 

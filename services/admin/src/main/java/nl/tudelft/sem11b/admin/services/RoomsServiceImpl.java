@@ -41,10 +41,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RoomsServiceImpl implements RoomsService {
-    private final BuildingRepository buildings;
-    private final RoomRepository rooms;
-    private final FaultRepository faults;
-    private final UserService users;
+    private final transient String missingEntityName = "Room";
+
+    private final transient BuildingRepository buildings;
+    private final transient RoomRepository rooms;
+    private final transient FaultRepository faults;
+    private final transient UserService users;
 
     /**
      * Instantiates the {@link RoomsServiceImpl} class.
@@ -188,7 +190,7 @@ public class RoomsServiceImpl implements RoomsService {
         }
 
         if (!rooms.existsById(id)) {
-            throw new EntityNotFound("Room");
+            throw new EntityNotFound(missingEntityName);
         }
 
         var room = rooms.getById(id);
@@ -207,7 +209,7 @@ public class RoomsServiceImpl implements RoomsService {
         }
 
         if (!rooms.existsById(id)) {
-            throw new EntityNotFound("Room");
+            throw new EntityNotFound(missingEntityName);
         }
 
         var room = rooms.getById(id);
@@ -219,7 +221,7 @@ public class RoomsServiceImpl implements RoomsService {
     public void addFault(long roomId, FaultRequestModel faultRequest)
             throws ApiException, EntityNotFound {
         if (!rooms.existsById(roomId)) {
-            throw new EntityNotFound("Room");
+            throw new EntityNotFound(missingEntityName);
         }
 
         var room = rooms.getById(roomId);
@@ -236,7 +238,7 @@ public class RoomsServiceImpl implements RoomsService {
             throws EntityNotFound {
 
         if (!rooms.existsById(roomId)) {
-            throw new EntityNotFound("Room");
+            throw new EntityNotFound(missingEntityName);
         }
 
         return new PageData<>(faults.findAllByRoomId(roomId, page.getPage(Sort.by("id")))

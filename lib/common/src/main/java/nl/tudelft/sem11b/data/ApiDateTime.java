@@ -191,6 +191,8 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
         }
 
         private static class ApiDateTimeDeserializeException extends JsonProcessingException {
+            private static final long serialVersionUID = 1L;
+
             protected ApiDateTimeDeserializeException(String msg, JsonLocation loc) {
                 super(msg, loc);
             }

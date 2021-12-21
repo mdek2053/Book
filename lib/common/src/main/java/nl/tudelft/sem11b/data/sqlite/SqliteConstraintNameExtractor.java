@@ -9,7 +9,8 @@ public class SqliteConstraintNameExtractor extends TemplatedViolatedConstraintNa
     @Override
     protected String doExtractConstraintName(SQLException ex) throws NumberFormatException {
         final int errorCode = JdbcExceptionHelper.extractErrorCode(ex) & 0xFF;
-        if (errorCode == 0x13) {
+        final int errorCodeComp = 0x13;
+        if (errorCode == errorCodeComp) {
             return extractUsingTemplate("constraint ", " failed", ex.getMessage());
         }
         return null;

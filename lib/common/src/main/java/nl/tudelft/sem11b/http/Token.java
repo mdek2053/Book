@@ -6,7 +6,7 @@ import java.util.Objects;
  * Represents an authentication token.
  */
 public class Token {
-    private final String token;
+    private final transient String token; //NOPMD
 
     /**
      * Instantiates the {@link Token} class.

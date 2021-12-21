@@ -18,8 +18,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BuildingServiceImpl implements BuildingService {
-    private final BuildingRepository buildings;
-    private final UserService users;
+    private final transient BuildingRepository buildings;
+    private final transient UserService users;
+
 
     public BuildingServiceImpl(BuildingRepository buildings, UserService users) {
         this.buildings = buildings;

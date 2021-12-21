@@ -39,18 +39,34 @@ public class ApiDate implements Comparable<ApiDate> {
     private short day;
 
     /**
+     * Sets the year of the date. Always must be done before setting the year.
+     * @param year Year component of the date.
+     */
+    public void setYear(long year) {
+        this.year = (short) year;
+    }
+
+    /**
+     * Sets the day of the date. Always must be done after setting the year.
+     * @param day Day of the year (indexed from 1)
+     */
+    public void setDay(long day) {
+        if (day < 1 || day > daysIn(year)) {
+            throw new IllegalArgumentException("Day is out of range for the given year!");
+        }
+
+        this.day = (short) (day - 1);
+    }
+
+    /**
      * Instantiates the {@link ApiDate} class.
      *
      * @param year      Year component of the date
      * @param dayOfYear Day of the year (indexed from 1)
      */
     public ApiDate(long year, long dayOfYear) {
-        if (dayOfYear < 1 || dayOfYear > daysIn(year)) {
-            throw new IllegalArgumentException("Day is out of range for the given year!");
-        }
-
-        this.year = (short) year;
-        this.day = (short) (dayOfYear - 1);
+        setYear(year);
+        setDay(dayOfYear);
     }
 
     /**
@@ -180,7 +196,8 @@ public class ApiDate implements Comparable<ApiDate> {
     public ApiDate before(int days) {
         // TODO: Better algorithm
         var day = this;
-        while (days-- > 0) {
+        while (days > 0) {
+            days--;
             day = day.before();
         }
 
@@ -210,7 +227,8 @@ public class ApiDate implements Comparable<ApiDate> {
     public ApiDate after(int days) {
         // TODO: Better algorithm
         var day = this;
-        while (days-- > 0) {
+        while (days > 0) {
+            days--;
             day = day.after();
         }
 
@@ -354,6 +372,8 @@ public class ApiDate implements Comparable<ApiDate> {
         }
 
         private static class ApiDateDeserializeException extends JsonProcessingException {
+            private static final long serialVersionUID = 1L;
+
             protected ApiDateDeserializeException(String msg, JsonLocation loc) {
                 super(msg, loc);
             }
