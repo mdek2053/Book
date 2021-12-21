@@ -63,6 +63,14 @@ public class Reservation {
         return cancelReason;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
     public Reservation() {
     }
 
@@ -101,7 +109,7 @@ public class Reservation {
         this.title = title;
         this.since = since;
         this.until = until;
-        this.cancelReason = null;
+        this.cancelReason = null; //NOPMD
     }
 
     public ReservationModel toModel() {
@@ -139,6 +147,18 @@ public class Reservation {
         }
         return cancelReason != null
                 ? cancelReason.equals(that.cancelReason) : that.cancelReason == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (int) (roomId ^ (roomId >>> 32));
+        result = 31 * result + (int) (userId ^ (userId >>> 32));
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (since != null ? since.hashCode() : 0);
+        result = 31 * result + (until != null ? until.hashCode() : 0);
+        result = 31 * result + (cancelReason != null ? cancelReason.hashCode() : 0);
+        return result;
     }
 
     @Override

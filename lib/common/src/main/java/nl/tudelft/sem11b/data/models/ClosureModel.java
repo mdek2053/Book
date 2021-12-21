@@ -65,6 +65,18 @@ public class ClosureModel {
         return until;
     }
 
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public void setSince(ApiDate since) {
+        this.since = since;
+    }
+
+    public void setUntil(ApiDate until) {
+        this.until = until;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -85,4 +97,11 @@ public class ClosureModel {
         return Objects.equals(until, that.until);
     }
 
+    @Override
+    public int hashCode() {
+        int result = reason != null ? reason.hashCode() : 0;
+        result = 31 * result + (since != null ? since.hashCode() : 0);
+        result = 31 * result + (until != null ? until.hashCode() : 0);
+        return result;
+    }
 }

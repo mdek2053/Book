@@ -7,6 +7,8 @@ import org.springframework.web.server.ResponseStatusException;
  * A generic API exception. Most commonly thrown by {@link nl.tudelft.sem11b.http.ApiClient}.
  */
 public class ApiException extends ServiceException {
+    private static final long serialVersionUID = 1L;
+
     private final String service;
     private final String reason;
 
@@ -31,7 +33,7 @@ public class ApiException extends ServiceException {
     public ApiException(String service, Throwable cause) {
         super("API operation with " + service + " service failed!: " + cause.getMessage(), cause);
         this.service = service;
-        this.reason = null;
+        this.reason = null; //NOPMD
     }
 
     /**

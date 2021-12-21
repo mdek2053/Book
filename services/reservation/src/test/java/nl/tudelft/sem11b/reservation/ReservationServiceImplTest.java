@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.reservation;
 
 import static nl.tudelft.sem11b.reservation.Constants.ROOM_A;
 import static nl.tudelft.sem11b.reservation.Constants.USER_A;
+import static nl.tudelft.sem11b.reservation.Constants.USER_B;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -266,6 +267,55 @@ class ReservationServiceImplTest {
         assertEquals(reservationModel.getSince().toLocal(), entity.getSince().toLocalDateTime());
         assertEquals(reservationModel.getUntil().toLocal(), entity.getUntil().toLocalDateTime());
         assertEquals(USER_A.getId(), entity.getUserId());
+    }
+
+    @Test
+    void deleteNonExistentReservationTest() throws ApiException {
+        final var id = 2L;
+
+        // arrange
+        when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
+        when(users.currentUser()).thenReturn(USER_A);
+        when(reservations.findById(id)).thenReturn(Optional.empty());
+
+        // action + assert
+        assertThrows(EntityNotFound.class, () -> service.deleteReservation(id));
+    }
+
+    @Test
+    void deleteReservationWithoutPermissions() throws ApiException {
+        final var reservation = new Reservation(
+                9, reservationModel.getRoomId(), USER_A.getId(), reservationModel.getTitle(),
+                Timestamp.valueOf(reservationModel.getSince().toLocal()),
+                Timestamp.valueOf(reservationModel.getUntil().toLocal()),
+                null
+        );
+
+        // arrange
+        when(reservations.findById(reservation.getId())).thenReturn(Optional.of(reservation));
+        when(users.currentUser()).thenReturn(USER_B);
+
+        // action + assert
+        assertThrows(ApiException.class, () -> service.deleteReservation(reservation.getId()));
+    }
+
+    @Test
+    void deleteReservationSuccessfully() throws ApiException, EntityNotFound {
+        final var reservation = new Reservation(
+                9, reservationModel.getRoomId(), USER_A.getId(), reservationModel.getTitle(),
+                Timestamp.valueOf(reservationModel.getSince().toLocal()),
+                Timestamp.valueOf(reservationModel.getUntil().toLocal()),
+                null
+        );
+
+        when(reservations.findById(reservation.getId())).thenReturn(Optional.of(reservation));
+        when(users.currentUser()).thenReturn(USER_A);
+
+        // action
+        service.deleteReservation(reservation.getId());
+
+        // verify
+        verify(reservations).delete(reservation);
     }
 
     @Test

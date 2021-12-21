@@ -28,9 +28,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
-    private final ReservationRepository reservations;
-    private final RoomsService rooms;
-    private final UserService users;
+    private final transient ReservationRepository reservations;
+    private final transient RoomsService rooms;
+    private final transient UserService users;
 
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
@@ -105,7 +105,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // check if the reservation is not too far in the future
-        if (now.until(sinceJava, ChronoUnit.DAYS) >= 14) {
+        int maxDaysInFuture = 14;
+        if (now.until(sinceJava, ChronoUnit.DAYS) >= maxDaysInFuture) {
             throw new InvalidData("Reservation is more than two weeks away");
         }
 
@@ -192,7 +193,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         var user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
+        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
             throw new ApiException("Reservation",
                 "User not authorized to change given reservation.");
         }
@@ -222,6 +223,33 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setUntil(untilTs);
 
         reservations.save(reservation);
+    }
+
+    /**
+     * Deletes reservations if the person has permissions do it.
+     * The person has permission to delete reservation only when they are admin
+     * or when they created the reservation.
+     * @param reservationId   The id of reservation to be deleted
+     * @throws EntityNotFound is thrown when the reservation doesn't exist.
+     * @throws ApiException is thrown when user is not authorized to
+     *     delete reservation.
+     */
+    @Override
+    public void deleteReservation(long reservationId) throws EntityNotFound, ApiException {
+        var reservationOpt = reservations.findById(reservationId);
+
+        if (reservationOpt.isEmpty()) {
+            throw new EntityNotFound("Reservation");
+        }
+        var reservation = reservationOpt.get();
+
+        var user = users.currentUser();
+        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
+            throw new ApiException("Reservation",
+                    "User not authorized to change given reservation.");
+        }
+
+        reservations.delete(reservation);
     }
 
     @Override
