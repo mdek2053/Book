@@ -149,7 +149,7 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public RoomModel addRoom(RoomModel model) throws ApiException {
+    public RoomModel addRoom(RoomModel model) throws ApiException, EntityNotFound{
         UserModel user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException("Rooms",

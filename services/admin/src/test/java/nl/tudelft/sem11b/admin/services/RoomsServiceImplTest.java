@@ -367,7 +367,7 @@ class RoomsServiceImplTest {
     }
 
     @Test
-    public void addRoomSuccessfulTest() throws ApiException {
+    public void addRoomSuccessfulTest() throws ApiException, EntityNotFound{
         when(users.currentUser()).thenReturn(admin);
         when(buildings.findById(1L)).thenReturn(Optional.of(building1));
         when(rooms.save(room1withoutId)).thenReturn(room1);
