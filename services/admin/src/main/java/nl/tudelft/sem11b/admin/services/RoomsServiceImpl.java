@@ -159,8 +159,7 @@ public class RoomsServiceImpl implements RoomsService {
         Optional<Building> buildingOptional = buildings.findById(buildingModel.getId());
 
         if (buildingOptional.isEmpty()) {
-            throw new ApiException("Rooms",
-                    "Building does not exist");
+            throw new EntityNotFound("Building");
         }
 
         Room newRoom = new Room(model.getSuffix(),
