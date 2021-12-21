@@ -38,7 +38,7 @@ public class BuildingClient implements BuildingService {
     }
 
     @Override
-    public BuildingModel addBuilding(BuildingModel model) {
-        return null;
+    public BuildingModel addBuilding(BuildingModel model) throws ApiException {
+        return api.post("/buildings", model, new TypeReference<BuildingModel>() {}).unwrap();
     }
 }
