@@ -11,7 +11,7 @@ import nl.tudelft.sem11b.services.GroupService;
 
 public class GroupClient implements GroupService {
 
-    private final ApiClient<Authenticated> api;
+    private final transient ApiClient<Authenticated> api;
 
     /**
      * Instantiates the {@link UserClient} class.
