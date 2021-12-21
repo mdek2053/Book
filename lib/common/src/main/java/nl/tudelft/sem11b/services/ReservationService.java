@@ -76,4 +76,12 @@ public interface ReservationService {
     void editReservation(long reservationId, String title, ApiDateTime since,
                          ApiDateTime until, Long forUser)
             throws ApiException, EntityNotFound, InvalidData;
+
+    /**
+     * Deletes reservation with provided reservationId if the user is authorized to do it.
+     * @param reservationId   The id of reservation to be deleted
+     * @throws EntityNotFound Thrown when the given reservation was not found
+     * @throws ApiException   Thrown when the given data is invalid
+     */
+    void deleteReservation(long reservationId) throws EntityNotFound, ApiException;
 }

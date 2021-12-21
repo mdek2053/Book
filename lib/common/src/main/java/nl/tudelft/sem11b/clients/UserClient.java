@@ -17,7 +17,7 @@ import nl.tudelft.sem11b.services.UserService;
  * A client for the {@link UserService} API. This client requires authentication.
  */
 public class UserClient implements UserService {
-    private final ApiClient<Authenticated> api;
+    private final transient ApiClient<Authenticated> api;
 
     /**
      * Instantiates the {@link UserClient} class.

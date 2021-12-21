@@ -5,6 +5,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,6 +17,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
@@ -122,4 +125,15 @@ class ReservationControllerTest {
             id, subject.getTitle() + "!", subject.getSince(), subject.getUntil(), null);
     }
 
+    @Test
+    void deleteReservationSuccessfully() throws Exception {
+        final var id = 2L;
+        doNothing().when(reservationService).deleteReservation(id);
+
+        mockMvc.perform(delete("/reservations/" + id))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        verify(reservationService, times(1)).deleteReservation(id);
+    }
 }

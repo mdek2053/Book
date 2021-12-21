@@ -20,9 +20,9 @@ import nl.tudelft.sem11b.data.exceptions.ApiException;
 public class ApiClient<I extends Identity> {
     private final I identity;
     private final URI uri;
-    private final Coding coding;
-    private final HttpClient http;
-    private final String service;
+    private final transient Coding coding;
+    private final transient HttpClient http;
+    private final transient String service;
 
     /**
      * Instantiates the {@link ApiClient} class.
@@ -125,7 +125,9 @@ public class ApiClient<I extends Identity> {
                 }
 
                 // check if response is successful
-                if (status / 100 == 2) {
+                int responseCategory = status / 100;
+                int responseCategoryComp = 2;
+                if (responseCategory == responseCategoryComp) {
                     // check if response body can be deserialized with the current coding
                     var bodyType = info.headers().firstValue("Content-Type")
                         .map(ApiClient::getContentType)

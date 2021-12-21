@@ -1,4 +1,4 @@
-package nl.tudelft.sem11b.authentication;
+package nl.tudelft.sem11b.authentication.controllers;
 
 import java.util.List;
 
@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupController {
 
     @Autowired
-    GroupServiceImpl groupService;
+    transient GroupServiceImpl groupService;
 
     @Autowired
-    UserServiceImpl userService;
+    transient UserServiceImpl userService;
 
     public GroupController(GroupServiceImpl groupService, UserServiceImpl userService) {
         this.groupService = groupService;

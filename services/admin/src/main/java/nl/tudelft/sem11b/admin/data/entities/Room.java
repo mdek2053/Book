@@ -1,5 +1,7 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -7,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -21,7 +25,8 @@ import nl.tudelft.sem11b.data.models.RoomStudModel;
 @Entity
 @Table(indexes = {@Index(columnList = "suffix, building_id", unique = true)})
 public class Room {
-    @Id @Column(name = "id", nullable = false)
+    @Id
+    @Column(name = "id", nullable = false)
     private long id;
     @Column(name = "suffix", nullable = false)
     private String suffix;
@@ -31,6 +36,14 @@ public class Room {
     private int capacity;
     @Embedded
     private Closure closure;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable
+    private Set<Equipment> equipment;
+
+    public Room() {
+
+    }
 
     @JoinColumn(name = "building_id", nullable = false)
     @ManyToOne(cascade = CascadeType.ALL)
@@ -116,6 +129,34 @@ public class Room {
         return building;
     }
 
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public Set<Equipment> getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(Set<Equipment> equipment) {
+        this.equipment = equipment;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
+
     /**
      * Constructs a room object.
      *
@@ -127,13 +168,14 @@ public class Room {
      * @param building  object representing the building the room is part of
      */
     public Room(long id, String suffix, String name, int capacity,
-                Closure closure, Building building) {
+                Closure closure, Building building, Set<Equipment> equipment) {
         this.id = id;
         this.suffix = suffix;
         this.name = name;
         this.capacity = capacity;
         this.closure = closure;
         this.building = building;
+        this.equipment = equipment;
     }
 
     /**
@@ -152,7 +194,42 @@ public class Room {
      * @return Room model
      */
     public RoomModel toModel() {
+        EquipmentModel[] equipmentModels = equipment.stream().map(x -> x.toModel())
+                .toArray(EquipmentModel[]::new);
         return new RoomModel(id, suffix, name, capacity,
-            building.toModel(), new EquipmentModel[0], closure == null ? null : closure.toModel());
+            building.toModel(), equipmentModels, closure == null ? null : closure.toModel());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Room room = (Room) o;
+        return id == room.id && capacity == room.capacity
+                && suffix.equals(room.suffix) && name.equals(room.name)
+                && Objects.equals(closure, room.closure)
+                && equipment.equals(room.equipment) && building.equals(room.building);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, suffix, name, capacity, closure, equipment);
+    }
+
+    @Override
+    public String toString() {
+        return "Room{"
+                + "id=" + id
+                + ", suffix='" + suffix + '\''
+                + ", name='" + name + '\''
+                + ", capacity=" + capacity
+                + ", closure=" + closure
+                + ", equipment=" + equipment
+                + ", building=" + building
+                + '}';
     }
 }

@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.persistence.AttributeOverride;
@@ -40,6 +41,10 @@ public class Building {
     @OneToMany(mappedBy = "building")
     private Set<Room> rooms;
 
+    public Building() {
+
+    }
+
     /**
      * Gets the unique numeric identifier of the building.
      *
@@ -47,6 +52,14 @@ public class Building {
      */
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
     }
 
     /**
@@ -192,5 +205,26 @@ public class Building {
      */
     public BuildingModel toModel() {
         return new BuildingModel(id, prefix, name, opening, closing);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Building building = (Building) o;
+        return id == building.id && Objects.equals(prefix, building.prefix)
+                && Objects.equals(name, building.name)
+                && Objects.equals(opening, building.opening)
+                && Objects.equals(closing, building.closing)
+                && Objects.equals(rooms, building.rooms);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, prefix, name, opening, closing, rooms);
     }
 }

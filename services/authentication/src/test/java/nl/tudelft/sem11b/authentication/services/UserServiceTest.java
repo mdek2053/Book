@@ -1,8 +1,7 @@
-package nl.tudelft.sem11b.authentication;
+package nl.tudelft.sem11b.authentication.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,8 +12,6 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
-import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
-import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -39,32 +36,36 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserServiceTest {
 
     @Mock
-    private UserRepository userRepositoryMock;
+    private transient UserRepository userRepositoryMock;
 
     @Mock
-    SecurityContext securityContext;
+    transient SecurityContext securityContext;
 
     @Mock
-    Authentication authentication;
+    transient Authentication authentication;
 
     @Mock
-    private PasswordEncoder encoder;
+    private transient PasswordEncoder encoder;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private transient UserServiceImpl userService;
 
-    private final String netId1 = "Andy";
-    private final String netId2 = "Bob";
+    private final transient String netId1 = "Andy";
+    private final transient String netId2 = "Bob";
 
-    private final User plainTextPasswordUser = new User("Bob", "employee", "plain");
-    private final User encodedPasswordUser = new User("Bob", "employee", "encoded");
+    transient String role = "employee";
+    transient String plain = "plain";
+    transient String encoded = "encoded";
+    private final transient User plainTextPasswordUser = new User(netId2, role, plain);
+    private final transient User encodedPasswordUser = new User(netId2, role, encoded);
 
-    private final UserRequestModel
-        plainTextPasswordUserModel = new UserRequestModel("Bob", "plain", "employee");
+    private final transient UserRequestModel
+            plainTextPasswordUserModel = new UserRequestModel(netId2, plain, role);
     private final UserRequestModel encodedPasswordUserModel =
-        new UserRequestModel("Bob", null, "employee");
+            new UserRequestModel("Bob", null, role);
 
-    private final UserModel nullPasswordUserModel = new UserModel(1L, "Bob", new String[0]);
+    private final transient UserModel nullPasswordUserModel
+            = new UserModel(1L, netId2, new String[0]);
 
     @Test
     public void loadUserNonExistentTest() {
@@ -78,12 +79,12 @@ public class UserServiceTest {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(plainTextPasswordUser.getRole()));
         org.springframework.security.core.userdetails.User expected =
-            new org.springframework.security.core.userdetails
-                .User(plainTextPasswordUser.getNetId(), plainTextPasswordUser
-                .getPassword(), authorities);
+                new org.springframework.security.core.userdetails
+                        .User(plainTextPasswordUser.getNetId(), plainTextPasswordUser
+                        .getPassword(), authorities);
 
         when(userRepositoryMock.findUserByNetId(netId2))
-            .thenReturn(Optional.of(plainTextPasswordUser));
+                .thenReturn(Optional.of(plainTextPasswordUser));
 
         assertEquals(expected, userService.loadUserByUsername(netId2));
     }
@@ -94,7 +95,7 @@ public class UserServiceTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(netId2);
         when(userRepositoryMock.findUserByNetId(netId2))
-            .thenReturn(Optional.of(plainTextPasswordUser));
+                .thenReturn(Optional.of(plainTextPasswordUser));
 
         assertEquals(nullPasswordUserModel.getLogin(), userService.currentUser().getLogin());
     }
@@ -102,31 +103,31 @@ public class UserServiceTest {
     @Test
     public void addUserInvalidNetIdTest() {
         assertThrows(InvalidData.class, () -> userService.addUser(
-            null, "banana", null));
+                null, "banana", null));
     }
 
     @Test
     public void addUserInvalidPasswordTest() {
         assertThrows(InvalidData.class, () -> userService.addUser(
-            "Stefan", null, null));
+                "Stefan", null, null));
     }
 
     @Test
     public void addUserAlreadyExistsTest() {
         when(userRepositoryMock.findUserByNetId(netId2))
-            .thenReturn(Optional.of(plainTextPasswordUser));
+                .thenReturn(Optional.of(plainTextPasswordUser));
 
         assertThrows(InvalidData.class, () ->
-            userService.addUser(netId2, "plain", null));
+                userService.addUser(netId2, plain, null));
     }
 
     @Test
     public void addUserSuccessfulTest() throws InvalidData {
         when(userRepositoryMock.findUserByNetId(netId2)).thenReturn(Optional.empty());
         when(encoder.encode(plainTextPasswordUser.getPassword()))
-            .thenReturn(encodedPasswordUser.getPassword());
+                .thenReturn(encodedPasswordUser.getPassword());
 
-        userService.addUser("Bob", "plain", null);
+        userService.addUser(netId2, plain, null);
 
         verify(userRepositoryMock, times(1)).save(encodedPasswordUser);
     }

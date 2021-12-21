@@ -29,7 +29,7 @@ public class SqliteDialect extends Dialect {
     private static final AbstractLimitHandler limitImpl = new SqliteLimits();
     private static final ViolatedConstraintNameExtracter constraintExtractorImpl =
         new SqliteConstraintNameExtractor();
-    private final UniqueDelegate uniqueImpl;
+    private final transient UniqueDelegate uniqueImpl;
 
     /**
      * Instantiates the {@link SqliteDialect} class.

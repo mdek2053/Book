@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.data.models;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.springframework.data.domain.Page;
@@ -67,5 +68,38 @@ public class PageData<T> {
      */
     public Stream<T> getData() {
         return data.stream();
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public void setData(List<T> data) {
+        this.data = data;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PageData<?> pageData = (PageData<?>) o;
+        return total == pageData.total && data.equals(pageData.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(total, data);
+    }
+
+    @Override
+    public String toString() {
+        return "PageData{"
+                + "total=" + total
+                + ", data=" + data
+                + '}';
     }
 }

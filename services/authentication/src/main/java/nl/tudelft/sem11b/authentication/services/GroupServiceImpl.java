@@ -27,13 +27,13 @@ import org.springframework.stereotype.Service;
 public class GroupServiceImpl implements GroupService {
 
     @Autowired
-    GroupRepository groupRepository;
+    transient GroupRepository groupRepository;
 
     @Autowired
-    UserRepository userRepository;
+    transient UserRepository userRepository;
 
     @Autowired
-    UserServiceImpl userService;
+    transient UserServiceImpl userService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -120,7 +120,7 @@ public class GroupServiceImpl implements GroupService {
 
         Group group = new Group(name, secretary.getId(), groupMembers);
         group = groupRepository.save(group);
-        return new GroupModel(group.getName(), secretaryId, groupMembers, group.getGroupId());
+        return new GroupModel(group.getName(), secretary.getId(), groupMembers, group.getGroupId());
     }
 
     /**

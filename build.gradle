@@ -22,7 +22,7 @@ subprojects {
 		// Jackson JSON serialization/deserialization API bindings
 		implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
 
-		// JUnit5 unit testing framework
+        // JUnit5 unit testing framework
 		testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 		testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
 	}
@@ -78,6 +78,10 @@ subprojects {
 
 	pmd {
 		incrementalAnalysis = true
+
+		ruleSets = [rootProject.file('config/pmd.xml')]
+
+		pmdTest.enabled = false
 	}
 
 	test {
