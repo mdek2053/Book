@@ -2,8 +2,6 @@ package nl.tudelft.sem11b.reservation;
 
 import java.util.Optional;
 
-import nl.tudelft.sem11b.data.exceptions.ApiException;
-import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
@@ -97,7 +95,7 @@ public class ReservationController {
      */
     @GetMapping("/availability/{id}")
     public boolean checkAvailability(@PathVariable long id,
-                                     @RequestParam ReservationRequestModel requestModel) {
+                                     @RequestBody ReservationRequestModel requestModel) {
         try {
             return reservationService.checkAvailability(id, requestModel);
         } catch (ServiceException invalidData) {

@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.models.ReservationModel;
