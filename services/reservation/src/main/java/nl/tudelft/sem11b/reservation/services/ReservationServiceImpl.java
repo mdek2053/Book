@@ -17,6 +17,7 @@ import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.services.GroupService;
@@ -33,6 +34,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final transient RoomsService rooms;
     private final transient UserService users;
     private final transient GroupService groups;
+
+    private final transient String entityName = "Reservation";
 
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
@@ -214,7 +217,7 @@ public class ReservationServiceImpl implements ReservationService {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound("Reservation");
+            throw new EntityNotFound(entityName);
         }
         var reservation = reservationOpt.get();
 
@@ -228,7 +231,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         var user = users.currentUser();
         if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
-            throw new ApiException("Reservation",
+            throw new ApiException(entityName,
                 "User not authorized to change given reservation.");
         }
 
@@ -273,13 +276,13 @@ public class ReservationServiceImpl implements ReservationService {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound("Reservation");
+            throw new EntityNotFound(entityName);
         }
-        var reservation = reservationOpt.get();
+        Reservation reservation = reservationOpt.get();
 
-        var user = users.currentUser();
+        UserModel user = users.currentUser();
         if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
-            throw new ApiException("Reservation",
+            throw new ApiException(entityName,
                     "User not authorized to change given reservation.");
         }
 

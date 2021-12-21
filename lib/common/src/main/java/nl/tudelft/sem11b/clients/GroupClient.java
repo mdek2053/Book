@@ -15,7 +15,7 @@ import nl.tudelft.sem11b.services.GroupService;
 
 public class GroupClient implements GroupService {
 
-    private final ApiClient<Authenticated> api;
+    private final transient ApiClient<Authenticated> api;
 
     /**
      * Instantiates the {@link UserClient} class.
@@ -28,7 +28,7 @@ public class GroupClient implements GroupService {
 
     @Override
     public List<GroupModel> getGroupsOfUser(UserModel user)
-            throws NoAssignedGroupException, ApiException {
+            throws ApiException {
         return api.get("/groups?user=" + user,
                 new TypeReference<List<GroupModel>>() {
                 }).unwrap();
@@ -44,7 +44,7 @@ public class GroupClient implements GroupService {
 
     @Override
     public GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
-            throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException {
+            throws ApiException {
         GroupModel groupModel = new GroupModel(name, secretaryId, groupMembers);
         return api.get("/groups?model=" + groupModel,
                 new TypeReference<GroupModel>() {
@@ -53,7 +53,7 @@ public class GroupClient implements GroupService {
 
     @Override
     public GroupModel getGroupInfo(Long groupId)
-            throws InvalidGroupCredentialsException, ApiException, InvalidCredentialsException {
+            throws ApiException {
         return api.get("/groups/" + groupId,
                 new TypeReference<GroupModel>() {
                 }).unwrap();
@@ -61,7 +61,7 @@ public class GroupClient implements GroupService {
 
     @Override
     public void addGroupMembers(List<Long> users, GroupModel group)
-            throws InvalidGroupCredentialsException, ApiException {
+            throws ApiException {
         api.get("/groups/members?users=" + users + "&group=" + group,
                 new TypeReference<GroupModel>() {
                 }).unwrap();
