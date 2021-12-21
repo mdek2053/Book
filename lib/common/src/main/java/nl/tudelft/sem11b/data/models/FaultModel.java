@@ -46,6 +46,22 @@ public class FaultModel {
         return roomId;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setReporter(long reporter) {
+        this.reporter = reporter;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setRoomId(long roomId) {
+        this.roomId = roomId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -69,4 +85,12 @@ public class FaultModel {
         return Objects.equals(description, that.description);
     }
 
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (int) (reporter ^ (reporter >>> 32));
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (int) (roomId ^ (roomId >>> 32));
+        return result;
+    }
 }

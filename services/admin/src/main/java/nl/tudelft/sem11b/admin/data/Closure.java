@@ -91,6 +91,18 @@ public class Closure {
         return until;
     }
 
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public void setSince(ApiDate since) {
+        this.since = since;
+    }
+
+    public void setUntil(ApiDate until) {
+        this.until = until;
+    }
+
     /**
      * Converts the closure entity into its equivalent model.
      *
@@ -120,4 +132,11 @@ public class Closure {
         return Objects.equals(until, closure.until);
     }
 
+    @Override
+    public int hashCode() {
+        int result = reason != null ? reason.hashCode() : 0;
+        result = 31 * result + (since != null ? since.hashCode() : 0);
+        result = 31 * result + (until != null ? until.hashCode() : 0);
+        return result;
+    }
 }

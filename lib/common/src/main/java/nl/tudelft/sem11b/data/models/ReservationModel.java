@@ -49,6 +49,22 @@ public class ReservationModel {
         return title;
     }
 
+    public void setRoomId(long roomId) {
+        this.roomId = roomId;
+    }
+
+    public void setSince(ApiDateTime since) {
+        this.since = since;
+    }
+
+    public void setUntil(ApiDateTime until) {
+        this.until = until;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     /**
      * Initiates ReservationModel class.
      *

@@ -31,9 +31,9 @@ lib-common-checkstyle:
       - .gradle/
   allow_failure: true
 
-#lib-common-pmd:
-#  stage: validate
-#  script: ./gradlew :lib:common:pmdMain :lib:common:pmdTest
+lib-common-pmd:
+  stage: validate
+  script: ./gradlew :lib:common:pmdMain :lib:common:pmdTest
 
 lib-common-test:
   stage: test

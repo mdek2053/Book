@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
  * @see Coding
  */
 public class JsonCoding implements Coding {
-    private final ObjectMapper mapper;
+    private final transient ObjectMapper mapper;
 
     /**
      * Instantiates the {@link JsonCoding} class.

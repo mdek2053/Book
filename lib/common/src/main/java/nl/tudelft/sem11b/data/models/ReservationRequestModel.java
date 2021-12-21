@@ -58,6 +58,26 @@ public class ReservationRequestModel {
         return forUser;
     }
 
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSince(ApiDateTime since) {
+        this.since = since;
+    }
+
+    public void setUntil(ApiDateTime until) {
+        this.until = until;
+    }
+
+    public void setForUser(Long forUser) {
+        this.forUser = forUser;
+    }
+
     /**
      * Checks if a reservation entity has all mandatory fields filled in.
      *

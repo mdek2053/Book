@@ -57,6 +57,18 @@ public class UserModel {
         return roles != null ? Arrays.stream(roles) : Stream.empty();
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setRoles(String[] roles) {
+        this.roles = roles;
+    }
+
     /**
      * Checks if the user has the given role.
      *

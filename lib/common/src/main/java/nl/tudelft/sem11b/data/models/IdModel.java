@@ -29,4 +29,8 @@ public class IdModel<T> {
     public T getId() {
         return id;
     }
+
+    public void setId(T id) {
+        this.id = id;
+    }
 }

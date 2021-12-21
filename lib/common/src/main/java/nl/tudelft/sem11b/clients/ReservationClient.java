@@ -17,7 +17,7 @@ import nl.tudelft.sem11b.services.ReservationService;
  * A client for the {@link ReservationService} API. This client requires authentication.
  */
 public class ReservationClient implements ReservationService {
-    private final ApiClient<Authenticated> api;
+    private final transient ApiClient<Authenticated> api;
 
     /**
      * Instantiates the {@link ReservationClient} class.
@@ -80,5 +80,10 @@ public class ReservationClient implements ReservationService {
         var model = new ReservationRequestModel(null, title, since, until, null);
         api.post("/reservations/" + reservationId, model, new TypeReference<>() {
         }).unwrap();
+    }
+
+    @Override
+    public void deleteReservation(long reservationId) throws ApiException {
+        api.delete("/reservations/" + reservationId).unwrap();
     }
 }

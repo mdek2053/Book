@@ -25,6 +25,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = ApiTime.Serializer.class)
 @JsonDeserialize(using = ApiTime.Deserializer.class)
 public class ApiTime implements Comparable<ApiTime> {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Minimal value. Equivalent to midnight.
      */
@@ -37,7 +39,7 @@ public class ApiTime implements Comparable<ApiTime> {
         Pattern.compile("(0?[0-9]|1[0-9]|2[0-3]):(0?[0-9]|[1-5][0-9])");
 
     @Column(name = "timestamp")
-    private short timestamp;
+    private transient short timestamp;
 
     /**
      * Instantiates the {@link ApiTime} class.
@@ -172,6 +174,8 @@ public class ApiTime implements Comparable<ApiTime> {
         }
 
         private static class TimeOfDayDeserializeException extends JsonProcessingException {
+            private static final long serialVersionUID = 1L;
+
             protected TimeOfDayDeserializeException(String msg, JsonLocation loc) {
                 super(msg, loc);
             }

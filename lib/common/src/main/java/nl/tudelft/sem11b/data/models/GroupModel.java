@@ -58,6 +58,10 @@ public class GroupModel {
         return name;
     }
 
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
     public void setSecretary(Long secretary) {
         this.secretary = secretary;
     }
@@ -92,7 +96,7 @@ public class GroupModel {
             return false;
         }
         GroupModel that = (GroupModel) o;
-        return getGroupId() == that.getGroupId()
+        return getGroupId().equals(that.getGroupId())
                 && Objects.equals(getName(), that.getName())
                 && getSecretary().equals(that.getSecretary())
                 && Objects.equals(getGroupMembers(), that.getGroupMembers());

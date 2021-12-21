@@ -7,6 +7,8 @@ import org.springframework.web.server.ResponseStatusException;
  * Exception thrown when request data is invalid.
  */
 public class InvalidData extends ServiceException {
+    private static final long serialVersionUID = 1L;
+
     private String reason;
 
     /**
@@ -16,6 +18,15 @@ public class InvalidData extends ServiceException {
      */
     public InvalidData(String reason) {
         super(reason);
+    }
+
+    /**
+     * Sets the error message.
+     *
+     * @param reason Error message
+     */
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     /**
