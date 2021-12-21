@@ -32,6 +32,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final transient RoomsService rooms;
     private final transient UserService users;
 
+    private final transient String entityName = "Reservation";
+
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
      *
@@ -180,7 +182,7 @@ public class ReservationServiceImpl implements ReservationService {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound("Reservation");
+            throw new EntityNotFound(entityName);
         }
         var reservation = reservationOpt.get();
 
@@ -194,7 +196,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         var user = users.currentUser();
         if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
-            throw new ApiException("Reservation",
+            throw new ApiException(entityName,
                 "User not authorized to change given reservation.");
         }
 
@@ -239,13 +241,15 @@ public class ReservationServiceImpl implements ReservationService {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound("Reservation");
+            throw new EntityNotFound(entityName);
         }
         var reservation = reservationOpt.get();
 
         var user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) {
-            throw new ApiException("Reservation",
+        long userId = user.getId();
+        long reservationUserId = reservation.getUserId();
+        if (userId != reservationUserId && !user.inRole(Roles.Admin)) {
+            throw new ApiException(entityName,
                     "User not authorized to change given reservation.");
         }
 
