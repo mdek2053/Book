@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
@@ -190,7 +191,7 @@ public class ReservationServiceImpl implements ReservationService {
         var user = users.currentUser();
         if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
             throw new ApiException(serviceName,
-                    "User not authorized to change given reservation.");
+                "User not authorized to change given reservation.");
         }
 
         var roomOpt = rooms.getRoom(reservation.getRoomId());
@@ -239,8 +240,7 @@ public class ReservationServiceImpl implements ReservationService {
         var reservation = reservationOpt.get();
 
         var user = users.currentUser();
-        if (!((Long)user.getId()).equals(reservation.getUserId())
-                && !user.inRole(Roles.Admin)) {
+        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)) {
             throw new ApiException(serviceName,
                     "User not authorized to change given reservation.");
         }

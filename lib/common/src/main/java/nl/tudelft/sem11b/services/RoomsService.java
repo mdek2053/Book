@@ -57,6 +57,8 @@ public interface RoomsService {
      */
     Optional<RoomModel> getRoom(long id) throws ApiException;
 
+    RoomModel addRoom(RoomModel model) throws ApiException, EntityNotFound;
+
     /**
      * Adds a closure to a room. The user making the change must have admin rights.
      *

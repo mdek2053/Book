@@ -49,7 +49,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("No such user exists.");
         }
-
         String password = user.get().getPassword();
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.get().getRole()));
