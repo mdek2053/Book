@@ -31,8 +31,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final transient UserService users;
     private final transient String serviceName = "Reservation";
 
-    private final transient String serviceName = "Reservation";
-
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
      *
