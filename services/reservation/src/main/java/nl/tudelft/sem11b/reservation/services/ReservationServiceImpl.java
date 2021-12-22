@@ -4,11 +4,11 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -226,7 +226,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         var user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)
+        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)
                 && !verifySecretary(reservation.getUserId())) {
             throw new ApiException(serviceName,
                     "User not authorized to change given reservation.");
