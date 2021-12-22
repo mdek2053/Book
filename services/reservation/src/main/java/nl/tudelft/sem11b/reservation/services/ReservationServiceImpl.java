@@ -34,8 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final transient RoomsService rooms;
     private final transient UserService users;
     private final transient GroupService groups;
-
-    private final transient String entityName = "Reservation";
+    private final transient String serviceName = "Reservation";
 
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
@@ -141,7 +140,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (closure.getUntil() == null || closure.getUntil().compareTo(since.getDate()) >= 0) {
             if (closure.getUntil() != null) {
                 throw new InvalidData(
-                    "Room is under maintenance (until " + closure.getUntil() + ")");
+                        "Room is under maintenance (until " + closure.getUntil() + ")");
             }
 
             throw new InvalidData("Room is under maintenance");
@@ -214,9 +213,9 @@ public class ReservationServiceImpl implements ReservationService {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound(entityName);
+            throw new EntityNotFound(serviceName);
         }
-        Reservation reservation = reservationOpt.get();
+        var reservation = reservationOpt.get();
 
         if (since == null) {
             since = ApiDateTime.from(reservation.getSince());
@@ -226,11 +225,11 @@ public class ReservationServiceImpl implements ReservationService {
             until = ApiDateTime.from(reservation.getUntil());
         }
 
-        UserModel user = users.currentUser();
+        var user = users.currentUser();
         if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)
                 && !verifySecretary(reservation.getUserId())) {
-            throw new ApiException(entityName,
-                "User not authorized to change given reservation.");
+            throw new ApiException(serviceName,
+                    "User not authorized to change given reservation.");
         }
 
         var roomOpt = rooms.getRoom(reservation.getRoomId());
@@ -270,19 +269,18 @@ public class ReservationServiceImpl implements ReservationService {
      *     delete reservation.
      */
     @Override
-    public void deleteReservation(long reservationId)
-            throws EntityNotFound, ApiException {
+    public void deleteReservation(long reservationId) throws EntityNotFound, ApiException {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound(entityName);
+            throw new EntityNotFound(serviceName);
         }
-        Reservation reservation = reservationOpt.get();
+        var reservation = reservationOpt.get();
 
-        UserModel user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)
-                && !verifySecretary(reservation.getUserId())) {
-            throw new ApiException(entityName,
+        var user = users.currentUser();
+        if (!((Long)user.getId()).equals(reservation.getUserId())
+                && !user.inRole(Roles.Admin) && !verifySecretary(reservation.getUserId())) {
+            throw new ApiException(serviceName,
                     "User not authorized to change given reservation.");
         }
 
