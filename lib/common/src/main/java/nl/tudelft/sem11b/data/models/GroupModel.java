@@ -107,13 +107,4 @@ public class GroupModel {
         return Objects.hash(getGroupId(), getName(), getSecretary(), getGroupMembers());
     }
 
-    @Override
-    public String toString() {
-        return "GroupModel{"
-                + "groupId=" + groupId
-                + ", name='" + name + '\''
-                + ", secretary=" + secretary
-                + ", groupMembers=" + groupMembers
-                + '}';
-    }
 }

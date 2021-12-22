@@ -164,16 +164,4 @@ public class RoomModel {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "RoomModel{"
-                + "id=" + id
-                + ", suffix='" + suffix + '\''
-                + ", name='" + name + '\''
-                + ", capacity=" + capacity
-                + ", building=" + building
-                + ", equipment=" + Arrays.toString(equipment)
-                + ", closure=" + closure
-                + '}';
-    }
 }
