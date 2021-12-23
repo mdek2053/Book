@@ -95,11 +95,4 @@ public class PageData<T> {
         return Objects.hash(total, data);
     }
 
-    @Override
-    public String toString() {
-        return "PageData{"
-                + "total=" + total
-                + ", data=" + data
-                + '}';
-    }
 }
