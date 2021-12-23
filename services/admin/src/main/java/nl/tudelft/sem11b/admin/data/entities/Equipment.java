@@ -58,12 +58,21 @@ public class Equipment {
             return false;
         }
         Equipment equipment = (Equipment) o;
-        return Objects.equals(id, equipment.id);
+        return Objects.equals(id, equipment.id) && Objects.equals(name, equipment.name);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Equipment{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", rooms=" + rooms +
+                '}';
     }
 
     public EquipmentModel toModel() {
