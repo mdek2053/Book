@@ -8,6 +8,7 @@ import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.FaultModel;
 import nl.tudelft.sem11b.data.models.FaultRequestModel;
 import nl.tudelft.sem11b.data.models.FaultStudModel;
@@ -72,6 +73,11 @@ public class RoomsClient implements RoomsService {
 
     @Override
     public RoomModel addRoom(RoomModel model) {
+        return null;
+    }
+
+    @Override
+    public EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId) {
         return null;
     }
 

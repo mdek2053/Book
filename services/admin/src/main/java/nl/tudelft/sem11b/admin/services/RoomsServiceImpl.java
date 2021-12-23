@@ -162,6 +162,9 @@ public class RoomsServiceImpl implements RoomsService {
                     "User not authorized to add rooms");
         }
         BuildingModel buildingModel = model.getBuilding();
+        if(buildingModel == null) {
+            throw new EntityNotFound("Building");
+        }
         Optional<Building> buildingOptional = buildings.findById(buildingModel.getId());
 
         if (buildingOptional.isEmpty()) {

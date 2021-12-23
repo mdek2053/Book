@@ -2,10 +2,7 @@ package nl.tudelft.sem11b.admin.data.entities;
 
 import java.util.Objects;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 
 import nl.tudelft.sem11b.data.models.EquipmentModel;
 
@@ -13,6 +10,7 @@ import nl.tudelft.sem11b.data.models.EquipmentModel;
 @Entity
 public class Equipment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
