@@ -56,8 +56,12 @@ public class EquipmentModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         EquipmentModel that = (EquipmentModel) o;
         return Objects.equals(id, that.id) && name.equals(that.name);
     }
@@ -69,9 +73,9 @@ public class EquipmentModel {
 
     @Override
     public String toString() {
-        return "EquipmentModel{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return "EquipmentModel{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + '}';
     }
 }

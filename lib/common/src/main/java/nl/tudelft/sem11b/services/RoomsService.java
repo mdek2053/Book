@@ -7,7 +7,15 @@ import java.util.Optional;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.*;
+import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
+import nl.tudelft.sem11b.data.models.FaultModel;
+import nl.tudelft.sem11b.data.models.FaultRequestModel;
+import nl.tudelft.sem11b.data.models.FaultStudModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.RoomStudModel;
 
 
 /**
@@ -52,7 +60,8 @@ public interface RoomsService {
 
     RoomModel addRoom(RoomModel model) throws ApiException, EntityNotFound;
 
-    EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId) throws ApiException, EntityNotFound;
+    EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId)
+            throws ApiException, EntityNotFound;
 
     /**
      * Adds a closure to a room. The user making the change must have admin rights.

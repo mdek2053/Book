@@ -51,6 +51,8 @@ public class RoomsServiceImpl implements RoomsService {
     private final transient EquipmentRepository equipmentRepo;
     private final transient UserService users;
 
+    private final transient String serviceName = "Rooms";
+
     /**
      * Instantiates the {@link RoomsServiceImpl} class.
      *
@@ -59,7 +61,8 @@ public class RoomsServiceImpl implements RoomsService {
      * @param users     Users handling service
      */
     public RoomsServiceImpl(BuildingRepository buildings, RoomRepository rooms,
-                            FaultRepository faults, EquipmentRepository equipmentRepo, UserService users) {
+                            FaultRepository faults, EquipmentRepository equipmentRepo,
+                            UserService users) {
         this.buildings = buildings;
         this.rooms = rooms;
         this.faults = faults;
@@ -158,11 +161,11 @@ public class RoomsServiceImpl implements RoomsService {
     public RoomModel addRoom(RoomModel model) throws ApiException, EntityNotFound {
         UserModel user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
-            throw new ApiException("Rooms",
+            throw new ApiException(serviceName,
                     "User not authorized to add rooms");
         }
         BuildingModel buildingModel = model.getBuilding();
-        if(buildingModel == null) {
+        if (buildingModel == null) {
             throw new EntityNotFound("Building");
         }
         Optional<Building> buildingOptional = buildings.findById(buildingModel.getId());
@@ -189,16 +192,17 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
-    public EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId) throws ApiException, EntityNotFound {
+    public EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId)
+            throws ApiException, EntityNotFound {
         var user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
-            throw new ApiException("Rooms",
+            throw new ApiException(serviceName,
                     "User not authorized to add equipment.");
         }
-        if(roomId.isEmpty()) {
+        if (roomId.isEmpty()) {
             return addEquipmentToSystem(model).toModel();
         } else {
-            if(!rooms.existsById(roomId.get())) {
+            if (!rooms.existsById(roomId.get())) {
                 throw new EntityNotFound("Room id does not exist");
             }
             Equipment equipment;
@@ -215,8 +219,8 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     private Equipment addEquipmentToSystem(EquipmentModel model) throws ApiException {
-        if(equipmentRepo.findByName(model.getName()).isPresent()) {
-            throw new ApiException("Rooms", "Equipment already exists!");
+        if (equipmentRepo.findByName(model.getName()).isPresent()) {
+            throw new ApiException(serviceName, "Equipment already exists!");
         }
         Equipment equipment = new Equipment(model.getName());
         return equipmentRepo.save(equipment);
@@ -226,7 +230,7 @@ public class RoomsServiceImpl implements RoomsService {
     public void closeRoom(long id, ClosureModel closure) throws EntityNotFound, ApiException {
         var user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
-            throw new ApiException("Rooms",
+            throw new ApiException(serviceName,
                     "User not authorized to close rooms.");
         }
 
@@ -245,7 +249,7 @@ public class RoomsServiceImpl implements RoomsService {
     public void reopenRoom(long id) throws EntityNotFound, ApiException {
         var user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
-            throw new ApiException("Rooms",
+            throw new ApiException(serviceName,
                     "User not authorized to open rooms.");
         }
 

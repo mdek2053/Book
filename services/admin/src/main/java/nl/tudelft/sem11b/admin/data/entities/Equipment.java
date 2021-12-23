@@ -2,7 +2,12 @@ package nl.tudelft.sem11b.admin.data.entities;
 
 import java.util.Objects;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 import nl.tudelft.sem11b.data.models.EquipmentModel;
 
@@ -49,6 +54,14 @@ public class Equipment {
         this.name = name;
     }
 
+    public Set<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -68,11 +81,11 @@ public class Equipment {
 
     @Override
     public String toString() {
-        return "Equipment{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", rooms=" + rooms +
-                '}';
+        return "Equipment{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", rooms=" + rooms
+                + '}';
     }
 
     public EquipmentModel toModel() {
