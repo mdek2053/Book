@@ -16,7 +16,7 @@ public class Equipment {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "equipment")
@@ -24,6 +24,10 @@ public class Equipment {
 
     public Equipment(Long id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    public Equipment(String name) {
         this.name = name;
     }
 

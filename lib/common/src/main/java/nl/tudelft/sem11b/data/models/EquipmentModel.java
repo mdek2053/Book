@@ -4,7 +4,7 @@ package nl.tudelft.sem11b.data.models;
  * Holds information about room equipment.
  */
 public class EquipmentModel {
-    private long id;
+    private Long id;
     private String name;
 
     /**
@@ -13,8 +13,12 @@ public class EquipmentModel {
      * @param id   Unique numeric identifier of the equipment
      * @param name Name of the equipment
      */
-    public EquipmentModel(long id, String name) {
+    public EquipmentModel(Long id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    public EquipmentModel(String name) {
         this.name = name;
     }
 
@@ -27,7 +31,7 @@ public class EquipmentModel {
      *
      * @return ID of the equipment
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
