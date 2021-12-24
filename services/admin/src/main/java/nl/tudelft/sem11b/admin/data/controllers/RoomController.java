@@ -137,6 +137,19 @@ public class RoomController {
     }
 
     /**
+     * Adds a room to the system.
+     * @param model The room to be added
+     */
+    @PostMapping("/rooms")
+    public RoomModel addRoom(@RequestBody RoomModel model) {
+        try {
+            return rooms.addRoom(model);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
+    }
+
+    /**
      * Changes or adds a room closure.
      *
      * @param id      ID of the room being modified

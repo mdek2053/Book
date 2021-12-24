@@ -8,7 +8,7 @@ import nl.tudelft.sem11b.data.ApiTime;
  * Holds all building information.
  */
 public class BuildingModel {
-    private long id;
+    private Long id;
     private String prefix;
     private String name;
     private ApiTime open;
@@ -23,7 +23,7 @@ public class BuildingModel {
      * @param open   Time of day at which the building opens
      * @param close  This of day at which the building closes
      */
-    public BuildingModel(long id, String prefix, String name, ApiTime open, ApiTime close) {
+    public BuildingModel(Long id, String prefix, String name, ApiTime open, ApiTime close) {
         this.id = id;
         this.prefix = prefix;
         this.name = name;
@@ -40,7 +40,7 @@ public class BuildingModel {
      *
      * @return ID of the building
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -109,7 +109,7 @@ public class BuildingModel {
             return false;
         }
         BuildingModel that = (BuildingModel) o;
-        return id == that.id;
+        return id.equals(that.id);
     }
 
     @Override

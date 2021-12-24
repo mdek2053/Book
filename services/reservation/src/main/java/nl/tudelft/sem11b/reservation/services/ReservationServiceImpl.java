@@ -229,7 +229,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)
                 && !verifySecretary(reservation.getUserId())) {
             throw new ApiException(serviceName,
-                    "User not authorized to change given reservation.");
+                "User not authorized to change given reservation.");
         }
 
         var roomOpt = rooms.getRoom(reservation.getRoomId());
@@ -278,8 +278,8 @@ public class ReservationServiceImpl implements ReservationService {
         var reservation = reservationOpt.get();
 
         var user = users.currentUser();
-        if (!((Long)user.getId()).equals(reservation.getUserId())
-                && !user.inRole(Roles.Admin) && !verifySecretary(reservation.getUserId())) {
+        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)
+                && !verifySecretary(reservation.getUserId())) {
             throw new ApiException(serviceName,
                     "User not authorized to change given reservation.");
         }
