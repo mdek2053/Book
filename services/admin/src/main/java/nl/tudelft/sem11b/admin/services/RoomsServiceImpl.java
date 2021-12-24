@@ -99,7 +99,7 @@ public class RoomsServiceImpl implements RoomsService {
             }
         }
 
-        return new PageData<RoomStudModel>(filteredRooms.size(), filteredRooms);
+        return new PageData<>(filteredRooms.size(), filteredRooms);
     }
 
     private BaseFilter setupChain(Map<String, Object> filterValues)

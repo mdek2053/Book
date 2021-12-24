@@ -88,7 +88,7 @@ class RoomsServiceImplTest {
     private final Room room1 = new Room(1, "idk",
             "PC hall 1", 30, null, building1, new HashSet<>());
     private final Room room2 = new Room(2,  "idk",
-            "PC hall 2", 50, null, building1, Set.of());
+            "PC hall 2", 50, null, building1, Set.of(beamer));
     private final Room room3 = new Room(3,  "idk",
             "Boole", 50, null, building2, Set.of());
     private final Room roomNullBuilding = new Room(3,  "idk",
@@ -275,7 +275,7 @@ class RoomsServiceImplTest {
     }
 
     @Test
-    public void searchRoomsOnlyCapacityFilterTest() {
+    public void searchRoomsCapacityFilterTest() {
         List<RoomStudModel> models = List.of(room2StudModel);
         PageData<RoomStudModel> expected = new PageData<>(1, models);
         Map<String, Object> filters = new HashMap<>();
@@ -283,6 +283,49 @@ class RoomsServiceImplTest {
 
         PageIndex index = new PageIndex(0, 10);
 
+        when(rooms.findAll(index.getPage(Sort.by("id"))))
+                .thenReturn(new PageImpl<>(List.of(room1, room2)));
+
+        try {
+            assertEquals(expected, service.searchRooms(index, filters));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void searchRoomsInvalidEquipmentFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("equipment", "String");
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsNonExistentEquipmentFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("equipment", Set.of(3L));
+
+        when(equipmentRepo.findById(3L)).thenReturn(Optional.empty());
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(EntityNotFound.class, () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsEquipmentFilterTest() {
+        List<RoomStudModel> models = List.of(room2StudModel);
+        PageData<RoomStudModel> expected = new PageData<>(1, models);
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("equipment", Set.of(1L));
+
+        PageIndex index = new PageIndex(0, 10);
+
+        when(equipmentRepo.findById(1L)).thenReturn(Optional.of(beamer));
         when(rooms.findAll(index.getPage(Sort.by("id"))))
                 .thenReturn(new PageImpl<>(List.of(room1, room2)));
 
