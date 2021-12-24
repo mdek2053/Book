@@ -119,7 +119,8 @@ public class RoomsServiceImpl implements RoomsService {
 
         if (filterValues.containsKey("equipment")) {
             try {
-                BaseFilter filter = new EquipmentFilter((Set<Long>)filterValues.get("equipment"), equipmentRepo);
+                BaseFilter filter = new EquipmentFilter(
+                        (Set<Long>)filterValues.get("equipment"), equipmentRepo);
                 tail.setNext(filter);
                 tail = filter;
             } catch (ClassCastException e) {
