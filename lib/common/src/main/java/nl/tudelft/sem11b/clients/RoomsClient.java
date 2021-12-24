@@ -71,6 +71,11 @@ public class RoomsClient implements RoomsService {
     }
 
     @Override
+    public RoomModel addRoom(RoomModel model) {
+        return null;
+    }
+
+    @Override
     public void closeRoom(long id, ClosureModel closure) throws ApiException {
         var response = api.post(urlRoomsPrefix + "/" + id + "/closure",
                 closure, new TypeReference<>() {});

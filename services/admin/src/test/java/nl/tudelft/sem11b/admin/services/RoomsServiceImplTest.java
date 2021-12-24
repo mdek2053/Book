@@ -82,11 +82,19 @@ class RoomsServiceImplTest {
     private final Room room2 = new Room(2,  "idk", "PC hall 2", 50, null, building1, Set.of());
     private final Room room3 = new Room(3,  "idk", "Boole", 50, null, building2, Set.of());
 
+    private final Room room1withoutId = new Room("idk", "PC hall 1", 30, null, building1, Set.of());
+
     private final RoomModel roomModel1 = room1.toModel();
+    private final RoomModel roomModel1withoutId = room1withoutId.toModel();
 
     private final RoomStudModel room1StudModel = room1.toStudModel();
     private final RoomStudModel room2StudModel = room2.toStudModel();
     private final RoomStudModel room3StudModel = room3.toStudModel();
+
+    private final String[] adminRoles = {"admin"};
+    private final String[] employeeRoles = {"employee"};
+    private final UserModel admin = new UserModel(1, "appel", adminRoles);
+    private final UserModel employee = new UserModel(2, "banaan", employeeRoles);
 
     @BeforeEach
     private void setup() {
@@ -338,6 +346,38 @@ class RoomsServiceImplTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void addRoomUnauthorizedTest() throws ApiException {
+        when(users.currentUser()).thenReturn(employee);
+
+        assertThrows(ApiException.class, () -> {
+            service.addRoom(roomModel1withoutId);
+        });
+    }
+
+    @Test
+    public void addRoomBuildingDoesntExistTest() throws ApiException {
+        when(users.currentUser()).thenReturn(admin);
+        when(buildings.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFound.class, () -> {
+            service.addRoom(roomModel1withoutId);
+        });
+    }
+
+    @Test
+    public void addRoomSuccessfulTest() throws ApiException, EntityNotFound {
+        when(users.currentUser()).thenReturn(admin);
+        when(buildings.findById(1L)).thenReturn(Optional.of(building1));
+        when(rooms.save(room1withoutId)).thenReturn(room1);
+
+
+        assertEquals(roomModel1, service.addRoom(roomModel1withoutId));
+
+        verify(rooms, times(1)).save(room1withoutId);
+    }
+
 
     @Test
     void addFaultTestNoRoom() {
