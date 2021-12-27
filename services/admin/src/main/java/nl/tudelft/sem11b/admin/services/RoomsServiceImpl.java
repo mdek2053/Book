@@ -20,6 +20,7 @@ import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.EquipmentRepository;
 import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
+import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
@@ -35,6 +36,7 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.services.ReservationService;
 import nl.tudelft.sem11b.services.RoomsService;
 import nl.tudelft.sem11b.services.UserService;
 import org.springframework.data.domain.Page;
@@ -50,6 +52,7 @@ public class RoomsServiceImpl implements RoomsService {
     private final transient FaultRepository faults;
     private final transient EquipmentRepository equipmentRepo;
     private final transient UserService users;
+    private final transient ReservationService reservations;
 
     private final transient String serviceName = "Rooms";
 
@@ -62,12 +65,13 @@ public class RoomsServiceImpl implements RoomsService {
      */
     public RoomsServiceImpl(BuildingRepository buildings, RoomRepository rooms,
                             FaultRepository faults, EquipmentRepository equipmentRepo,
-                            UserService users) {
+                            UserService users, ReservationService reservations) {
         this.buildings = buildings;
         this.rooms = rooms;
         this.faults = faults;
         this.equipmentRepo = equipmentRepo;
         this.users = users;
+        this.reservations = reservations;
     }
 
     @Override
@@ -130,8 +134,8 @@ public class RoomsServiceImpl implements RoomsService {
 
         if (filterValues.containsKey("from") || filterValues.containsKey("until")) {
             try {
-                BaseFilter filter = new AvailabilityFilter((String)filterValues.get("from"),
-                        (String)filterValues.get("until"));
+                BaseFilter filter = new AvailabilityFilter((ApiDateTime)filterValues.get("from"),
+                        (ApiDateTime)filterValues.get("until"), reservations);
                 tail.setNext(filter);
                 tail = filter;
             } catch (ClassCastException e) {

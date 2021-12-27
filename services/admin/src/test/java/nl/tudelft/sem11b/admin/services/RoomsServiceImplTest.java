@@ -41,6 +41,7 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.services.ReservationService;
 import nl.tudelft.sem11b.services.UserService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,6 +72,9 @@ class RoomsServiceImplTest {
 
     @Mock
     UserService users;
+
+    @Mock
+    ReservationService reservations;
 
     RoomsServiceImpl service;
 
@@ -119,7 +123,7 @@ class RoomsServiceImplTest {
 
     @BeforeEach
     void initService() {
-        service = new RoomsServiceImpl(buildings, rooms, faults, equipmentRepo, users);
+        service = new RoomsServiceImpl(buildings, rooms, faults, equipmentRepo, users, reservations);
     }
 
     @Test

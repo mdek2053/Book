@@ -266,9 +266,7 @@ public class ReservationServiceImpl implements ReservationService {
                 validateTime(requestModel.getSince(), requestModel.getUntil());
                 validateRoom(roomModelOptional.get(), requestModel.getSince(),
                         requestModel.getUntil());
-                validateConflicts(requestModel.getForUser(), requestModel.getRoomId(),
-                        Timestamp.valueOf(requestModel.getSince().toLocal()),
-                        Timestamp.valueOf(requestModel.getUntil().toLocal()));
+                validateRoom(roomModelOptional.get(), requestModel.getSince(), requestModel.getUntil());
                 return true;
             }
 
