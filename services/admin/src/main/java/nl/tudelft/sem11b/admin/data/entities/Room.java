@@ -162,6 +162,10 @@ public class Room {
         this.building = building;
     }
 
+    public void addEquipment(Equipment e) {
+        equipment.add(e);
+    }
+
     /**
      * Constructs a room object.
      *

@@ -25,6 +25,7 @@ import nl.tudelft.sem11b.admin.data.entities.Equipment;
 import nl.tudelft.sem11b.admin.data.entities.Fault;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
+import nl.tudelft.sem11b.admin.data.repositories.EquipmentRepository;
 import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
 import nl.tudelft.sem11b.data.ApiDate;
@@ -66,6 +67,9 @@ class RoomsServiceImplTest {
     FaultRepository faults;
 
     @Mock
+    EquipmentRepository equipmentRepo;
+
+    @Mock
     UserService users;
 
     RoomsServiceImpl service;
@@ -76,15 +80,25 @@ class RoomsServiceImplTest {
             new Building(3, "idk", "EWI", null, null, new HashSet<>());
 
     private final Equipment beamer = new Equipment(1L, "Beamer");
+    private final Equipment beamerWithoutId = new Equipment("Beamer");
     private final EquipmentModel beamerModel = beamer.toModel();
+    private final EquipmentModel beamerModelWithoutId = beamerWithoutId.toModel();
 
-    private final Room room1 = new Room(1, "idk", "PC hall 1", 30, null, building1, Set.of());
-    private final Room room2 = new Room(2,  "idk", "PC hall 2", 50, null, building1, Set.of());
-    private final Room room3 = new Room(3,  "idk", "Boole", 50, null, building2, Set.of());
 
-    private final Room room1withoutId = new Room("idk", "PC hall 1", 30, null, building1, Set.of());
+    private final Room room1 = new Room(1, "idk",
+            "PC hall 1", 30, null, building1, new HashSet<>());
+    private final Room room2 = new Room(2,  "idk",
+            "PC hall 2", 50, null, building1, Set.of());
+    private final Room room3 = new Room(3,  "idk",
+            "Boole", 50, null, building2, Set.of());
+    private final Room roomNullBuilding = new Room(3,  "idk",
+            "Boole", 50, null, building2, Set.of());
+
+    private final Room room1withoutId = new Room("idk",
+            "PC hall 1", 30, null, building1, Set.of());
 
     private final RoomModel roomModel1 = room1.toModel();
+    private final RoomModel roomNullBuildingModel = roomNullBuilding.toModel();
     private final RoomModel roomModel1withoutId = room1withoutId.toModel();
 
     private final RoomStudModel room1StudModel = room1.toStudModel();
@@ -105,7 +119,7 @@ class RoomsServiceImplTest {
 
     @BeforeEach
     void initService() {
-        service = new RoomsServiceImpl(buildings, rooms, faults, users);
+        service = new RoomsServiceImpl(buildings, rooms, faults, equipmentRepo, users);
     }
 
     @Test
@@ -357,6 +371,15 @@ class RoomsServiceImplTest {
     }
 
     @Test
+    public void addRoomNullBuildingTest() throws ApiException {
+        when(users.currentUser()).thenReturn(admin);
+
+        assertThrows(EntityNotFound.class, () -> {
+            service.addRoom(roomNullBuildingModel);
+        });
+    }
+
+    @Test
     public void addRoomBuildingDoesntExistTest() throws ApiException {
         when(users.currentUser()).thenReturn(admin);
         when(buildings.findById(1L)).thenReturn(Optional.empty());
@@ -377,6 +400,74 @@ class RoomsServiceImplTest {
 
         verify(rooms, times(1)).save(room1withoutId);
     }
+
+    @Test
+    public void addEquipmentUnauthorizedTest() throws ApiException {
+        when(users.currentUser()).thenReturn(employee);
+
+        assertThrows(ApiException.class, () -> {
+            service.addEquipment(beamerModelWithoutId, Optional.empty());
+        });
+    }
+
+    @Test
+    public void addEquipmentAlreadyExistsTest() throws ApiException {
+        when(users.currentUser()).thenReturn(admin);
+        when(equipmentRepo.findByName(beamerModel.getName())).thenReturn(Optional.of(beamer));
+
+        assertThrows(ApiException.class, () -> {
+            service.addEquipment(beamerModelWithoutId, Optional.empty());
+        });
+    }
+
+    @Test
+    public void addEquipmentNoRoomTest() throws ApiException, EntityNotFound {
+        when(users.currentUser()).thenReturn(admin);
+        when(equipmentRepo.findByName(beamerModel.getName())).thenReturn(Optional.empty());
+        when(equipmentRepo.save(beamerWithoutId)).thenReturn(beamer);
+
+        assertEquals(beamerModel, service.addEquipment(beamerModelWithoutId, Optional.empty()));
+
+        verify(equipmentRepo, times(1)).save(beamerWithoutId);
+    }
+
+    @Test
+    public void addEquipmentRoomDoesntExistTest() throws ApiException, EntityNotFound {
+        when(users.currentUser()).thenReturn(admin);
+        when(rooms.existsById(1L)).thenReturn(false);
+
+        assertThrows(EntityNotFound.class, () -> {
+            service.addEquipment(beamerModelWithoutId, Optional.of(1L));
+        });
+    }
+
+    @Test
+    public void addEquipmentToRoomEquipmentDoesntExistTest() throws ApiException, EntityNotFound {
+        when(users.currentUser()).thenReturn(admin);
+        when(rooms.existsById(1L)).thenReturn(true);
+        when(rooms.getById(1L)).thenReturn(room1);
+        when(equipmentRepo.findByName(beamerModel.getName())).thenReturn(Optional.empty());
+        when(equipmentRepo.save(beamerWithoutId)).thenReturn(beamer);
+
+        assertEquals(beamerModel, service.addEquipment(beamerModelWithoutId, Optional.of(1L)));
+
+        verify(equipmentRepo, times(1)).save(beamerWithoutId);
+        verify(rooms, times(1)).save(room1);
+    }
+
+    @Test
+    public void addEquipmentToRoomEquipmentAlreadyExistsTest() throws ApiException, EntityNotFound {
+        when(users.currentUser()).thenReturn(admin);
+        when(rooms.existsById(1L)).thenReturn(true);
+        when(rooms.getById(1L)).thenReturn(room1);
+        when(equipmentRepo.findByName(beamerModel.getName())).thenReturn(Optional.of(beamer));
+
+        assertEquals(beamerModel, service.addEquipment(beamerModelWithoutId, Optional.of(1L)));
+
+        verify(equipmentRepo, times(0)).save(beamerWithoutId);
+        verify(rooms, times(1)).save(room1);
+    }
+
 
 
     @Test
