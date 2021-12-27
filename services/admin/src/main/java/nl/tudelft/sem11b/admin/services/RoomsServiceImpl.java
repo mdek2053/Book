@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.services;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -138,11 +139,12 @@ public class RoomsServiceImpl implements RoomsService {
                 throw new InvalidFilterException("Either from or until time not provided!");
             }
             try {
-                BaseFilter filter = new AvailabilityFilter((ApiDateTime)filterValues.get("from"),
-                        (ApiDateTime)filterValues.get("until"), reservations);
+                BaseFilter filter = new AvailabilityFilter(ApiDateTime.parse((String)filterValues.get("from")),
+                        ApiDateTime.parse((String)filterValues.get("until")), reservations);
                 tail.setNext(filter);
                 tail = filter;
-            } catch (ClassCastException e) {
+            } catch (ClassCastException | ParseException e) {
+                e.printStackTrace();
                 throw new InvalidFilterException("Invalid availability filter!");
             }
         }

@@ -2,7 +2,6 @@ package nl.tudelft.sem11b.admin.services;
 
 import nl.tudelft.sem11b.clients.AuthenticatedServiceClient;
 import nl.tudelft.sem11b.clients.ReservationClient;
-import nl.tudelft.sem11b.clients.UserClient;
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
@@ -12,9 +11,11 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.services.ReservationService;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 
+@Service
 public class ReservationServiceImpl extends AuthenticatedServiceClient<ReservationClient> implements ReservationService {
 
     public ReservationServiceImpl() {

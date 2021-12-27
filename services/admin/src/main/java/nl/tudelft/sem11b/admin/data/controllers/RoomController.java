@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.data.controllers;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -97,7 +98,7 @@ public class RoomController {
     public PageData<RoomStudModel> searchRooms(
             @RequestParam Optional<Integer> page,
             @RequestParam Optional<Integer> limit,
-            @RequestParam Optional<Map<String, Object>> filters) {
+            @RequestBody Optional<HashMap<String, Object>> filters) {
         var index = PageIndex.fromQuery(page, limit);
 
         if (filters.isEmpty()) {
