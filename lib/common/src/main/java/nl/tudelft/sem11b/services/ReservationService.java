@@ -7,6 +7,7 @@ import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 
 /**
  * API definition of the reservation service. This service is responsible for management of
@@ -26,7 +27,7 @@ public interface ReservationService {
      * @throws InvalidData    Thrown when the given data is invalid
      */
     long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData;
+            throws ApiException, EntityNotFound, InvalidData;
 
     /**
      * Lists a page of reservations created by/for the current user.
@@ -61,5 +62,19 @@ public interface ReservationService {
      * @throws EntityNotFound Thrown when the given reservation was not found
      * @throws ApiException   Thrown when the given data is invalid
      */
-    void deleteReservation(long reservationId) throws EntityNotFound, ApiException;
+    void deleteReservation(long reservationId) throws ApiException, EntityNotFound;
+
+    /**
+     * Checks whether a reservation request is valid and whether the room is available for the
+     * provided reservation request.
+     *
+     * @param roomModelId  Unique numeric identifier of the room for which the reservation
+     *                     wants to be made
+     * @param requestModel Object containing the reservation request
+     * @return a boolean value of whether the room is available for the specified reservation
+     * @throws InvalidData  Thrown when the given data is invalid
+     * @throws ApiException Thrown when a remote API encountered an error
+     */
+    boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel)
+            throws InvalidData, ApiException;
 }
