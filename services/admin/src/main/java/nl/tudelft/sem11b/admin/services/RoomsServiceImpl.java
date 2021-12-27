@@ -133,6 +133,10 @@ public class RoomsServiceImpl implements RoomsService {
         }
 
         if (filterValues.containsKey("from") || filterValues.containsKey("until")) {
+            // If either filter is not there, the user probably made an error, and we should let them know
+            if(!filterValues.containsKey("from") || !filterValues.containsKey("until")) {
+                throw new InvalidFilterException("Either from or until time not provided!");
+            }
             try {
                 BaseFilter filter = new AvailabilityFilter((ApiDateTime)filterValues.get("from"),
                         (ApiDateTime)filterValues.get("until"), reservations);
