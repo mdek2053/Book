@@ -94,7 +94,7 @@ public class ReservationController {
      * @return a boolean value whether to request is valid and
      *      does not collide with any other reservations
      */
-    @GetMapping("/availability/{roomModelId}")
+    @PostMapping("/availability/{roomModelId}")
     public boolean checkAvailability(@PathVariable long roomModelId,
                                      @RequestBody ReservationRequestModel requestModel) {
         try {
