@@ -134,12 +134,14 @@ public class RoomsServiceImpl implements RoomsService {
         }
 
         if (filterValues.containsKey("from") || filterValues.containsKey("until")) {
-            // If either filter is not there, the user probably made an error, and we should let them know
-            if(!filterValues.containsKey("from") || !filterValues.containsKey("until")) {
+            // If either filter is not there, the user probably made an error,
+            // and we should let them know.
+            if (!filterValues.containsKey("from") || !filterValues.containsKey("until")) {
                 throw new InvalidFilterException("Either from or until time not provided!");
             }
             try {
-                BaseFilter filter = new AvailabilityFilter(ApiDateTime.parse((String)filterValues.get("from")),
+                BaseFilter filter = new AvailabilityFilter(
+                        ApiDateTime.parse((String)filterValues.get("from")),
                         ApiDateTime.parse((String)filterValues.get("until")), reservations);
                 tail.setNext(filter);
                 tail = filter;

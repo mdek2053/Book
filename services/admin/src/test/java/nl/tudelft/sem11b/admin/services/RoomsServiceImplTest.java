@@ -35,7 +35,15 @@ import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
-import nl.tudelft.sem11b.data.models.*;
+import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
+import nl.tudelft.sem11b.data.models.FaultRequestModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
+import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.RoomStudModel;
+import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.ReservationService;
 import nl.tudelft.sem11b.services.UserService;
 import org.junit.Assert;
@@ -118,7 +126,8 @@ class RoomsServiceImplTest {
 
     @BeforeEach
     void initService() {
-        service = new RoomsServiceImpl(buildings, rooms, faults, equipmentRepo, users, reservations);
+        service = new RoomsServiceImpl(buildings, rooms,
+                faults, equipmentRepo, users, reservations);
     }
 
     @Test
@@ -338,7 +347,8 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsNoFromTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        filters.put("until", new ApiDateTime(2022L, 1L, 1L, 11L, 0L));
+        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+        filters.put("until", until.toString());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -349,7 +359,8 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsNoUntilTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        filters.put("from", new ApiDateTime(2022L, 1L, 1L, 10L, 0L));
+        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        filters.put("from", from.toString());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -360,8 +371,9 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsInvalidUntilTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        filters.put("from", new ApiDateTime(2022L, 1L, 1L, 10L, 0L));
-        filters.put("until", "String");
+        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        filters.put("from", from.toString());
+        filters.put("until", 1);
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -372,8 +384,9 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsInvalidFromTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        filters.put("from", "String");
-        filters.put("until", new ApiDateTime(2022L, 1L, 1L, 11L, 0L));
+        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        filters.put("from", 1);
+        filters.put("until", until.toString());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -384,8 +397,10 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsFromTimeAfterUntilTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        filters.put("from", new ApiDateTime(2022L, 1L, 1L, 11L, 0L));
-        filters.put("until", new ApiDateTime(2022L, 1L, 1L, 10L, 0L));
+        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        filters.put("from", from.toString());
+        filters.put("until", until.toString());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -394,14 +409,13 @@ class RoomsServiceImplTest {
     }
 
     @Test
-    public void searchRoomsAvailabilityFilterTest() throws InvalidData, ApiException, EntityNotFound, InvalidFilterException {
-        List<RoomStudModel> models = List.of(room2StudModel);
-        PageData<RoomStudModel> expected = new PageData<>(1, models);
+    public void searchRoomsAvailabilityFilterTest()
+            throws InvalidData, ApiException, EntityNotFound, InvalidFilterException {
         Map<String, Object> filters = new HashMap<>();
         ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
         ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
-        filters.put("from", from);
-        filters.put("until", until);
+        filters.put("from", from.toString());
+        filters.put("until", until.toString());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -413,6 +427,9 @@ class RoomsServiceImplTest {
         when(reservations.checkAvailability(2L,
                 new ReservationRequestModel(2L, "Check-availability", from, until, 1L)))
                 .thenReturn(true);
+
+        List<RoomStudModel> models = List.of(room2StudModel);
+        PageData<RoomStudModel> expected = new PageData<>(1, models);
 
         assertEquals(expected, service.searchRooms(index, filters));
     }

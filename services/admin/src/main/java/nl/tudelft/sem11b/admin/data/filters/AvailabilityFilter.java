@@ -13,21 +13,29 @@ public class AvailabilityFilter extends BaseFilter {
     private transient ApiDateTime until;
     private transient ReservationService reservations;
 
-    public AvailabilityFilter(ApiDateTime from, ApiDateTime until, ReservationService reservations) throws InvalidFilterException {
+    /**
+     * Constructor for availability filter.
+     * @param from The time the room should be available from
+     * @param until The time the rooms should be available until
+     * @param reservations The reservations client
+     * @throws InvalidFilterException If from is after until
+     */
+    public AvailabilityFilter(ApiDateTime from, ApiDateTime until,
+                              ReservationService reservations) throws InvalidFilterException {
         this.from = from;
         this.until = until;
         this.reservations = reservations;
-        if(from.compareTo(until) > 0) {
+        if (from.compareTo(until) > 0) {
             throw new InvalidFilterException("Timeslot must start before it ends!");
         }
     }
 
     @Override
     public boolean handle(Room room) {
-        ReservationRequestModel requestModel =
-                new ReservationRequestModel(room.getId(), "Check-availability", from, until, 1L);
+        ReservationRequestModel requestModel = new ReservationRequestModel(room.getId(),
+                        "Check-availability", from, until, 1L);
         try {
-            if(!reservations.checkAvailability(room.getId(), requestModel)) {
+            if (!reservations.checkAvailability(room.getId(), requestModel)) {
                 return false;
             }
         } catch (InvalidData e) {

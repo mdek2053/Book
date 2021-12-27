@@ -1,5 +1,7 @@
 package nl.tudelft.sem11b.admin.services;
 
+import java.net.URI;
+
 import nl.tudelft.sem11b.clients.AuthenticatedServiceClient;
 import nl.tudelft.sem11b.clients.ReservationClient;
 import nl.tudelft.sem11b.data.ApiDateTime;
@@ -13,17 +15,17 @@ import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.services.ReservationService;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-
 @Service
-public class ReservationServiceImpl extends AuthenticatedServiceClient<ReservationClient> implements ReservationService {
+public class ReservationServiceImpl extends AuthenticatedServiceClient<ReservationClient>
+        implements ReservationService {
 
     public ReservationServiceImpl() {
         super(URI.create("http://localhost:8080/"), "Reservation", ReservationClient::new);
     }
 
     @Override
-    public long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until) throws ApiException, EntityNotFound, InvalidData {
+    public long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until)
+            throws ApiException, EntityNotFound, InvalidData {
         return 0;
     }
 
@@ -33,7 +35,9 @@ public class ReservationServiceImpl extends AuthenticatedServiceClient<Reservati
     }
 
     @Override
-    public void editReservation(long reservationId, String title, ApiDateTime since, ApiDateTime until) throws ApiException, EntityNotFound, InvalidData {
+    public void editReservation(long reservationId, String title,
+                                ApiDateTime since, ApiDateTime until)
+            throws ApiException, EntityNotFound, InvalidData {
 
     }
 
@@ -43,7 +47,8 @@ public class ReservationServiceImpl extends AuthenticatedServiceClient<Reservati
     }
 
     @Override
-    public boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel) throws InvalidData, ApiException {
+    public boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel)
+            throws InvalidData, ApiException {
         return openClient().checkAvailability(roomModelId, requestModel);
     }
 }
