@@ -161,6 +161,13 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    private void validateRoomConflicts(long roomId, Timestamp since, Timestamp until)
+            throws InvalidData {
+        if (reservations.hasRoomConflict(roomId, since, until)) {
+            throw new InvalidData("Reservation conflicts with room's existing reservations");
+        }
+    }
+
     @Override
     public long makeOwnReservation(long roomId, String title,
                                    ApiDateTime since, ApiDateTime until)
@@ -266,8 +273,9 @@ public class ReservationServiceImpl implements ReservationService {
                 validateTime(requestModel.getSince(), requestModel.getUntil());
                 validateRoom(roomModelOptional.get(), requestModel.getSince(),
                         requestModel.getUntil());
-                validateRoom(roomModelOptional.get(), requestModel.getSince(),
-                        requestModel.getUntil());
+                validateRoomConflicts(roomModelId,
+                        Timestamp.valueOf(requestModel.getSince().toLocal()),
+                        Timestamp.valueOf(requestModel.getUntil().toLocal()));
                 return true;
             }
 
