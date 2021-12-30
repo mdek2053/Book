@@ -33,13 +33,14 @@ public class AvailabilityFilter extends BaseFilter {
     @Override
     public boolean handle(Room room) {
         ReservationRequestModel requestModel = new ReservationRequestModel(room.getId(),
-                        "Check-availability", from, until, 1L);
+                        "Check-availability", from, until, null);
         try {
             if (!reservations.checkAvailability(room.getId(), requestModel)) {
                 return false;
             }
         } catch (InvalidData e) {
             e.printStackTrace();
+            return false;
         } catch (ApiException e) {
             e.printStackTrace();
         }
