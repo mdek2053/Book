@@ -1,6 +1,5 @@
 package nl.tudelft.sem11b.reservation;
 
-import static nl.tudelft.sem11b.reservation.Constants.GROUP_A;
 import static nl.tudelft.sem11b.reservation.Constants.GROUPS;
 import static nl.tudelft.sem11b.reservation.Constants.GROUP_A;
 import static nl.tudelft.sem11b.reservation.Constants.GROUP_B;
@@ -13,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -87,11 +86,6 @@ class ReservationServiceImplTest {
 
     @BeforeEach
     void setup() {
-        List<Long> groupUsers = new ArrayList<>();
-        groupUsers.add(USER_A.getId());
-        GROUP_A.setGroupMembers(groupUsers);
-        groupModelList.add(GROUP_A);
-
         List<Long> array = new ArrayList<>();
         array.add(USER_B.getId());
         GROUP_A.addToGroupMembers(array);
@@ -238,7 +232,7 @@ class ReservationServiceImplTest {
 
         // arrange
         when(users.currentUser()).thenReturn(USER_A);
-        when(groups.getGroupsOfSecretary(any(), any())).thenReturn(GROUPS);
+        when(groups.getGroupsOfSecretary(any())).thenReturn(GROUPS);
         when(rooms.getRoom(ROOM_A.getId())).thenReturn(Optional.of(ROOM_A));
         when(reservations.save(captor.capture())).thenAnswer(i -> i.getArgument(0));
 
@@ -260,7 +254,7 @@ class ReservationServiceImplTest {
     @Test
     void invalidSecretaryReservation() throws ApiException {
         when(users.currentUser()).thenReturn(USER_A);
-        when(groups.getGroupsOfSecretary(any(), any())).thenReturn(new ArrayList<>());
+        when(groups.getGroupsOfSecretary(any())).thenReturn(new ArrayList<>());
         assertThrows(InvalidGroupCredentialsException.class, () -> service.makeUserReservation(
                 reservationModel.getRoomId(), USER_B.getId(), reservationModel.getTitle(),
                 reservationModel.getSince(), reservationModel.getUntil()));
@@ -387,8 +381,12 @@ class ReservationServiceImplTest {
 
     @Test
     void deleteReservationBySecretary() throws ApiException, EntityNotFound {
+        List<Long> groupUsers = new ArrayList<>();
+        groupUsers.add(USER_A.getId());
+        GROUP_A.setGroupMembers(groupUsers);
+        groupModelList.add(GROUP_B);
         final var reservation = new Reservation(
-                9, reservationModel.getRoomId(), USER_A.getId(), reservationModel.getTitle(),
+                9, reservationModel.getRoomId(), USER_B.getId(), reservationModel.getTitle(),
                 Timestamp.valueOf(reservationModel.getSince().toLocal()),
                 Timestamp.valueOf(reservationModel.getUntil().toLocal()),
                 null
