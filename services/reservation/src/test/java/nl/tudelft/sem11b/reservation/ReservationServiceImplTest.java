@@ -382,17 +382,17 @@ class ReservationServiceImplTest {
     @Test
     void deleteReservationBySecretary() throws ApiException, EntityNotFound {
         List<Long> groupUsers = new ArrayList<>();
-        groupUsers.add(USER_A.getId());
+        groupUsers.add(USER_C.getId());
         GROUP_A.setGroupMembers(groupUsers);
-        groupModelList.add(GROUP_B);
+        groupModelList.add(GROUP_A);
         final var reservation = new Reservation(
-                9, reservationModel.getRoomId(), USER_B.getId(), reservationModel.getTitle(),
+                9, reservationModel.getRoomId(), USER_C.getId(), reservationModel.getTitle(),
                 Timestamp.valueOf(reservationModel.getSince().toLocal()),
                 Timestamp.valueOf(reservationModel.getUntil().toLocal()),
                 null
         );
         when(reservations.findById(reservation.getId())).thenReturn(Optional.of(reservation));
-        when(users.currentUser()).thenReturn(USER_C);
+        when(users.currentUser()).thenReturn(USER_A);
         when(groups.getGroupsOfSecretary(anyLong())).thenReturn(groupModelList);
 
         // action
