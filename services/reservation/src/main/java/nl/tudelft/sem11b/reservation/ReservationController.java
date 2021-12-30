@@ -97,6 +97,25 @@ public class ReservationController {
     }
 
     /**
+     * Checks availability of room compared to the request sent.
+     *
+     * @param roomModelId  id of a RoomModel for which the availability needs to be checked
+     * @param requestModel of type ReservationRequestModel which contains the reservation request
+     * @return a boolean value whether to request is valid and
+     *      does not collide with any other reservations
+     */
+    @PostMapping("/availability/{roomModelId}")
+    public boolean checkAvailability(@PathVariable long roomModelId,
+                                     @RequestBody ReservationRequestModel requestModel) {
+        try {
+            return reservationService.checkAvailability(roomModelId, requestModel);
+        } catch (ServiceException invalidData) {
+            invalidData.toResponseException();
+        }
+        return false;
+    }
+
+    /**
      * Updates the reservation with the given unique numeric identifier.
      *
      * @param id  ID of the reservation to update
