@@ -30,4 +30,6 @@ public interface BuildingService {
      * @throws ApiException Thrown when a remote API encountered an error
      */
     Optional<BuildingModel> getBuilding(long id) throws ApiException;
+
+    BuildingModel addBuilding(BuildingModel model) throws ApiException;
 }

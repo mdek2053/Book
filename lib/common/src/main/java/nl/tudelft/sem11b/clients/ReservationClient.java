@@ -86,4 +86,12 @@ public class ReservationClient implements ReservationService {
     public void deleteReservation(long reservationId) throws ApiException {
         api.delete("/reservations/" + reservationId).unwrap();
     }
+
+    @Override
+    public boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel)
+            throws ApiException {
+        return api.post("/reservations/availability/" + roomModelId, requestModel,
+                new TypeReference<ReservationRequestModel>() {}, new TypeReference<Boolean>() {})
+                .unwrap();
+    }
 }

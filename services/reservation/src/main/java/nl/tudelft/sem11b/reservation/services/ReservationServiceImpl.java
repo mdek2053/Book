@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
@@ -13,9 +15,11 @@ import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.GroupModel;
+import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
@@ -34,8 +38,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final transient RoomsService rooms;
     private final transient UserService users;
     private final transient GroupService groups;
-
-    private final transient String entityName = "Reservation";
+    private final transient String serviceName = "Reservation";
 
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
@@ -125,6 +128,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     private void validateRoom(RoomModel room, ApiDateTime since, ApiDateTime until)
             throws InvalidData {
+        if (room == null) {
+            throw new InvalidData("No room specified");
+        }
         // check if in business hours
         if (room.getBuilding().getOpen().compareTo(since.getTime()) > 0
                 || room.getBuilding().getClose().compareTo(until.getTime()) < 0) {
@@ -141,7 +147,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (closure.getUntil() == null || closure.getUntil().compareTo(since.getDate()) >= 0) {
             if (closure.getUntil() != null) {
                 throw new InvalidData(
-                    "Room is under maintenance (until " + closure.getUntil() + ")");
+                        "Room is under maintenance (until " + closure.getUntil() + ")");
             }
 
             throw new InvalidData("Room is under maintenance");
@@ -212,7 +218,7 @@ public class ReservationServiceImpl implements ReservationService {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound(entityName);
+            throw new EntityNotFound(serviceName);
         }
         var reservation = reservationOpt.get();
 
@@ -226,7 +232,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         var user = users.currentUser();
         if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
-            throw new ApiException(entityName,
+            throw new ApiException(serviceName,
                 "User not authorized to change given reservation.");
         }
 
@@ -271,19 +277,41 @@ public class ReservationServiceImpl implements ReservationService {
         var reservationOpt = reservations.findById(reservationId);
 
         if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound(entityName);
+            throw new EntityNotFound(serviceName);
         }
         var reservation = reservationOpt.get();
 
         var user = users.currentUser();
-        long userId = user.getId();
-        long reservationUserId = reservation.getUserId();
-        if (userId != reservationUserId && !user.inRole(Roles.Admin)) {
-            throw new ApiException(entityName,
+        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)) {
+            throw new ApiException(serviceName,
                     "User not authorized to change given reservation.");
         }
 
         reservations.delete(reservation);
+    }
+
+    @Override
+    public boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel) {
+        if (requestModel == null) {
+            return false;
+        }
+        try {
+            Optional<RoomModel> roomModelOptional = rooms.getRoom(roomModelId);
+
+            if (roomModelOptional.isPresent()) {
+                validateTime(requestModel.getSince(), requestModel.getUntil());
+                validateRoom(roomModelOptional.get(), requestModel.getSince(),
+                        requestModel.getUntil());
+                validateConflicts(requestModel.getForUser(), requestModel.getRoomId(),
+                        Timestamp.valueOf(requestModel.getSince().toLocal()),
+                        Timestamp.valueOf(requestModel.getUntil().toLocal()));
+                return true;
+            }
+
+        } catch (ServiceException ex) {
+            throw ex.toResponseException();
+        }
+        return false;
     }
 
     // debug testing method
