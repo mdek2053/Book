@@ -3,16 +3,19 @@ package nl.tudelft.sem11b.reservation.services;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
+import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
+import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
@@ -20,6 +23,7 @@ import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
+import nl.tudelft.sem11b.services.GroupService;
 import nl.tudelft.sem11b.services.ReservationService;
 import nl.tudelft.sem11b.services.RoomsService;
 import nl.tudelft.sem11b.services.UserService;
@@ -29,9 +33,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
+
     private final transient ReservationRepository reservations;
     private final transient RoomsService rooms;
     private final transient UserService users;
+    private final transient GroupService groups;
     private final transient String serviceName = "Reservation";
 
     /**
@@ -40,13 +46,15 @@ public class ReservationServiceImpl implements ReservationService {
      * @param reservations Reservations repository
      * @param rooms        Rooms handling service
      * @param users        Users handling service
+     * @param groups       Groups handling service
      */
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservations, RoomsService rooms,
-                                  UserService users) {
+                                  UserService users, GroupService groups) {
         this.reservations = reservations;
         this.rooms = rooms;
         this.users = users;
+        this.groups = groups;
     }
 
     /**
@@ -166,6 +174,34 @@ public class ReservationServiceImpl implements ReservationService {
                                    ApiDateTime since, ApiDateTime until)
             throws ApiException, EntityNotFound, InvalidData {
         return makeReservation(roomId, users.currentUser().getId(), title, since, until);
+    }
+
+    @Override
+    public long makeUserReservation(long roomId, Long getForUser,
+                                    String title, ApiDateTime since, ApiDateTime until)
+            throws ApiException, InvalidGroupCredentialsException, InvalidData, EntityNotFound {
+        if (verifySecretary(getForUser)) {
+            return makeReservation(roomId, getForUser, title, since, until);
+        }
+        throw new InvalidGroupCredentialsException("You are not a secretary of the provided user");
+    }
+
+    /**
+     * Verifies whether the current user is allowed to make a reservation for the provided user.
+     *
+     * @param getForUser Id of the user for whom the reservation will be made
+     * @return a boolean value whether the current user has the correct rights
+     * @throws ApiException Thrown when a remote API encountered an error
+     */
+    protected boolean verifySecretary(Long getForUser) throws ApiException {
+        List<GroupModel> groupList =
+                groups.getGroupsOfSecretary(users.currentUser().getId(), new ArrayList<>());
+        for (GroupModel groupModel : groupList) {
+            if (groupModel.getGroupMembers().contains(getForUser)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -41,11 +41,11 @@ public class GroupServiceImpl implements GroupService {
     /**
      * Retrieves all groups where the provided user is part of.
      *
-     * @param user of type User of whom we want to know the group he/she is part of.
+     * @param id of whom we want to know the group he/she is part of.
      * @return a list of all groups which the current user is part of.
      * @throws NoAssignedGroupException when the user is not part of any group.
      */
-    public List<GroupModel> getGroupsOfUser(UserModel user)
+    public List<GroupModel> getGroupsOfUser(Long id)
             throws NoAssignedGroupException {
         List<Group> groupList = groupRepository.findAll();
 
@@ -53,13 +53,13 @@ public class GroupServiceImpl implements GroupService {
 
             List<GroupModel> userGroupList = new ArrayList<>();
             for (Group group : groupList) {
-                if (group.getGroupMembers().contains(user.getId())) {
+                if (group.getGroupMembers().contains(id)) {
                     GroupModel model = group.createGroupModel();
                     userGroupList.add(model);
                 }
             }
 
-            userGroupList = getGroupsOfSecretary(user, userGroupList);
+            userGroupList = getGroupsOfSecretary(id, userGroupList);
 
             if (!userGroupList.isEmpty()) {
                 return userGroupList;
@@ -74,11 +74,11 @@ public class GroupServiceImpl implements GroupService {
     /**
      * Tries to get the groups of a specific secretary.
      *
-     * @param user of type UserModel.
+     * @param id of the current user
      * @return a list of groups for which the provided user is a secretary.
      */
-    public List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups) {
-        Optional<User> secretary = userRepository.findUserByNetId(user.getLogin());
+    public List<GroupModel> getGroupsOfSecretary(Long id, List<GroupModel> groups) {
+        Optional<User> secretary = userRepository.findUserById(id);
         if (secretary.isPresent()) {
             Optional<List<Group>> groupList =
                     groupRepository.findGroupsBySecretary(secretary.get().getId());

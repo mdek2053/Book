@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.reservation;
 
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
@@ -54,7 +55,15 @@ public class ReservationController {
         }
 
         if (req.getForUser() != null) {
-            throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+            try {
+                long reservationId = reservationService.makeUserReservation(req.getRoomId(),
+                        req.getForUser(), req.getTitle(), req.getSince(), req.getUntil());
+                return new IdModel<>(reservationId);
+            } catch (ServiceException ex) {
+                throw ex.toResponseException();
+            } catch (InvalidGroupCredentialsException ex) {
+                ex.printStackTrace();
+            }
         }
 
         try {

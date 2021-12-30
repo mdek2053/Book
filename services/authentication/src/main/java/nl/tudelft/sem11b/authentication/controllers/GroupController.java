@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.authentication.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.sem11b.authentication.services.GroupServiceImpl;
@@ -55,9 +56,20 @@ public class GroupController {
     }
 
     @GetMapping(value = "/mine")
-    public List<GroupModel> getGroupsOfEmployee()
+    public List<GroupModel> getGroupsOfCurrentUser()
             throws NoAssignedGroupException, ApiException {
-        return groupService.getGroupsOfUser(userService.currentUser());
+        return groupService.getGroupsOfUser(userService.currentUser().getId());
+    }
+
+    @GetMapping(value = "/user/{id}")
+    public List<GroupModel> getGroupsOfUser(@PathVariable Long id)
+            throws NoAssignedGroupException {
+        return groupService.getGroupsOfUser(id);
+    }
+
+    @GetMapping(value = "/secretary/{id}")
+    public List<GroupModel> getGroupsOfSecretary(@PathVariable Long id) {
+        return groupService.getGroupsOfSecretary(id, new ArrayList<>());
     }
 
     @GetMapping(value = "/{id}")

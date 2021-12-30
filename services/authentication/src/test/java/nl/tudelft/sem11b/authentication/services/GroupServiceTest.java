@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -22,7 +20,6 @@ import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.UserModel;
-import nl.tudelft.sem11b.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,17 +51,17 @@ class GroupServiceTest {
     transient User user3 = new User(3L, "User3", role, "abc2");
     transient User user4 = new User(4L, "User4", role, "abc3");
 
-    transient UserModel userModel1;
-    transient UserModel userModel2;
-    transient UserModel userModel3;
-    transient UserModel userModel4;
+    transient UserModel userModel1 = user1.toModel();
+    transient UserModel userModel2 = user2.toModel();
+    transient UserModel userModel3 = user3.toModel();
+    transient UserModel userModel4 = user4.toModel();
 
     transient List<Long> users1 = new ArrayList<>();
     transient List<Long> users2 = new ArrayList<>();
     transient List<Group> groups = new ArrayList<>();
-    transient Group group1 = new Group("group1", user1.getId(), new ArrayList<>(), 2L);
-    transient Group group2 = new Group("group2", user2.getId(), new ArrayList<>(), 4L);
-    transient Group group = new Group("group", user1.getId(), new ArrayList<>(), 3L);
+    transient Group group1 = new Group("group1", userModel1.getId(), new ArrayList<>(), 2L);
+    transient Group group2 = new Group("group2", userModel2.getId(), new ArrayList<>(), 4L);
+    transient Group group = new Group("group", userModel1.getId(), new ArrayList<>(), 3L);
 
     transient GroupModel groupModel1;
     transient GroupModel groupModel2;
@@ -95,7 +92,7 @@ class GroupServiceTest {
     void getGroupsOfUserNoGroups() {
         when(groupRepository.findAll()).thenReturn(new ArrayList<>());
         assertThrows(NoAssignedGroupException.class, () -> groupService
-                .getGroupsOfUser(userModel1));
+                .getGroupsOfUser(userModel1.getId()));
     }
 
     @Test
@@ -103,7 +100,7 @@ class GroupServiceTest {
         when(groupRepository.findAll()).thenReturn(groups);
         List<GroupModel> result = new ArrayList<>();
         result.add(groupModel1);
-        assertEquals(result, groupService.getGroupsOfUser(userModel4));
+        assertEquals(result, groupService.getGroupsOfUser(userModel4.getId()));
     }
 
     @Test
@@ -155,9 +152,10 @@ class GroupServiceTest {
 
     @Test
     void getGroupsOfSecretary() {
-        when(userRepository.findUserByNetId(user1.getNetId())).thenReturn(Optional.of(user1));
+        when(userRepository.findUserById(userModel1.getId())).thenReturn(Optional.of(user1));
         when(groupRepository.findGroupsBySecretary(user1.getId())).thenReturn(Optional.of(groups));
 
-        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1, new ArrayList<>()));
+        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1.getId(),
+                new ArrayList<>()));
     }
 }
