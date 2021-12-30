@@ -123,9 +123,9 @@ public class ReservationRequestModel {
             return false;
         }
         ReservationRequestModel that = (ReservationRequestModel) o;
-        return roomId.equals(that.roomId) && title.equals(that.title)
+        return Objects.equals(roomId, that.roomId) && title.equals(that.title)
                 && since.equals(that.since) && until.equals(that.until)
-                && forUser.equals(that.forUser);
+                && Objects.equals(forUser, that.forUser);
     }
 
     @Override
