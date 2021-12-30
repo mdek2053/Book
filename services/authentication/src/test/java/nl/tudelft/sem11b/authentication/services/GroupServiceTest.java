@@ -51,17 +51,17 @@ class GroupServiceTest {
     transient User user3 = new User(3L, "User3", role, "abc2");
     transient User user4 = new User(4L, "User4", role, "abc3");
 
-    transient UserModel userModel1;
-    transient UserModel userModel2;
-    transient UserModel userModel3;
-    transient UserModel userModel4;
+    transient UserModel userModel1 = user1.toModel();
+    transient UserModel userModel2 = user2.toModel();
+    transient UserModel userModel3 = user3.toModel();
+    transient UserModel userModel4 = user4.toModel();
 
     transient List<Long> users1 = new ArrayList<>();
     transient List<Long> users2 = new ArrayList<>();
     transient List<Group> groups = new ArrayList<>();
-    transient Group group1 = new Group("group1", user1.getId(), new ArrayList<>(), 2L);
-    transient Group group2 = new Group("group2", user2.getId(), new ArrayList<>(), 4L);
-    transient Group group = new Group("group", user1.getId(), new ArrayList<>(), 3L);
+    transient Group group1 = new Group("group1", userModel1.getId(), new ArrayList<>(), 2L);
+    transient Group group2 = new Group("group2", userModel2.getId(), new ArrayList<>(), 4L);
+    transient Group group = new Group("group", userModel1.getId(), new ArrayList<>(), 3L);
 
     transient GroupModel groupModel1;
     transient GroupModel groupModel2;

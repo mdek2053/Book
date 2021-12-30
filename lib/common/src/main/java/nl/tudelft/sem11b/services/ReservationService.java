@@ -50,7 +50,6 @@ public interface ReservationService {
                              ApiDateTime since, ApiDateTime until)
             throws ApiException, EntityNotFound, InvalidGroupCredentialsException, InvalidData;
 
-
     /**
      * Lists a page of reservations created by/for the current user.
      *

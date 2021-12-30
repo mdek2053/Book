@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.authentication.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.sem11b.authentication.services.GroupServiceImpl;

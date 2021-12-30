@@ -49,9 +49,10 @@ public class GroupClient implements GroupService {
     public GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
             throws ApiException {
         GroupModel groupModel = new GroupModel(name, secretaryId, groupMembers);
-        return api.get("/groups?model=" + groupModel,
-                new TypeReference<GroupModel>() {
+        api.post("/groups/" + groupModel.getGroupId(), groupModel,
+                new TypeReference<>() {
                 }).unwrap();
+        return groupModel;
     }
 
     @Override
