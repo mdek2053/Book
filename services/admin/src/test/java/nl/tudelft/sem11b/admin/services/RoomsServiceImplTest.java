@@ -422,10 +422,10 @@ class RoomsServiceImplTest {
         when(rooms.findAll(index.getPage(Sort.by("id"))))
                 .thenReturn(new PageImpl<>(List.of(room1, room2)));
         when(reservations.checkAvailability(1L,
-                new ReservationRequestModel(1L, "Check-availability", from, until, 1L)))
+                new ReservationRequestModel(1L, "Check-availability", from, until, null)))
                 .thenReturn(false);
         when(reservations.checkAvailability(2L,
-                new ReservationRequestModel(2L, "Check-availability", from, until, 1L)))
+                new ReservationRequestModel(2L, "Check-availability", from, until, null)))
                 .thenReturn(true);
 
         List<RoomStudModel> models = List.of(room2StudModel);
