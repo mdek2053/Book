@@ -317,9 +317,4 @@ public class ReservationServiceImpl implements ReservationService {
         }
         return false;
     }
-
-    // debug testing method
-    public List<Reservation> getAll() {
-        return reservations.findAll();
-    }
 }
