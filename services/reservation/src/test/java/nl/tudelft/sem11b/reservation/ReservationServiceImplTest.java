@@ -256,7 +256,8 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void adminReservation() throws InvalidData, ApiException, EntityNotFound, InvalidGroupCredentialsException {
+    void adminReservation() throws InvalidData, ApiException,
+            EntityNotFound, InvalidGroupCredentialsException {
         final var captor = ArgumentCaptor.forClass(Reservation.class);
 
         // arrange
