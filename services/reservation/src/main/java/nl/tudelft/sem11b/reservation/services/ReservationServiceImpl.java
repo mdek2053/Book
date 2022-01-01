@@ -3,7 +3,6 @@ package nl.tudelft.sem11b.reservation.services;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,6 +20,7 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.services.GroupService;
@@ -179,8 +179,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public long makeUserReservation(long roomId, Long getForUser,
                                     String title, ApiDateTime since, ApiDateTime until)
-            throws ApiException, InvalidGroupCredentialsException, InvalidData, EntityNotFound {
-        if (verifySecretary(getForUser)) {
+            throws ApiException, InvalidGroupCredentialsException, InvalidData,
+            EntityNotFound {
+        if (verifySecretary(getForUser) || users.currentUser().inRole(Roles.Admin)) {
             return makeReservation(roomId, getForUser, title, since, until);
         }
         throw new InvalidGroupCredentialsException("You are not a secretary of the provided user");
@@ -193,9 +194,10 @@ public class ReservationServiceImpl implements ReservationService {
      * @return a boolean value whether the current user has the correct rights
      * @throws ApiException Thrown when a remote API encountered an error
      */
-    protected boolean verifySecretary(Long getForUser) throws ApiException {
+    private boolean verifySecretary(Long getForUser) throws ApiException {
+        UserModel user = users.currentUser();
         List<GroupModel> groupList =
-                groups.getGroupsOfSecretary(users.currentUser().getId(), new ArrayList<>());
+                groups.getGroupsOfSecretary(user.getId());
         for (GroupModel groupModel : groupList) {
             if (groupModel.getGroupMembers().contains(getForUser)) {
                 return true;
@@ -231,7 +233,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         var user = users.currentUser();
-        if (user.getId() != reservation.getUserId() && !user.inRole(Roles.Admin)) { //NOPMD
+        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)
+                && !verifySecretary(reservation.getUserId())) {
             throw new ApiException(serviceName,
                 "User not authorized to change given reservation.");
         }
@@ -282,7 +285,8 @@ public class ReservationServiceImpl implements ReservationService {
         var reservation = reservationOpt.get();
 
         var user = users.currentUser();
-        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)) {
+        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)
+                && !verifySecretary(reservation.getUserId())) {
             throw new ApiException(serviceName,
                     "User not authorized to change given reservation.");
         }
@@ -312,10 +316,5 @@ public class ReservationServiceImpl implements ReservationService {
             throw ex.toResponseException();
         }
         return false;
-    }
-
-    // debug testing method
-    public List<Reservation> getAll() {
-        return reservations.findAll();
     }
 }

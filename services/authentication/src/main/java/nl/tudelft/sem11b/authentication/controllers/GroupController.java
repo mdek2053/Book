@@ -7,8 +7,8 @@ import nl.tudelft.sem11b.authentication.services.GroupServiceImpl;
 import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.GroupModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,19 +57,18 @@ public class GroupController {
 
     @GetMapping(value = "/mine")
     public List<GroupModel> getGroupsOfCurrentUser()
-            throws NoAssignedGroupException, ApiException {
-        return groupService.getGroupsOfUser(userService.currentUser().getId());
+            throws ApiException, InvalidData {
+        return groupService.getGroupsOfCurrentUser(userService.currentUser().getId());
     }
 
     @GetMapping(value = "/user/{id}")
-    public List<GroupModel> getGroupsOfUser(@PathVariable Long id)
-            throws NoAssignedGroupException {
+    public List<GroupModel> getGroupsOfUser(@PathVariable Long id) {
         return groupService.getGroupsOfUser(id);
     }
 
     @GetMapping(value = "/secretary/{id}")
     public List<GroupModel> getGroupsOfSecretary(@PathVariable Long id) {
-        return groupService.getGroupsOfSecretary(id, new ArrayList<>());
+        return groupService.getGroupsOfSecretary(id);
     }
 
     @GetMapping(value = "/{id}")

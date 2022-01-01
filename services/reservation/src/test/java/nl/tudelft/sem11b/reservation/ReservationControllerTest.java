@@ -95,7 +95,8 @@ class ReservationControllerTest {
         String response = mvcResult.getResponse().getContentAsString();
 
         // assert
-        var page = mapper.readValue(response, new TypeReference<PageData<ReservationModel>>() {});
+        var page = mapper.readValue(response,
+                new TypeReference<PageData<ReservationModel>>() {});
         assertEquals(Optional.of(subject), page.getData().findFirst());
     }
 

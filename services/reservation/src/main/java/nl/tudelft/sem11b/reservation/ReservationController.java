@@ -3,6 +3,7 @@ package nl.tudelft.sem11b.reservation;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
+import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
@@ -122,13 +123,14 @@ public class ReservationController {
      */
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void changeReservation(@PathVariable long id, @RequestBody ReservationRequestModel req) {
+    void changeReservation(@PathVariable long id, @RequestBody ReservationModel req) {
         if (req == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body empty");
         }
 
         try {
-            reservationService.editReservation(id, req.getTitle(), req.getSince(), req.getUntil());
+            reservationService.editReservation(id, req.getTitle(),
+                    req.getSince(), req.getUntil());
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }
@@ -146,4 +148,6 @@ public class ReservationController {
             throw ex.toResponseException();
         }
     }
+
+
 }

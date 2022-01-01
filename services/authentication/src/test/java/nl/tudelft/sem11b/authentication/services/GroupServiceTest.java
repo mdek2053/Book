@@ -91,12 +91,11 @@ class GroupServiceTest {
     @Test
     void getGroupsOfUserNoGroups() {
         when(groupRepository.findAll()).thenReturn(new ArrayList<>());
-        assertThrows(NoAssignedGroupException.class, () -> groupService
-                .getGroupsOfUser(userModel1.getId()));
+        assertEquals(new ArrayList<>(), groupService.getGroupsOfUser(userModel1.getId()));
     }
 
     @Test
-    void getGroupsOfUserExistingGroups() throws NoAssignedGroupException {
+    void getGroupsOfUserExistingGroups() {
         when(groupRepository.findAll()).thenReturn(groups);
         List<GroupModel> result = new ArrayList<>();
         result.add(groupModel1);
@@ -152,10 +151,9 @@ class GroupServiceTest {
 
     @Test
     void getGroupsOfSecretary() {
-        when(userRepository.findUserById(userModel1.getId())).thenReturn(Optional.of(user1));
+        when(userRepository.findUserById(user1.getId())).thenReturn(Optional.of(user1));
         when(groupRepository.findGroupsBySecretary(user1.getId())).thenReturn(Optional.of(groups));
 
-        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1.getId(),
-                new ArrayList<>()));
+        assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1.getId()));
     }
 }

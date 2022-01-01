@@ -65,7 +65,6 @@ public class ReservationClient implements ReservationService {
         return res.get().getId();
     }
 
-
     @Override
     public PageData<ReservationModel> inspectOwnReservation(PageIndex page) throws ApiException {
         var path = "/reservations/mine?page=" + page.getPage() + "&limit=" + page.getLimit();
@@ -77,7 +76,7 @@ public class ReservationClient implements ReservationService {
     @Override
     public void editReservation(long reservationId, String title, ApiDateTime since,
                                 ApiDateTime until) throws ApiException {
-        var model = new ReservationRequestModel(null, title, since, until, null);
+        var model = new ReservationModel(reservationId, since, until, title);
         api.post("/reservations/" + reservationId, model, new TypeReference<>() {
         }).unwrap();
     }
