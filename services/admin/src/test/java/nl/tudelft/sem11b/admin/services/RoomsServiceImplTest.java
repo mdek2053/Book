@@ -29,18 +29,22 @@ import nl.tudelft.sem11b.admin.data.repositories.EquipmentRepository;
 import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
 import nl.tudelft.sem11b.data.ApiDate;
+import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.FaultRequestModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.services.ReservationService;
 import nl.tudelft.sem11b.services.UserService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,6 +76,9 @@ class RoomsServiceImplTest {
     @Mock
     UserService users;
 
+    @Mock
+    ReservationService reservations;
+
     RoomsServiceImpl service;
 
     private final Building building1 =
@@ -88,7 +95,7 @@ class RoomsServiceImplTest {
     private final Room room1 = new Room(1, "idk",
             "PC hall 1", 30, null, building1, new HashSet<>());
     private final Room room2 = new Room(2,  "idk",
-            "PC hall 2", 50, null, building1, Set.of());
+            "PC hall 2", 50, null, building1, Set.of(beamer));
     private final Room room3 = new Room(3,  "idk",
             "Boole", 50, null, building2, Set.of());
     private final Room roomNullBuilding = new Room(3,  "idk",
@@ -119,7 +126,8 @@ class RoomsServiceImplTest {
 
     @BeforeEach
     void initService() {
-        service = new RoomsServiceImpl(buildings, rooms, faults, equipmentRepo, users);
+        service = new RoomsServiceImpl(buildings, rooms,
+                faults, equipmentRepo, users, reservations);
     }
 
     @Test
@@ -275,7 +283,7 @@ class RoomsServiceImplTest {
     }
 
     @Test
-    public void searchRoomsOnlyCapacityFilterTest() {
+    public void searchRoomsCapacityFilterTest() {
         List<RoomStudModel> models = List.of(room2StudModel);
         PageData<RoomStudModel> expected = new PageData<>(1, models);
         Map<String, Object> filters = new HashMap<>();
@@ -291,6 +299,139 @@ class RoomsServiceImplTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void searchRoomsInvalidEquipmentFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("equipment", "String");
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsNonExistentEquipmentFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("equipment", Set.of(3L));
+
+        when(equipmentRepo.findById(3L)).thenReturn(Optional.empty());
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(EntityNotFound.class, () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsEquipmentFilterTest() {
+        List<RoomStudModel> models = List.of(room2StudModel);
+        PageData<RoomStudModel> expected = new PageData<>(1, models);
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("equipment", Set.of(1L));
+
+        PageIndex index = new PageIndex(0, 10);
+
+        when(equipmentRepo.findById(1L)).thenReturn(Optional.of(beamer));
+        when(rooms.findAll(index.getPage(Sort.by("id"))))
+                .thenReturn(new PageImpl<>(List.of(room1, room2)));
+
+        try {
+            assertEquals(expected, service.searchRooms(index, filters));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void searchRoomsNoFromTimeFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+        filters.put("until", until.toString());
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsNoUntilTimeFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        filters.put("from", from.toString());
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsInvalidUntilTimeFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        filters.put("from", from.toString());
+        filters.put("until", 1);
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsInvalidFromTimeFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        filters.put("from", 1);
+        filters.put("until", until.toString());
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsFromTimeAfterUntilTimeFilterTest() {
+        Map<String, Object> filters = new HashMap<>();
+        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        filters.put("from", from.toString());
+        filters.put("until", until.toString());
+
+        PageIndex index = new PageIndex(0, 10);
+
+        Assert.assertThrows(InvalidFilterException.class,
+                () -> service.searchRooms(index, filters));
+    }
+
+    @Test
+    public void searchRoomsAvailabilityFilterTest()
+            throws InvalidData, ApiException, EntityNotFound, InvalidFilterException {
+        Map<String, Object> filters = new HashMap<>();
+        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+        filters.put("from", from.toString());
+        filters.put("until", until.toString());
+
+        PageIndex index = new PageIndex(0, 10);
+
+        when(rooms.findAll(index.getPage(Sort.by("id"))))
+                .thenReturn(new PageImpl<>(List.of(room1, room2)));
+        when(reservations.checkAvailability(1L,
+                new ReservationRequestModel(1L, "Check-availability", from, until, null)))
+                .thenReturn(false);
+        when(reservations.checkAvailability(2L,
+                new ReservationRequestModel(2L, "Check-availability", from, until, null)))
+                .thenReturn(true);
+
+        List<RoomStudModel> models = List.of(room2StudModel);
+        PageData<RoomStudModel> expected = new PageData<>(1, models);
+
+        assertEquals(expected, service.searchRooms(index, filters));
     }
 
     @Test
