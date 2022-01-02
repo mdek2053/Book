@@ -129,14 +129,4 @@ public class RoomStudModel {
         return Objects.hash(id, suffix, name, capacity, closure);
     }
 
-    @Override
-    public String toString() {
-        return "RoomStudModel{"
-                + "id=" + id
-                + ", suffix='" + suffix + '\''
-                + ", name='" + name + '\''
-                + ", capacity=" + capacity
-                + ", closure=" + closure
-                + '}';
-    }
 }
