@@ -4,16 +4,23 @@ import java.util.List;
 
 import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.GroupModel;
-import nl.tudelft.sem11b.data.models.UserModel;
+
+/**
+ * API definition of the group service. This service is responsible for holding the information
+ * about groups.
+ */
 
 public interface GroupService {
 
-    List<GroupModel> getGroupsOfUser(UserModel user) throws NoAssignedGroupException;
+    List<GroupModel> getGroupsOfUser(Long id) throws ApiException;
 
-    List<GroupModel> getGroupsOfSecretary(UserModel user, List<GroupModel> groups);
+    List<GroupModel> getGroupsOfSecretary(Long id)
+            throws ApiException;
+
+    List<GroupModel> getGroupsOfCurrentUser(Long id) throws InvalidData, ApiException;
 
     GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
             throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException;
@@ -22,5 +29,5 @@ public interface GroupService {
             ApiException, InvalidCredentialsException;
 
     void addGroupMembers(List<Long> users, GroupModel group)
-            throws InvalidGroupCredentialsException;
+            throws InvalidGroupCredentialsException, ApiException;
 }

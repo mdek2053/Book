@@ -1,12 +1,15 @@
 package nl.tudelft.sem11b.services;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
+import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 
 /**
  * API definition of the reservation service. This service is responsible for management of
@@ -26,7 +29,26 @@ public interface ReservationService {
      * @throws InvalidData    Thrown when the given data is invalid
      */
     long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData;
+            throws ApiException, EntityNotFound, InvalidData;
+
+
+    /**
+     * Creates a new reservation for a provided user, which can be made by a secretary or admin.
+     *
+     * @param roomId  Unique numeric identifier of the room where the reservation takes place
+     * @param forUser Id of user for whom the reservation will be made
+     * @param title   Title of the reservation
+     * @param since   Beginning date and time of the reservation
+     * @param until   Ending date and time of the reservation
+     * @return Unique numeric identifier of the newly created reservation
+     * @throws ApiException                     Thrown when a remote API encountered an error
+     * @throws EntityNotFound                   Thrown when the given room was not found
+     * @throws InvalidGroupCredentialsException Thrown when the current user is not a secretary
+     * @throws InvalidData                      Thrown when the given data is invalid
+     */
+    long makeUserReservation(long roomId, Long forUser, String title,
+                             ApiDateTime since, ApiDateTime until)
+            throws ApiException, EntityNotFound, InvalidGroupCredentialsException, InvalidData;
 
     /**
      * Lists a page of reservations created by/for the current user.
@@ -52,8 +74,9 @@ public interface ReservationService {
      * @throws EntityNotFound Thrown when the given reservation was not found
      * @throws InvalidData    Thrown when the given data is invalid
      */
-    void editReservation(long reservationId, String title, ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound, InvalidData;
+    void editReservation(long reservationId, String title, ApiDateTime since,
+                         ApiDateTime until)
+            throws ApiException, EntityNotFound, InvalidData;
 
     /**
      * Deletes reservation with provided reservationId if the user is authorized to do it.
@@ -61,5 +84,19 @@ public interface ReservationService {
      * @throws EntityNotFound Thrown when the given reservation was not found
      * @throws ApiException   Thrown when the given data is invalid
      */
-    void deleteReservation(long reservationId) throws EntityNotFound, ApiException;
+    void deleteReservation(long reservationId) throws ApiException, EntityNotFound;
+
+    /**
+     * Checks whether a reservation request is valid and whether the room is available for the
+     * provided reservation request.
+     *
+     * @param roomModelId  Unique numeric identifier of the room for which the reservation
+     *                     wants to be made
+     * @param requestModel Object containing the reservation request
+     * @return a boolean value of whether the room is available for the specified reservation
+     * @throws InvalidData  Thrown when the given data is invalid
+     * @throws ApiException Thrown when a remote API encountered an error
+     */
+    boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel)
+            throws InvalidData, ApiException;
 }

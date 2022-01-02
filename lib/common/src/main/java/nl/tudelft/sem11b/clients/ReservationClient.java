@@ -30,12 +30,33 @@ public class ReservationClient implements ReservationService {
 
     @Override
     public long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until)
-        throws ApiException, EntityNotFound {
+            throws ApiException, EntityNotFound {
         var req = new ReservationRequestModel(roomId, title, since, until, null);
 
         var res = api.post("/reservations", req,
-                new TypeReference<>() {}, new TypeReference<IdModel<Long>>() {})
-            .toOptional();
+                new TypeReference<>() {
+                }, new TypeReference<IdModel<Long>>() {
+                })
+                .toOptional();
+
+        if (res.isEmpty()) {
+            throw new EntityNotFound("Room");
+        }
+
+        return res.get().getId();
+    }
+
+    @Override
+    public long makeUserReservation(long roomId, Long forUser, String title,
+                                    ApiDateTime since, ApiDateTime until)
+            throws ApiException, EntityNotFound {
+        var req = new ReservationRequestModel(roomId, title, since, until, forUser);
+
+        var res = api.post("/reservations", req,
+                new TypeReference<>() {
+                }, new TypeReference<IdModel<Long>>() {
+                })
+                .toOptional();
 
         if (res.isEmpty()) {
             throw new EntityNotFound("Room");
@@ -48,18 +69,28 @@ public class ReservationClient implements ReservationService {
     public PageData<ReservationModel> inspectOwnReservation(PageIndex page) throws ApiException {
         var path = "/reservations/mine?page=" + page.getPage() + "&limit=" + page.getLimit();
 
-        return api.get(path, new TypeReference<PageData<ReservationModel>>() {}).unwrap();
+        return api.get(path, new TypeReference<PageData<ReservationModel>>() {
+        }).unwrap();
     }
 
     @Override
     public void editReservation(long reservationId, String title, ApiDateTime since,
                                 ApiDateTime until) throws ApiException {
-        var model = new ReservationRequestModel(null, title, since, until, null);
-        api.post("/reservations/" + reservationId, model, new TypeReference<>() {}).unwrap();
+        var model = new ReservationModel(reservationId, since, until, title);
+        api.post("/reservations/" + reservationId, model, new TypeReference<>() {
+        }).unwrap();
     }
 
     @Override
     public void deleteReservation(long reservationId) throws ApiException {
         api.delete("/reservations/" + reservationId).unwrap();
+    }
+
+    @Override
+    public boolean checkAvailability(long roomModelId, ReservationRequestModel requestModel)
+            throws ApiException {
+        return api.post("/reservations/availability/" + roomModelId, requestModel,
+                new TypeReference<ReservationRequestModel>() {}, new TypeReference<Boolean>() {})
+                .unwrap();
     }
 }

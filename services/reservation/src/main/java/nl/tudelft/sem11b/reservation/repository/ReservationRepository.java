@@ -1,8 +1,6 @@
 package nl.tudelft.sem11b.reservation.repository;
 
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Optional;
 import javax.transaction.Transactional;
 
 import nl.tudelft.sem11b.reservation.entity.Reservation;

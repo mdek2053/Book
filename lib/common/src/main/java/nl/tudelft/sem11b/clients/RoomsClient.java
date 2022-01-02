@@ -8,6 +8,7 @@ import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.FaultModel;
 import nl.tudelft.sem11b.data.models.FaultRequestModel;
 import nl.tudelft.sem11b.data.models.FaultStudModel;
@@ -68,6 +69,16 @@ public class RoomsClient implements RoomsService {
     public Optional<RoomModel> getRoom(long id) throws ApiException {
         return api.get(urlRoomsPrefix + "/" + id,
                 new TypeReference<RoomModel>() {}).toOptional();
+    }
+
+    @Override
+    public RoomModel addRoom(RoomModel model) {
+        return null;
+    }
+
+    @Override
+    public EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId) {
+        return null;
     }
 
     @Override
