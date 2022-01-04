@@ -33,7 +33,7 @@ public class EquipmentTest {
     }
 
     @Test
-    void equalsSuccesfulTest() {
+    void equalsSuccessfulTest() {
         assertTrue(equipment1.equals(equipment2));
     }
 
