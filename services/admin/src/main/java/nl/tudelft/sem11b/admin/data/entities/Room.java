@@ -76,7 +76,7 @@ public class Room {
      *
      * @param suffix New room suffix
      */
-    public void setPrefix(String suffix) {
+    public void setSuffix(String suffix) {
         if (suffix == null || suffix.trim().isEmpty()) {
             throw new IllegalArgumentException("Suffix may not be empty nor null!");
         }
@@ -140,10 +140,6 @@ public class Room {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
     }
 
     public void setCapacity(int capacity) {
