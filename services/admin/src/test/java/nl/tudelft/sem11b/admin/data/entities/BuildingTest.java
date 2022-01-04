@@ -1,14 +1,22 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
-import nl.tudelft.sem11b.data.ApiTime;
-import nl.tudelft.sem11b.data.models.BuildingModel;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import nl.tudelft.sem11b.data.ApiTime;
+import nl.tudelft.sem11b.data.models.BuildingModel;
+import org.junit.jupiter.api.Test;
+
+
+
 
 public class BuildingTest {
 
@@ -200,7 +208,8 @@ public class BuildingTest {
 
     @Test
     void toStringTest() {
-        String s = "Building{id=0, prefix='prefix', name='name', opening=10:00, closing=22:00, rooms=[]}";
+        String s = "Building{id=0, prefix='prefix', "
+                + "name='name', opening=10:00, closing=22:00, rooms=[]}";
         assertEquals(s, building2.toString());
     }
 }

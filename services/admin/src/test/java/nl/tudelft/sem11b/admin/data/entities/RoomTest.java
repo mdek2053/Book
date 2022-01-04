@@ -1,5 +1,12 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashSet;
+
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiTime;
@@ -7,11 +14,6 @@ import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class RoomTest {
 
@@ -132,19 +134,24 @@ public class RoomTest {
     @Test
     void toStudModelNullClosureTest() {
         room2.setClosure(null);
-        assertEquals(new RoomStudModel(0L, "suffix", "name", 10), room2.toStudModel());
+        assertEquals(new RoomStudModel(0L, "suffix", "name", 10),
+                room2.toStudModel());
     }
 
     @Test
     void toStudModelNonNullClosureTest() {
-        assertEquals(new RoomStudModel(0L, "suffix", "name", 10, closure.toModel()), room2.toStudModel());
+        assertEquals(new RoomStudModel(0L, "suffix",
+                        "name", 10, closure.toModel()),
+                room2.toStudModel());
     }
 
     @Test
     void toModelNullClosureTest() {
         room2.setClosure(null);
 
-        assertEquals(new RoomModel(0L, "suffix", "name", 10, building.toModel(), new EquipmentModel[0]), room2.toModel());
+        assertEquals(new RoomModel(0L, "suffix",
+                "name", 10, building.toModel(), new EquipmentModel[0]),
+                room2.toModel());
     }
 
     @Test
@@ -154,6 +161,8 @@ public class RoomTest {
         EquipmentModel[] models = new EquipmentModel[1];
         models[0] = equipment.toModel();
 
-        assertEquals(new RoomModel(0L, "suffix", "name", 10, building.toModel(), models, closure.toModel()), room2.toModel());
+        assertEquals(new RoomModel(0L, "suffix",
+                "name", 10, building.toModel(), models, closure.toModel()),
+                room2.toModel());
     }
 }

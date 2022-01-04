@@ -1,11 +1,12 @@
 package nl.tudelft.sem11b.admin.data.entities;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
 
 public class FaultTest {
     private final transient Fault fault1 = new Fault(1L, "description", null);
@@ -45,6 +46,7 @@ public class FaultTest {
                 null, null, new HashSet<>()));
         assertFalse(fault1.equals(fault2));
     }
+
     @Test
     void equalsSuccessfulTest() {
         assertTrue(fault1.equals(fault2));
