@@ -109,7 +109,7 @@ public class BuildingModel {
             return false;
         }
         BuildingModel that = (BuildingModel) o;
-        return id.equals(that.id);
+        return Objects.equals(id, that.id);
     }
 
     @Override
