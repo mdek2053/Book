@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.data.models;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,9 @@ class RoomModelTest {
             new BuildingModel(1L, "pref", "EWI", start, end);
     EquipmentModel equipmentModel = new EquipmentModel(1L, "Projector");
     RoomModel model =
+            new RoomModel(1L, "suff", "room", 6,
+                    buildingModel, new EquipmentModel[]{equipmentModel});
+    RoomModel model2 =
             new RoomModel(1L, "suff", "room", 6,
                     buildingModel, new EquipmentModel[]{equipmentModel});
 
@@ -80,6 +84,58 @@ class RoomModelTest {
     @Test
     void testNotInstance() {
         assertFalse(model.equals(new Object()));
+    }
+
+    @Test
+    void testEqualsNull() {
+        assertFalse(model.equals(null));
+    }
+
+    @Test
+    void testEqualsDifferentId() {
+        model2.setId(18L);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentCapacity() {
+        model2.setCapacity(18);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentSuffix() {
+        model2.setSuffix("Stonks");
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentName() {
+        model2.setName("Stonks");
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentBuilding() {
+        model2.setBuilding(null);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentEquipment() {
+        model2.setEquipment(new EquipmentModel[12]);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentClosure() {
+        model2.setClosure(new ClosureModel("yeet"));
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsSuccessful() {
+        assertTrue(model.equals(model2));
     }
 
     @Test

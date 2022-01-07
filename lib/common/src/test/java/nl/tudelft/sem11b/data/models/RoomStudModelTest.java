@@ -2,6 +2,7 @@ package nl.tudelft.sem11b.data.models;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Objects;
 
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 class RoomStudModelTest {
 
     RoomStudModel model = new RoomStudModel(1L, "suff", "room", 6);
+    RoomStudModel model2 = new RoomStudModel(1L, "suff", "room", 6);
 
     @Test
     void setId() {
@@ -53,6 +55,46 @@ class RoomStudModelTest {
     @Test
     void testNotInstance() {
         assertFalse(model.equals(new Object()));
+    }
+
+    @Test
+    void testEqualsNull() {
+        assertFalse(model.equals(null));
+    }
+
+    @Test
+    void testEqualsDifferentId() {
+        model2.setId(12L);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentCapacity() {
+        model2.setCapacity(12);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentSuffix() {
+        model2.setSuffix("Chonk");
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentName() {
+        model2.setName("Chonk");
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentClosure() {
+        model2.setClosure(new ClosureModel("Bonk"));
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsSuccessful() {
+        assertTrue(model.equals(model2));
     }
 
     @Test
