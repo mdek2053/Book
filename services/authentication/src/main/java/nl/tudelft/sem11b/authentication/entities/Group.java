@@ -22,7 +22,7 @@ import nl.tudelft.sem11b.data.models.GroupModel;
 public class Group {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "groupId")
     private long groupId;
 
