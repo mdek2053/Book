@@ -123,7 +123,7 @@ public class ReservationController {
      */
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void changeReservation(@PathVariable long id, @RequestBody ReservationModel req) {
+    void changeReservation(@PathVariable long id, @RequestBody ReservationRequestModel req) {
         if (req == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body empty");
         }
