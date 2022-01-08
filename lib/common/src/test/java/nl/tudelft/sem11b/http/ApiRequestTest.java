@@ -29,7 +29,7 @@ public class ApiRequestTest {
 
     @Test
     void headerTestSuccessful() {
-        // I don't know how to verify this, I just test this and check whether it breaks
+        // I don't know how to verify this, I just test this and it will fail if something breaks i guess
         request.header("Content", "chili");
     }
 
