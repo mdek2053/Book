@@ -1,29 +1,30 @@
 package nl.tudelft.sem11b.clients;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
-import nl.tudelft.sem11b.data.models.*;
+import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.FaultRequestModel;
+import nl.tudelft.sem11b.data.models.FaultStudModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
+import nl.tudelft.sem11b.data.models.RoomStudModel;
 import nl.tudelft.sem11b.http.ApiClient;
 import nl.tudelft.sem11b.http.ApiResponse;
 import nl.tudelft.sem11b.http.Authenticated;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class RoomsClientTest {
@@ -52,7 +53,8 @@ public class RoomsClientTest {
 
     @Test
     void listRoomsSpecificBuildingEmptyDataTest() {
-        when(api.get(eq("/buildings/1/rooms?page=" + pageIndex0.getPage() + "&limit=" + pageIndex0.getLimit()), any(TypeReference.class)))
+        when(api.get(eq("/buildings/1/rooms?page=" + pageIndex0.getPage()
+                + "&limit=" + pageIndex0.getLimit()), any(TypeReference.class)))
                 .thenReturn(new ApiResponse<>("rooms", null));
 
         assertThrows(EntityNotFound.class, () -> client.listRooms(pageIndex0, 1));
@@ -60,7 +62,8 @@ public class RoomsClientTest {
 
     @Test
     void listRoomsSpecificBuildingTest() throws EntityNotFound, ApiException {
-        when(api.get(eq("/buildings/1/rooms?page=" + pageIndex1.getPage() + "&limit=" + pageIndex1.getLimit()), any(TypeReference.class)))
+        when(api.get(eq("/buildings/1/rooms?page=" + pageIndex1.getPage()
+                + "&limit=" + pageIndex1.getLimit()), any(TypeReference.class)))
                 .thenReturn(new ApiResponse<>("rooms", pageDataRoomStudModel1));
 
         assertEquals(pageDataRoomStudModel1, client.listRooms(pageIndex1, 1));
@@ -68,7 +71,8 @@ public class RoomsClientTest {
 
     @Test
     void listFaultsSpecificRoomEmptyDataTest() {
-        when(api.get(eq("/rooms/1/faults?page=" + pageIndex0.getPage() + "&limit=" + pageIndex0.getLimit()), any(TypeReference.class)))
+        when(api.get(eq("/rooms/1/faults?page=" + pageIndex0.getPage()
+                + "&limit=" + pageIndex0.getLimit()), any(TypeReference.class)))
                 .thenReturn(new ApiResponse<>("rooms", null));
 
         assertThrows(EntityNotFound.class, () -> client.listFaults(pageIndex0, 1));
@@ -76,7 +80,8 @@ public class RoomsClientTest {
 
     @Test
     void listFaultsSpecificRoomTest() throws EntityNotFound, ApiException {
-        when(api.get(eq("/rooms/1/faults?page=" + pageIndex1.getPage() + "&limit=" + pageIndex1.getLimit()), any(TypeReference.class)))
+        when(api.get(eq("/rooms/1/faults?page=" + pageIndex1.getPage()
+                + "&limit=" + pageIndex1.getLimit()), any(TypeReference.class)))
                 .thenReturn(new ApiResponse<>("rooms", pageDataFaultStudModel1));
 
         assertEquals(pageDataFaultStudModel1, client.listFaults(pageIndex1, 1));
@@ -84,7 +89,8 @@ public class RoomsClientTest {
 
     @Test
     void listFaultsEmptyDataTest() {
-        when(api.get(eq("/faults?page=" + pageIndex0.getPage() + "&limit=" + pageIndex0.getLimit()), any(TypeReference.class)))
+        when(api.get(eq("/faults?page=" + pageIndex0.getPage() + "&limit="
+                + pageIndex0.getLimit()), any(TypeReference.class)))
                 .thenReturn(new ApiResponse<>("rooms", null));
 
         assertThrows(EntityNotFound.class, () -> client.listFaults(pageIndex0));
@@ -92,7 +98,8 @@ public class RoomsClientTest {
 
     @Test
     void listFaultsTest() throws EntityNotFound, ApiException {
-        when(api.get(eq("/faults?page=" + pageIndex1.getPage() + "&limit=" + pageIndex1.getLimit()), any(TypeReference.class)))
+        when(api.get(eq("/faults?page=" + pageIndex1.getPage() + "&limit="
+                + pageIndex1.getLimit()), any(TypeReference.class)))
                 .thenReturn(new ApiResponse<>("rooms", pageDataFaultStudModel1));
 
         assertEquals(pageDataFaultStudModel1, client.listFaults(pageIndex1));

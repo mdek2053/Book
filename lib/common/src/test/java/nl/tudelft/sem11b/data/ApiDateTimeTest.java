@@ -1,15 +1,12 @@
-package nl.tudelft.sem11b.data.models;
-
-import nl.tudelft.sem11b.data.ApiDate;
-import nl.tudelft.sem11b.data.ApiDateTime;
-import nl.tudelft.sem11b.data.ApiTime;
-import org.junit.jupiter.api.Test;
-
-import java.text.ParseException;
+package nl.tudelft.sem11b.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.text.ParseException;
+
+import org.junit.jupiter.api.Test;
 
 public class ApiDateTimeTest {
 

@@ -1,10 +1,10 @@
 package nl.tudelft.sem11b.data.models;
 
-import nl.tudelft.sem11b.data.ApiDateTime;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import nl.tudelft.sem11b.data.ApiDateTime;
+import org.junit.jupiter.api.Test;
 
 public class ReservationModelTest {
 

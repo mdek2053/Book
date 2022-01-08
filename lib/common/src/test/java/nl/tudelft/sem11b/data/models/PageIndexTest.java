@@ -91,6 +91,7 @@ class PageIndexTest {
         assertThrows(ResponseStatusException.class,
                 () -> PageIndex.fromQuery(Optional.of(1), Optional.of(-6)));
     }
+
     @Test
     void testFromQueryLimitOver128() {
         assertThrows(ResponseStatusException.class,

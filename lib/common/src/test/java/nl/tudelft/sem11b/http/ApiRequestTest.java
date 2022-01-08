@@ -1,13 +1,12 @@
 package nl.tudelft.sem11b.http;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.http.HttpRequest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
 
 public class ApiRequestTest {
 
@@ -29,7 +28,8 @@ public class ApiRequestTest {
 
     @Test
     void headerTestSuccessful() {
-        // I don't know how to verify this, I just test this and it will fail if something breaks i guess
+        // I don't know how to verify this, I just test this
+        // and it will fail if something breaks I guess
         request.header("Content", "chili");
     }
 
