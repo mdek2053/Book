@@ -92,7 +92,7 @@ public class ReservationRequestModel {
             && until != null;
     }
 
-    private ReservationRequestModel() {
+    public ReservationRequestModel() {
         // default constructor for model materialization
     }
 
