@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.admin.data.controllers;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.FaultModel;
 import nl.tudelft.sem11b.data.models.FaultRequestModel;
 import nl.tudelft.sem11b.data.models.FaultStudModel;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,7 +33,7 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 public class RoomController {
-    private final RoomsService rooms;
+    private final transient RoomsService rooms;
 
     /**
      * Instantiates the {@link RoomController} class.
@@ -97,7 +98,7 @@ public class RoomController {
     public PageData<RoomStudModel> searchRooms(
             @RequestParam Optional<Integer> page,
             @RequestParam Optional<Integer> limit,
-            @RequestParam Optional<Map<String, Object>> filters) {
+            @RequestBody Optional<HashMap<String, Object>> filters) {
         var index = PageIndex.fromQuery(page, limit);
 
         if (filters.isEmpty()) {
@@ -134,6 +135,35 @@ public class RoomController {
         }
 
         return room.get();
+    }
+
+    /**
+     * Adds a room to the system.
+     * @param model The room to be added
+     */
+    @PostMapping("/rooms")
+    public RoomModel addRoom(@RequestBody RoomModel model) {
+        try {
+            return rooms.addRoom(model);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
+    }
+
+    /**
+     * Adds equipment to the system and to a certain room, if specified.
+     * @param roomId The room to add the equipment to (optional)
+     * @param model The equipment to add.
+     * @return An equipment model with an id
+     */
+    @PostMapping("/equipment")
+    public EquipmentModel addEquipment(@RequestParam Optional<Long> roomId,
+                                       @RequestBody EquipmentModel model) {
+        try {
+            return rooms.addEquipment(model, roomId);
+        } catch (ServiceException e) {
+            throw e.toResponseException();
+        }
     }
 
     /**

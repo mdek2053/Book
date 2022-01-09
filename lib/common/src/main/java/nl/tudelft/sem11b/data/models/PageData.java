@@ -70,6 +70,14 @@ public class PageData<T> {
         return data.stream();
     }
 
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public void setData(List<T> data) {
+        this.data = data;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -87,11 +95,4 @@ public class PageData<T> {
         return Objects.hash(total, data);
     }
 
-    @Override
-    public String toString() {
-        return "PageData{"
-                + "total=" + total
-                + ", data=" + data
-                + '}';
-    }
 }

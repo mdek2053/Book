@@ -1,5 +1,7 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Objects;
+
 import nl.tudelft.sem11b.data.ApiDateTime;
 
 /**
@@ -58,6 +60,26 @@ public class ReservationRequestModel {
         return forUser;
     }
 
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSince(ApiDateTime since) {
+        this.since = since;
+    }
+
+    public void setUntil(ApiDateTime until) {
+        this.until = until;
+    }
+
+    public void setForUser(Long forUser) {
+        this.forUser = forUser;
+    }
+
     /**
      * Checks if a reservation entity has all mandatory fields filled in.
      *
@@ -70,7 +92,7 @@ public class ReservationRequestModel {
             && until != null;
     }
 
-    private ReservationRequestModel() {
+    public ReservationRequestModel() {
         // default constructor for model materialization
     }
 
@@ -90,5 +112,35 @@ public class ReservationRequestModel {
         this.since = since;
         this.until = until;
         this.forUser = forUser;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReservationRequestModel that = (ReservationRequestModel) o;
+        return Objects.equals(roomId, that.roomId) && title.equals(that.title)
+                && since.equals(that.since) && until.equals(that.until)
+                && Objects.equals(forUser, that.forUser);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roomId, title, since, until, forUser);
+    }
+
+    @Override
+    public String toString() {
+        return "ReservationRequestModel{"
+                + "roomId=" + roomId
+                + ", title='" + title + '\''
+                + ", since=" + since
+                + ", until=" + until
+                + ", forUser=" + forUser
+                + '}';
     }
 }

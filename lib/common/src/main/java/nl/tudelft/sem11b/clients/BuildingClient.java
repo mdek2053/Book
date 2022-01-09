@@ -15,7 +15,7 @@ import nl.tudelft.sem11b.services.BuildingService;
  * A client for the {@link BuildingService} API. This client requires authentication.
  */
 public class BuildingClient implements BuildingService {
-    private final ApiClient<Authenticated> api;
+    private final transient ApiClient<Authenticated> api;
 
     /**
      * Instantiates the {@link BuildingClient} class.
@@ -35,5 +35,10 @@ public class BuildingClient implements BuildingService {
     @Override
     public Optional<BuildingModel> getBuilding(long id) throws ApiException {
         return api.get("/buildings/" + id, new TypeReference<BuildingModel>() {}).toOptional();
+    }
+
+    @Override
+    public BuildingModel addBuilding(BuildingModel model) throws ApiException {
+        return null;
     }
 }

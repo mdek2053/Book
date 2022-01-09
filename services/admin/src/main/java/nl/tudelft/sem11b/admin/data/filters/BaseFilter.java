@@ -4,7 +4,7 @@ import nl.tudelft.sem11b.admin.data.entities.Room;
 
 public class BaseFilter {
 
-    protected BaseFilter next;
+    protected transient BaseFilter next;
 
     public void setNext(BaseFilter next) {
         this.next = next;

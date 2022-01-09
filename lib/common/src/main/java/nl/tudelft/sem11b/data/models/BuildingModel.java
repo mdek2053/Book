@@ -1,12 +1,14 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Objects;
+
 import nl.tudelft.sem11b.data.ApiTime;
 
 /**
  * Holds all building information.
  */
 public class BuildingModel {
-    private long id;
+    private Long id;
     private String prefix;
     private String name;
     private ApiTime open;
@@ -21,7 +23,7 @@ public class BuildingModel {
      * @param open   Time of day at which the building opens
      * @param close  This of day at which the building closes
      */
-    public BuildingModel(long id, String prefix, String name, ApiTime open, ApiTime close) {
+    public BuildingModel(Long id, String prefix, String name, ApiTime open, ApiTime close) {
         this.id = id;
         this.prefix = prefix;
         this.name = name;
@@ -38,7 +40,7 @@ public class BuildingModel {
      *
      * @return ID of the building
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -76,5 +78,42 @@ public class BuildingModel {
      */
     public ApiTime getClose() {
         return close;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOpen(ApiTime open) {
+        this.open = open;
+    }
+
+    public void setClose(ApiTime close) {
+        this.close = close;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BuildingModel that = (BuildingModel) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, prefix, name, open, close);
     }
 }

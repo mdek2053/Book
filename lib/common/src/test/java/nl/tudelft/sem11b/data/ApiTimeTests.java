@@ -8,7 +8,7 @@ import java.text.ParseException;
 
 import org.junit.jupiter.api.Test;
 
-public class ApiDateTests {
+public class ApiTimeTests {
     @Test
     public void parseTest() {
         for (int i = 0; i < 24; i++) {
@@ -54,4 +54,5 @@ public class ApiDateTests {
             }
         }
     }
+
 }

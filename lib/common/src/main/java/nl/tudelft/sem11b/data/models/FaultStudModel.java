@@ -36,4 +36,16 @@ public class FaultStudModel {
     public String getDescription() {
         return description;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setReporter(long reporter) {
+        this.reporter = reporter;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -51,4 +51,16 @@ public class UserRequestModel {
     public String getRole() {
         return role;
     }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

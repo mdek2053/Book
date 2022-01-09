@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.data.models;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import nl.tudelft.sem11b.data.Roles;
@@ -57,6 +58,18 @@ public class UserModel {
         return roles != null ? Arrays.stream(roles) : Stream.empty();
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setRoles(String[] roles) {
+        this.roles = roles;
+    }
+
     /**
      * Checks if the user has the given role.
      *
@@ -65,5 +78,26 @@ public class UserModel {
      */
     public boolean inRole(Roles role) {
         return getRoles().anyMatch(i -> i.equalsIgnoreCase(role.toString()));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserModel userModel = (UserModel) o;
+        return id == userModel.id
+                && Objects.equals(login, userModel.login)
+                && Arrays.equals(roles, userModel.roles);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, login);
+        result = 31 * result + Arrays.hashCode(roles);
+        return result;
     }
 }

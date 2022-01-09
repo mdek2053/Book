@@ -6,6 +6,8 @@ import org.springframework.web.server.ResponseStatusException;
  * Base exception for all other API exceptions.
  */
 public abstract class ServiceException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Instantiates the {@link ServiceException} class.
      *

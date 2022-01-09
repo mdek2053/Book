@@ -1,10 +1,12 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.util.Objects;
+
 /**
  * Holds information about room equipment.
  */
 public class EquipmentModel {
-    private long id;
+    private Long id;
     private String name;
 
     /**
@@ -13,8 +15,12 @@ public class EquipmentModel {
      * @param id   Unique numeric identifier of the equipment
      * @param name Name of the equipment
      */
-    public EquipmentModel(long id, String name) {
+    public EquipmentModel(Long id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    public EquipmentModel(String name) {
         this.name = name;
     }
 
@@ -27,7 +33,7 @@ public class EquipmentModel {
      *
      * @return ID of the equipment
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -38,5 +44,38 @@ public class EquipmentModel {
      */
     public String getName() {
         return name;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        EquipmentModel that = (EquipmentModel) o;
+        return Objects.equals(id, that.id) && name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "EquipmentModel{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + '}';
     }
 }

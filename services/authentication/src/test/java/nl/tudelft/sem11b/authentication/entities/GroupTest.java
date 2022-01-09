@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 class GroupTest {
 
     transient String role = "employee";
-    transient User user = new User("netId", role, "abc");
-    transient User user1 = new User("netId1", role, "abc1");
-    transient User user2 = new User("netId2", role, "abc2");
+    transient User user = new User(1L, "netId", role, "abc");
+    transient User user1 = new User(2L, "netId1", role, "abc1");
+    transient User user2 = new User(3L, "netId2", role, "abc2");
     transient User user3 = new User("netId3", role, "abc3");
     transient List<Long> members = new ArrayList<>();
     transient List<Long> newMembers = new ArrayList<>();
@@ -33,7 +33,8 @@ class GroupTest {
 
     @Test
     void getGroupId() {
-        assertEquals(2, group.getGroupId());
+        group.setGroupId(3L);
+        assertEquals(3L, group.getGroupId());
     }
 
     @Test
@@ -70,6 +71,18 @@ class GroupTest {
     }
 
     @Test
+    void testAddGroupMembers() {
+        newMembers.add(user2.getId());
+        group.addToGroupMembers(newMembers);
+        List<Long> list = new ArrayList<>();
+        list.add(user1.getId());
+        list.add(user2.getId());
+        list.add(user3.getId());
+        Group expected = new Group("group", user.getId(), list, 2L);
+        assertEquals(expected, group);
+    }
+
+    @Test
     void testEquals() {
         assertTrue(group.equals(group1));
     }
@@ -77,5 +90,44 @@ class GroupTest {
     @Test
     void testNotEquals() {
         assertFalse(group.equals(group2));
+    }
+
+    @Test
+    void testNotEqualsSecretary() {
+        Group diff = new Group("group", user1.getId(), members, 2L);
+        assertFalse(group.equals(diff));
+    }
+
+    @Test
+    void testNotEqualsMembers() {
+        Group diff = new Group("group", user.getId(), new ArrayList<>(), 2L);
+        assertFalse(group.equals(diff));
+    }
+
+    @Test
+    void testNotEqualsGroupId() {
+        Group diff = new Group("group", user.getId(), members, 3L);
+        assertFalse(group.equals(diff));
+    }
+
+    @Test
+    void testNotEqualsName() {
+        Group diff = new Group("diff", user.getId(), members, group.getGroupId());
+        assertFalse(group.equals(diff));
+    }
+
+    @Test
+    void testTheSame() {
+        assertEquals(group, group);
+    }
+
+    @Test
+    void testNotEqualsObject() {
+        assertFalse(group.equals(new Object()));
+    }
+
+    @Test
+    void testNotEqualsNull() {
+        assertFalse(group.equals(null));
     }
 }

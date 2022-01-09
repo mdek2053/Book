@@ -31,13 +31,12 @@ service-admin-checkstyle:
       - .gradle/
   allow_failure: true
 
-#service-admin-pmd:
-  #stage: validate
-  #script: ./gradlew :services:admin:pmdMain :services:admin:pmdTest
+service-admin-pmd:
+  stage: validate
+  script: ./gradlew :services:admin:pmdMain :services:admin:pmdTest
 
 service-admin-test:
   stage: test
-  when: manual
   script:
     - ./gradlew :services:admin:test :services:admin:jacocoTestReport
     - cat services/admin/build/reports/jacoco/html/index.html | grep -Po "Total.*?([0-9]{1,3})%"

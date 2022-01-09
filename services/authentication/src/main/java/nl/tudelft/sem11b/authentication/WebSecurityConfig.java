@@ -42,7 +42,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().anyRequest().authenticated();
-        http.addFilter(new CustomAuthenticationFilter(authenticationManager(), secret));
+        CustomAuthenticationFilter customAuthenticationFilter
+                = new CustomAuthenticationFilter(authenticationManager(), secret);
+        customAuthenticationFilter.setFilterProcessesUrl("/users/login");
+        http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(secret),
                 UsernamePasswordAuthenticationFilter.class);
     }

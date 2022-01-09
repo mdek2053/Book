@@ -90,6 +90,26 @@ public class RoomStudModel {
         return closure;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void setClosure(ClosureModel closure) {
+        this.closure = closure;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -109,14 +129,4 @@ public class RoomStudModel {
         return Objects.hash(id, suffix, name, capacity, closure);
     }
 
-    @Override
-    public String toString() {
-        return "RoomStudModel{"
-                + "id=" + id
-                + ", suffix='" + suffix + '\''
-                + ", name='" + name + '\''
-                + ", capacity=" + capacity
-                + ", closure=" + closure
-                + '}';
-    }
 }

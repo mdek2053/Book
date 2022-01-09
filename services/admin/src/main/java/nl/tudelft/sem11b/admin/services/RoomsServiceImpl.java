@@ -1,11 +1,15 @@
 package nl.tudelft.sem11b.admin.services;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import nl.tudelft.sem11b.admin.data.Closure;
+import nl.tudelft.sem11b.admin.data.entities.Building;
+import nl.tudelft.sem11b.admin.data.entities.Equipment;
 import nl.tudelft.sem11b.admin.data.entities.Fault;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.filters.AvailabilityFilter;
@@ -14,13 +18,17 @@ import nl.tudelft.sem11b.admin.data.filters.BuildingFilter;
 import nl.tudelft.sem11b.admin.data.filters.CapacityFilter;
 import nl.tudelft.sem11b.admin.data.filters.EquipmentFilter;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
+import nl.tudelft.sem11b.admin.data.repositories.EquipmentRepository;
 import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
+import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
+import nl.tudelft.sem11b.data.models.BuildingModel;
 import nl.tudelft.sem11b.data.models.ClosureModel;
+import nl.tudelft.sem11b.data.models.EquipmentModel;
 import nl.tudelft.sem11b.data.models.FaultModel;
 import nl.tudelft.sem11b.data.models.FaultRequestModel;
 import nl.tudelft.sem11b.data.models.FaultStudModel;
@@ -28,6 +36,8 @@ import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
 import nl.tudelft.sem11b.data.models.RoomStudModel;
+import nl.tudelft.sem11b.data.models.UserModel;
+import nl.tudelft.sem11b.services.ReservationService;
 import nl.tudelft.sem11b.services.RoomsService;
 import nl.tudelft.sem11b.services.UserService;
 import org.springframework.data.domain.Page;
@@ -36,10 +46,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RoomsServiceImpl implements RoomsService {
-    private final BuildingRepository buildings;
-    private final RoomRepository rooms;
-    private final FaultRepository faults;
-    private final UserService users;
+    private final transient String missingEntityName = "Room";
+
+    private final transient BuildingRepository buildings;
+    private final transient RoomRepository rooms;
+    private final transient FaultRepository faults;
+    private final transient EquipmentRepository equipmentRepo;
+    private final transient UserService users;
+    private final transient ReservationService reservations;
+
+    private final transient String serviceName = "Rooms";
 
     /**
      * Instantiates the {@link RoomsServiceImpl} class.
@@ -49,11 +65,14 @@ public class RoomsServiceImpl implements RoomsService {
      * @param users     Users handling service
      */
     public RoomsServiceImpl(BuildingRepository buildings, RoomRepository rooms,
-                            FaultRepository faults, UserService users) {
+                            FaultRepository faults, EquipmentRepository equipmentRepo,
+                            UserService users, ReservationService reservations) {
         this.buildings = buildings;
         this.rooms = rooms;
         this.faults = faults;
+        this.equipmentRepo = equipmentRepo;
         this.users = users;
+        this.reservations = reservations;
     }
 
     @Override
@@ -85,7 +104,7 @@ public class RoomsServiceImpl implements RoomsService {
             }
         }
 
-        return new PageData<RoomStudModel>(filteredRooms.size(), filteredRooms);
+        return new PageData<>(filteredRooms.size(), filteredRooms);
     }
 
     private BaseFilter setupChain(Map<String, Object> filterValues)
@@ -105,7 +124,8 @@ public class RoomsServiceImpl implements RoomsService {
 
         if (filterValues.containsKey("equipment")) {
             try {
-                BaseFilter filter = new EquipmentFilter();
+                BaseFilter filter = new EquipmentFilter(
+                        (Set<Long>)filterValues.get("equipment"), equipmentRepo);
                 tail.setNext(filter);
                 tail = filter;
             } catch (ClassCastException e) {
@@ -114,12 +134,19 @@ public class RoomsServiceImpl implements RoomsService {
         }
 
         if (filterValues.containsKey("from") || filterValues.containsKey("until")) {
+            // If either filter is not there, the user probably made an error,
+            // and we should let them know.
+            if (!filterValues.containsKey("from") || !filterValues.containsKey("until")) {
+                throw new InvalidFilterException("Either from or until time not provided!");
+            }
             try {
-                BaseFilter filter = new AvailabilityFilter((String)filterValues.get("from"),
-                        (String)filterValues.get("until"));
+                BaseFilter filter = new AvailabilityFilter(
+                        ApiDateTime.parse((String)filterValues.get("from")),
+                        ApiDateTime.parse((String)filterValues.get("until")), reservations);
                 tail.setNext(filter);
                 tail = filter;
-            } catch (ClassCastException e) {
+            } catch (ClassCastException | ParseException e) {
+                e.printStackTrace();
                 throw new InvalidFilterException("Invalid availability filter!");
             }
         }
@@ -144,15 +171,84 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     @Override
+    public RoomModel addRoom(RoomModel model) throws ApiException, EntityNotFound {
+        UserModel user = users.currentUser();
+        if (!user.inRole(Roles.Admin)) {
+            throw new ApiException(serviceName,
+                    "User not authorized to add rooms");
+        }
+        BuildingModel buildingModel = model.getBuilding();
+        if (buildingModel == null) {
+            throw new EntityNotFound("Building");
+        }
+        Optional<Building> buildingOptional = buildings.findById(buildingModel.getId());
+
+        if (buildingOptional.isEmpty()) {
+            throw new EntityNotFound("Building");
+        }
+
+        Room newRoom = new Room(model.getSuffix(),
+                model.getName(), model.getCapacity(), null, buildingOptional.get(), Set.of());
+
+        Room saved = rooms.save(newRoom);
+
+        //Only convert the closure to a model if it is not null
+        ClosureModel savedClosure =
+                saved.getClosure() == null ? null : saved.getClosure().toModel();
+
+        RoomModel result = new RoomModel(saved.getId(), saved.getSuffix(),
+                saved.getName(), saved.getCapacity(),
+                saved.getBuilding().toModel(),
+                saved.getEquipment().toArray(EquipmentModel[]::new), savedClosure);
+
+        return result;
+    }
+
+    @Override
+    public EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId)
+            throws ApiException, EntityNotFound {
+        var user = users.currentUser();
+        if (!user.inRole(Roles.Admin)) {
+            throw new ApiException(serviceName,
+                    "User not authorized to add equipment.");
+        }
+        if (roomId.isEmpty()) {
+            return addEquipmentToSystem(model).toModel();
+        } else {
+            if (!rooms.existsById(roomId.get())) {
+                throw new EntityNotFound("Room id does not exist");
+            }
+            Equipment equipment;
+            try {
+                equipment = addEquipmentToSystem(model);
+            } catch (ApiException e) {
+                equipment = equipmentRepo.findByName(model.getName()).get();
+            }
+            Room room = rooms.getById(roomId.get());
+            room.addEquipment(equipment);
+            rooms.save(room);
+            return equipment.toModel();
+        }
+    }
+
+    private Equipment addEquipmentToSystem(EquipmentModel model) throws ApiException {
+        if (equipmentRepo.findByName(model.getName()).isPresent()) {
+            throw new ApiException(serviceName, "Equipment already exists!");
+        }
+        Equipment equipment = new Equipment(model.getName());
+        return equipmentRepo.save(equipment);
+    }
+
+    @Override
     public void closeRoom(long id, ClosureModel closure) throws EntityNotFound, ApiException {
         var user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
-            throw new ApiException("Rooms",
+            throw new ApiException(serviceName,
                     "User not authorized to close rooms.");
         }
 
         if (!rooms.existsById(id)) {
-            throw new EntityNotFound("Room");
+            throw new EntityNotFound(missingEntityName);
         }
 
         var room = rooms.getById(id);
@@ -166,12 +262,12 @@ public class RoomsServiceImpl implements RoomsService {
     public void reopenRoom(long id) throws EntityNotFound, ApiException {
         var user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
-            throw new ApiException("Rooms",
+            throw new ApiException(serviceName,
                     "User not authorized to open rooms.");
         }
 
         if (!rooms.existsById(id)) {
-            throw new EntityNotFound("Room");
+            throw new EntityNotFound(missingEntityName);
         }
 
         var room = rooms.getById(id);
@@ -183,7 +279,7 @@ public class RoomsServiceImpl implements RoomsService {
     public void addFault(long roomId, FaultRequestModel faultRequest)
             throws ApiException, EntityNotFound {
         if (!rooms.existsById(roomId)) {
-            throw new EntityNotFound("Room");
+            throw new EntityNotFound(missingEntityName);
         }
 
         var room = rooms.getById(roomId);
@@ -200,7 +296,7 @@ public class RoomsServiceImpl implements RoomsService {
             throws EntityNotFound {
 
         if (!rooms.existsById(roomId)) {
-            throw new EntityNotFound("Room");
+            throw new EntityNotFound(missingEntityName);
         }
 
         return new PageData<>(faults.findAllByRoomId(roomId, page.getPage(Sort.by("id")))

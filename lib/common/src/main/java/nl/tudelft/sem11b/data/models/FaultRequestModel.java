@@ -29,6 +29,14 @@ public class FaultRequestModel {
         return description;
     }
 
+    public void setReservationId(long reservationId) {
+        this.reservationId = reservationId;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public FaultRequestModel() {
     }
 
@@ -58,5 +66,12 @@ public class FaultRequestModel {
             return false;
         }
         return Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (reservationId ^ (reservationId >>> 32));
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
     }
 }
