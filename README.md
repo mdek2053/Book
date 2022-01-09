@@ -26,14 +26,14 @@ $ gradlew build
 ### Running
 To start a service run the following in project root:
 ```shell
-# for admin
+# for rooms
 $ gradlew services:admin:run
 
-# for core
-$ gradlew services:core:run
+# for reservation
+$ gradlew services:reservation:run
 
-# for identity
-$ gradlew services:identity:run
+# for authentication
+$ gradlew services:authentication:run
 ```
 
 It is highly recommended using a profile. Each service has two profiles:
@@ -42,6 +42,11 @@ It is highly recommended using a profile. Each service has two profiles:
  * `prod` for production environment (external database, less diagnostics output, more lightweight, etc.)
 
 A profile can be specified by supplying the `-Dspring.profiles.active=<profile>` argument on launch.
+
+##Note
+We use the terms authentication microservice and user microservice interchangably, since these microservices were merged
+in the early development stage of our project. The rooms microservice is also named admin, because of the template
+project that we used. 
 
 ## Authors
 Members of the development team include:
