@@ -1,0 +1,70 @@
+openapi: "3.0.3"
+info:
+  title: "Reservation Service API"
+  description: "sem_11b API"
+  version: "1.0.0"
+servers:
+  - url: "localhost:8080"
+paths:
+  /reservations:
+    post:
+      summary: "Creates a new reservation on behalf of the current user"
+      operationId: "makeReservation"
+      responses:
+        "200":
+          description: "OK"
+  /reservations/availability/{roomModelId}:
+    post:
+      summary: "Checks availability of room compared to the request sent"
+      operationId: "checkAvailability"
+      parameters:
+        - name: "roomModelId"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+  /reservations/mine:
+    get:
+      summary: "Lists the reservations of the current user"
+      operationId: "inspectOwnReservation"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+        - name: "limit"
+          in: "query"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+  /reservations/{id}:
+    post:
+      summary: "Updates the reservation with the given unique numeric identifier"
+      operationId: "changeReservation"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+    delete:
+      summary: "Deletes reservation with given id"
+      operationId: "deleteReservation"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"

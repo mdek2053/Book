@@ -1,0 +1,92 @@
+openapi: "3.0.3"
+info:
+  title: "User Service API"
+  description: "sem_11b API"
+  version: "1.0.0"
+servers:
+  - url: "localhost:8082"
+paths:
+  /groups/:
+    post:
+      summary: "Tries to add a new group to the system"
+      operationId: "postGroup"
+      responses:
+        "200":
+          description: "OK"
+  /groups/members:
+    post:
+      summary: "Tries to add new groupMembers to a group"
+      operationId: "addGroupMember"
+      responses:
+        "200":
+          description: "OK"
+  /groups/mine:
+    get:
+      summary: "Gets groups of current user"
+      operationId: "getGroupsOfCurrentUser"
+      responses:
+        "200":
+          description: "OK"
+  /groups/secretary/{id}:
+    get:
+      summary: "Get groups of secretary with given id"
+      operationId: "getGroupsOfSecretary"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+  /groups/user/{id}:
+    get:
+      summary: "Get groups of user with given id"
+      operationId: "getGroupsOfUser"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+  /groups/{id}:
+    get:
+      summary: "Gets information about group with given id"
+      operationId: "getGroupInfo"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+  /users/:
+    post:
+      summary: "Tries to add a new user to the system"
+      operationId: "postUser"
+      responses:
+        "200":
+          description: "OK"
+  /users/all:
+    get:
+      summary: "Gets information about all users"
+      operationId: "getAllUsers"
+      responses:
+        "200":
+          description: "OK"
+  /users/me:
+    get:
+      summary: "Gets information about current user"
+      operationId: "me"
+      responses:
+        "200":
+          description: "OK"

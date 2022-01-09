@@ -1,0 +1,222 @@
+openapi: "3.0.3"
+info:
+  title: "Room Service API"
+  description: "sem_11b"
+  version: "1.0.0"
+servers:
+  - url: "localhost:8081"
+paths:
+  /buildings:
+    get:
+      summary: "Lists all buildings in the system"
+      operationId: "listBuildings"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+        - name: "limit"
+          in: "query"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+    post:
+      summary: "Adds a building to the system"
+      operationId: "addBuilding"
+      responses:
+        "200":
+          description: "OK"
+  /buildings/{id}:
+    get:
+      summary: "Gets building data"
+      operationId: "getBuilding"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+  /buildings/{id}/rooms:
+    get:
+      summary: "Lists all rooms in a building with the given id"
+      operationId: "listRoomsByBuilding"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+        - name: "page"
+          in: "query"
+          required: true
+        - name: "limit"
+          in: "query"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+  /equipment:
+    post:
+      summary: "Adds equipment to the system and to a certain room, if specified"
+      operationId: "addEquipment"
+      parameters:
+        - name: "roomId"
+          in: "query"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+  /faults:
+    get:
+      summary: "Lists all faults in the system"
+      operationId: "listFaults"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+        - name: "limit"
+          in: "query"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+  /faults/{id}:
+    get:
+      summary: "Gets fault information"
+      operationId: "getFault"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+    delete:
+      summary: "Removes a fault, i.e. resolved the fault"
+      operationId: "resolveFault"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+  /rooms:
+    get:
+      summary: "Lists all rooms in the system"
+      operationId: "listRooms"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+        - name: "limit"
+          in: "query"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+    post:
+      summary: "Adds a room to the system"
+      operationId: "addRoom"
+      responses:
+        "200":
+          description: "OK"
+  /rooms/filter:
+    get:
+      summary: "Lists all rooms that pass the filters"
+      operationId: "searchRooms"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+        - name: "limit"
+          in: "query"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+  /rooms/{id}:
+    get:
+      summary: "Gets room information"
+      operationId: "getRoom"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+  /rooms/{id}/closure:
+    post:
+      summary: "Changes or adds a room closure"
+      operationId: "closeRoom"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+    delete:
+      summary: "Removes a room closure, i.e. reopens the room"
+      operationId: "reopenRoom"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+  /rooms/{id}/faults:
+    get:
+      summary: "Lists all faults for a room with the given id"
+      operationId: "listFaultsByRoom"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+        - name: "page"
+          in: "query"
+          required: true
+        - name: "limit"
+          in: "query"
+          required: true
+      responses:
+        "200":
+          description: "OK"
+    post:
+      summary: "Stores a fault report"
+      operationId: "addFault"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
