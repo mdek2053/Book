@@ -22,8 +22,11 @@ import static org.mockito.Mockito.when;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
@@ -34,9 +37,12 @@ import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
+import nl.tudelft.sem11b.data.models.PageData;
+import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
+import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.reservation.services.ReservationServiceImpl;
@@ -51,6 +57,8 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -610,5 +618,26 @@ class ReservationServiceImplTest {
                         ApiDate.yesterday().at(requestModel.getUntil().getTime()),
                         requestModel.getForUser()
                 )));
+    }
+
+    @Test
+    void inspectOwnReservationsTest() throws ApiException {
+        final var page = new PageIndex(0, 1);
+        final var reservation = new Reservation(
+                9, reservationModel.getRoomId(), USER_A.getId(), reservationModel.getTitle(),
+                Timestamp.valueOf(reservationModel.getSince().toLocal()),
+                Timestamp.valueOf(reservationModel.getUntil().toLocal()),
+                null
+        );
+        when(users.currentUser()).thenReturn(USER_A);
+
+        final var list = Arrays.asList(reservation);
+
+        when(reservations.findByUserId(USER_A.getId(), page.getPage(Sort.by("id"))))
+                .thenReturn(new PageImpl<>(list));
+
+        var result = service.inspectOwnReservation(page);
+        assertEquals(new PageData<>(1, list.stream().map(Reservation::toModel)
+                .collect(Collectors.toList())), result);
     }
 }
