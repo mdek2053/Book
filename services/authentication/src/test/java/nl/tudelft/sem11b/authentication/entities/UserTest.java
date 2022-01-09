@@ -35,6 +35,12 @@ class UserTest {
     }
 
     @Test
+    void setRoleEmployee() {
+        user1.setRole("employee");
+        assertEquals("employee", user1.getRole());
+    }
+
+    @Test
     void setInvalidRole() {
         assertThrows(IllegalArgumentException.class, () -> user1.setRole("Random"));
         assertEquals("employee", user1.getRole());
@@ -47,7 +53,28 @@ class UserTest {
     }
 
     @Test
+    void testEqualsTheSame() {
+        assertTrue(user1.equals(user1));
+    }
+
+    @Test
     void testNotEquals() {
         assertFalse(user1.equals(user2));
+    }
+
+    @Test
+    void testNotEqualsRole() {
+        User user3 = new User("username1", "Admin", "abc1");
+        assertFalse(user1.equals(user3));
+    }
+
+    @Test
+    void testNotEqualsNull() {
+        assertFalse(user1.equals(null));
+    }
+
+    @Test
+    void testNotEqualsObject() {
+        assertFalse(user1.equals(new Object()));
     }
 }
