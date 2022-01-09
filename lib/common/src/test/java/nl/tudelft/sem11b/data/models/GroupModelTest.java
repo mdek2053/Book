@@ -3,6 +3,7 @@ package nl.tudelft.sem11b.data.models;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,8 @@ class GroupModelTest {
 
     long id = 1L;
     long secretaryId = 6L;
-    GroupModel model = new GroupModel("Team", secretaryId, new ArrayList<>());
+    GroupModel model = new GroupModel("Team", secretaryId, new ArrayList<>(), 15L);
+    GroupModel model2 = new GroupModel("Team", secretaryId, new ArrayList<>(), 15L);
     List<Long> members = new ArrayList<>();
 
     @BeforeEach
@@ -74,6 +76,40 @@ class GroupModelTest {
     @Test
     void testNotInstance() {
         assertFalse(model.equals(new Object()));
+    }
+
+    @Test
+    void testEqualsNull() {
+        assertFalse(model.equals(null));
+    }
+
+    @Test
+    void testEqualsDifferentId() {
+        model2.setGroupId(17L);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentName() {
+        model2.setName("Chonkers");
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentSecretary() {
+        model2.setSecretary(18L);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsDifferentMembers() {
+        model2.setGroupMembers(null);
+        assertFalse(model.equals(model2));
+    }
+
+    @Test
+    void testEqualsSuccessful() {
+        assertTrue(model.equals(model2));
     }
 
     @Test
