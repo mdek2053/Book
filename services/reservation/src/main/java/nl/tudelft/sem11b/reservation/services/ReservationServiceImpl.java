@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.Roles;
@@ -234,11 +235,11 @@ public class ReservationServiceImpl implements ReservationService {
         var reservation = reservationOpt.get();
 
         if (since == null) {
-            since = ApiDateTime.from(reservation.getSince());
+            since = ApiDateTimeUtils.from(reservation.getSince());
         }
 
         if (until == null) {
-            until = ApiDateTime.from(reservation.getUntil());
+            until = ApiDateTimeUtils.from(reservation.getUntil());
         }
 
         var user = users.currentUser();

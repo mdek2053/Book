@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 
 @Entity
@@ -113,7 +113,7 @@ public class Reservation {
     }
 
     public ReservationModel toModel() {
-        return new ReservationModel(id, ApiDateTime.from(since), ApiDateTime.from(until), title);
+        return new ReservationModel(id, ApiDateTimeUtils.from(since), ApiDateTimeUtils.from(until), title);
     }
 
     @Override
