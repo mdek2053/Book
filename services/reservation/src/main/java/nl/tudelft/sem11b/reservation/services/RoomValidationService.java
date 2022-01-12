@@ -75,7 +75,7 @@ public class RoomValidationService {
         }
 
         // room should also NOT be under maintenance
-        if(room.getClosure() == null) {
+        if (room.getClosure() == null) {
             return;
         }
 
