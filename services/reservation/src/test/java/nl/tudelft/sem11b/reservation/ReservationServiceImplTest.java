@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;

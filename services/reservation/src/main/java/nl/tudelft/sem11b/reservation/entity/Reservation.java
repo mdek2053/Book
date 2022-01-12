@@ -113,7 +113,8 @@ public class Reservation {
     }
 
     public ReservationModel toModel() {
-        return new ReservationModel(id, ApiDateTimeUtils.from(since), ApiDateTimeUtils.from(until), title);
+        return new ReservationModel(id, ApiDateTimeUtils.from(since),
+                ApiDateTimeUtils.from(until), title);
     }
 
     @Override

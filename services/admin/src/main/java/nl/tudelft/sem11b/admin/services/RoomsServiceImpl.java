@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Building;
 import nl.tudelft.sem11b.admin.data.entities.Equipment;
@@ -22,6 +21,7 @@ import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.EquipmentRepository;
 import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;

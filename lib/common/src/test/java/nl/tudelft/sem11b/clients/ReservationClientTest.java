@@ -7,7 +7,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.IdModel;
@@ -32,9 +34,9 @@ public class ReservationClientTest {
     ReservationClient client;
 
     private final transient ApiDateTime since =
-            new ApiDateTime(2022, 1, 1, 10L, 0L);
+            new ApiDateTime(new ApiDate(2022, 1, 1), new ApiTime(10L, 0L));
     private final transient ApiDateTime until =
-            new ApiDateTime(2022, 1, 1, 11L, 0L);
+            new ApiDateTime(new ApiDate(2022, 1, 1), new ApiTime(11L, 0L));
     private final transient ReservationRequestModel model =
             new ReservationRequestModel(1L, "Meeting", since, until, null);
     private final transient ReservationRequestModel model2 =
