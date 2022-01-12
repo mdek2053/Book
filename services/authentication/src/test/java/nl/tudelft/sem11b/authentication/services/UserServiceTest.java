@@ -12,7 +12,6 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
-import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.UserModel;
@@ -90,7 +89,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getCurrentUserTest() throws InvalidCredentialsException, ApiException {
+    public void getCurrentUserTest() throws ApiException {
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(netId2);
