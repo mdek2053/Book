@@ -93,14 +93,14 @@ public class GroupServiceImpl implements GroupService {
         if (id == null) {
             throw new InvalidData("Invalid user");
         }
-        groupModelList = new ArrayList<>();
-        groupModelList.addAll(getGroupsOfUser(id));
-        groupModelList.addAll(getGroupsOfSecretary(id));
-        if (groupModelList.isEmpty()) {
+        List<GroupModel> groupList = new ArrayList<>();
+        groupList.addAll(getGroupsOfUser(id));
+        groupList.addAll(getGroupsOfSecretary(id));
+        if (groupList.isEmpty()) {
             throw new InvalidData("No groups found in the system or "
                     + "the user is not part of any group");
         }
-        return groupModelList;
+        return groupList;
     }
 
     /**
