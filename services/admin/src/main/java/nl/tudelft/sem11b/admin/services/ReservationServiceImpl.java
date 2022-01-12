@@ -25,14 +25,13 @@ public class ReservationServiceImpl extends AuthenticatedServiceClient<Reservati
     }
 
     @Override
-    public long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until)
+    public long makeOwnReservation(ReservationRequestModel request)
             throws ApiException, EntityNotFound, InvalidData {
         return 0;
     }
 
     @Override
-    public long makeUserReservation(long roomId, Long forUser, String title,
-                                    ApiDateTime since, ApiDateTime until)
+    public long makeUserReservation(ReservationRequestModel request)
             throws ApiException, EntityNotFound,
             InvalidGroupCredentialsException, InvalidData {
         return 0;
@@ -44,8 +43,7 @@ public class ReservationServiceImpl extends AuthenticatedServiceClient<Reservati
     }
 
     @Override
-    public void editReservation(long reservationId, String title,
-                                ApiDateTime since, ApiDateTime until)
+    public void editReservation(long reservationId, ReservationRequestModel request)
             throws ApiException, EntityNotFound, InvalidData {
 
     }

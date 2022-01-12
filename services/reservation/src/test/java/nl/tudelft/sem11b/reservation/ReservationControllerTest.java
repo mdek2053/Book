@@ -64,14 +64,14 @@ class ReservationControllerTest {
     @Test
     void makeReservationTest() throws Exception {
         final var resrv = 2L;
+        var req = new ReservationRequestModel(
+                subject.getRoomId(), subject.getTitle(),
+                subject.getSince(), subject.getUntil(), null);
 
         // arrange
         when(reservationService.makeOwnReservation(
-            subject.getRoomId(), subject.getTitle(), subject.getSince(), subject.getUntil())
+            req)
         ).thenReturn(resrv);
-
-        var req = new ReservationRequestModel(
-            subject.getRoomId(), subject.getTitle(), subject.getSince(), subject.getUntil(), null);
 
         // action
         MvcResult mvcResult = mockMvc.perform(post("/reservations")
@@ -90,15 +90,13 @@ class ReservationControllerTest {
     void makeReservationForUserTest() throws Exception {
         final var resrv = 2L;
         final long userId = 11L;
-        // arrange
-        when(reservationService.makeUserReservation(
-                subject.getRoomId(), userId, subject.getTitle(),
-                subject.getSince(), subject.getUntil())
-        ).thenReturn(resrv);
-
         var req = new ReservationRequestModel(
                 subject.getRoomId(), subject.getTitle(),
                 subject.getSince(), subject.getUntil(), userId);
+
+        // arrange
+        when(reservationService.makeUserReservation(req)
+        ).thenReturn(resrv);
 
         // action
         MvcResult mvcResult = mockMvc.perform(post("/reservations")
@@ -138,9 +136,7 @@ class ReservationControllerTest {
         var req = new ReservationRequestModel(
                 subject.getRoomId(), subject.getTitle(),
                 subject.getSince(), subject.getUntil(), userId);
-        when(reservationService.makeUserReservation(
-                subject.getRoomId(), userId, subject.getTitle(),
-                subject.getSince(), subject.getUntil())
+        when(reservationService.makeUserReservation(req)
         ).thenThrow(new EntityNotFound("Room"));
 
         mockMvc.perform(post("/reservations")
@@ -154,8 +150,7 @@ class ReservationControllerTest {
         var req = new ReservationRequestModel(
                 subject.getRoomId(), subject.getTitle(),
                 subject.getSince(), subject.getUntil(), null);
-        when(reservationService.makeOwnReservation(
-                subject.getRoomId(), subject.getTitle(), subject.getSince(), subject.getUntil())
+        when(reservationService.makeOwnReservation(req)
         ).thenThrow(new EntityNotFound("Room"));
 
         mockMvc.perform(post("/reservations")
@@ -239,13 +234,12 @@ class ReservationControllerTest {
     @Test
     void editReservationSuccessfully() throws Exception {
         final var id = 2L;
-
+        var req = new ReservationRequestModel(
+                subject.getRoomId(), subject.getTitle() + "!",
+                subject.getSince(), subject.getUntil(), null);
         // arrange
         doNothing().when(reservationService).editReservation(
-            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil());
-        var req = new ReservationRequestModel(
-            subject.getRoomId(), subject.getTitle() + "!",
-            subject.getSince(), subject.getUntil(), null);
+            id, req);
 
         // action
         mockMvc.perform(post("/reservations/" + id)
@@ -256,7 +250,7 @@ class ReservationControllerTest {
 
         // assert
         verify(reservationService, times(1)).editReservation(
-            id, subject.getTitle() + "!", subject.getSince(), subject.getUntil());
+            id, req);
     }
 
     @Test
@@ -269,13 +263,13 @@ class ReservationControllerTest {
     void changeReservationInvalidData() throws ApiException, EntityNotFound, InvalidData {
         ReservationController sut = new ReservationController(reservationService);
         final var id = 2L;
-
-        // arrange
-        doThrow(new EntityNotFound("Room")).when(reservationService).editReservation(
-                id, subject.getTitle(), subject.getSince(), subject.getUntil());
         var req = new ReservationRequestModel(
                 subject.getRoomId(), subject.getTitle(),
                 subject.getSince(), subject.getUntil(), null);
+
+        // arrange
+        doThrow(new EntityNotFound("Room")).when(reservationService).editReservation(
+                id, req);
 
         // assert
         assertThrows(ResponseStatusException.class, () -> sut.changeReservation(id, req));

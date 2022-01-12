@@ -156,6 +156,10 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
         return Objects.hash(date, time);
     }
 
+    public Timestamp toTimestamp() {
+        return Timestamp.valueOf(this.toLocal());
+    }
+
     /**
      * JSON serializer for {@link ApiDateTime}.
      */

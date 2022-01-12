@@ -57,8 +57,7 @@ public class ReservationController {
 
         if (req.getForUser() != null) {
             try {
-                long reservationId = reservationService.makeUserReservation(req.getRoomId(),
-                        req.getForUser(), req.getTitle(), req.getSince(), req.getUntil());
+                long reservationId = reservationService.makeUserReservation(req);
                 return new IdModel<>(reservationId);
             } catch (ServiceException ex) {
                 throw ex.toResponseException();
@@ -68,8 +67,7 @@ public class ReservationController {
         }
 
         try {
-            long reservationId = reservationService.makeOwnReservation(req.getRoomId(),
-                    req.getTitle(), req.getSince(), req.getUntil());
+            long reservationId = reservationService.makeOwnReservation(req);
             return new IdModel<>(reservationId);
         } catch (ServiceException ex) {
             throw ex.toResponseException();
@@ -129,8 +127,7 @@ public class ReservationController {
         }
 
         try {
-            reservationService.editReservation(id, req.getTitle(),
-                    req.getSince(), req.getUntil());
+            reservationService.editReservation(id, req);
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }

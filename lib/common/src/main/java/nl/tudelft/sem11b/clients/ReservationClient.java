@@ -29,9 +29,8 @@ public class ReservationClient implements ReservationService {
     }
 
     @Override
-    public long makeOwnReservation(long roomId, String title, ApiDateTime since, ApiDateTime until)
+    public long makeOwnReservation(ReservationRequestModel req)
             throws ApiException, EntityNotFound {
-        var req = new ReservationRequestModel(roomId, title, since, until, null);
 
         var res = api.post("/reservations", req,
                 new TypeReference<>() {
@@ -47,10 +46,8 @@ public class ReservationClient implements ReservationService {
     }
 
     @Override
-    public long makeUserReservation(long roomId, Long forUser, String title,
-                                    ApiDateTime since, ApiDateTime until)
+    public long makeUserReservation(ReservationRequestModel req)
             throws ApiException, EntityNotFound {
-        var req = new ReservationRequestModel(roomId, title, since, until, forUser);
 
         var res = api.post("/reservations", req,
                 new TypeReference<>() {
@@ -74,9 +71,10 @@ public class ReservationClient implements ReservationService {
     }
 
     @Override
-    public void editReservation(long reservationId, String title, ApiDateTime since,
-                                ApiDateTime until) throws ApiException {
-        var model = new ReservationModel(reservationId, since, until, title);
+    public void editReservation(long reservationId, ReservationRequestModel request)
+            throws ApiException {
+        var model = new ReservationModel(reservationId, request.getSince(),
+                request.getUntil(), request.getTitle());
         api.post("/reservations/" + reservationId, model, new TypeReference<>() {
         }).unwrap();
     }

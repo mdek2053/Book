@@ -1,5 +1,6 @@
 package nl.tudelft.sem11b.data.models;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
@@ -142,5 +143,17 @@ public class ReservationRequestModel {
                 + ", until=" + until
                 + ", forUser=" + forUser
                 + '}';
+    }
+
+    public void setTimestampSince(Timestamp since) {
+        this.since = ApiDateTime.from(since);
+    }
+
+    public void setTimestampUntil(Timestamp until) {
+        this.until = ApiDateTime.from(until);
+    }
+
+    public boolean checkTitle() {
+        return (title != null && !title.isBlank());
     }
 }

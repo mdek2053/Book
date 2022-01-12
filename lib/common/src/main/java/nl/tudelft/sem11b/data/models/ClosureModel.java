@@ -3,6 +3,8 @@ package nl.tudelft.sem11b.data.models;
 import java.util.Objects;
 
 import nl.tudelft.sem11b.data.ApiDate;
+import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 
 /**
  * Represents a closure of a room.
@@ -103,5 +105,22 @@ public class ClosureModel {
         result = 31 * result + (since != null ? since.hashCode() : 0);
         result = 31 * result + (until != null ? until.hashCode() : 0);
         return result;
+    }
+
+    /**
+     * Verifyes if the closure is still ongoing.
+     * @param since The time to verify
+     * @throws InvalidData when closure is still ongoing.
+     */
+    public void verify(ApiDateTime since) throws InvalidData {
+        if (until == null || until.compareTo(since.getDate()) >= 0) {
+            if (until != null) {
+                throw new InvalidData(
+                        "Room is under maintenance (until " + until + ")");
+            }
+
+            throw new InvalidData("Room is under maintenance");
+        }
+
     }
 }

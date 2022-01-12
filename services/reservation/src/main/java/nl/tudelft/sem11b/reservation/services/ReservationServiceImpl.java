@@ -1,32 +1,17 @@
 package nl.tudelft.sem11b.reservation.services;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import nl.tudelft.sem11b.data.ApiDateTime;
-import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
-import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
-import nl.tudelft.sem11b.data.models.RoomModel;
-import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
-import nl.tudelft.sem11b.services.GroupService;
 import nl.tudelft.sem11b.services.ReservationService;
-import nl.tudelft.sem11b.services.RoomsService;
-import nl.tudelft.sem11b.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -35,240 +20,103 @@ import org.springframework.stereotype.Service;
 public class ReservationServiceImpl implements ReservationService {
 
     private final transient ReservationRepository reservations;
-    private final transient RoomsService rooms;
-    private final transient UserService users;
-    private final transient GroupService groups;
-    private final transient String serviceName = "Reservation";
+    private final transient RoomValidationService validation;
+    private final transient UserValidationService userValidation;
 
     /**
      * Instantiates the {@link ReservationServiceImpl} class.
      *
      * @param reservations Reservations repository
-     * @param rooms        Rooms handling service
-     * @param users        Users handling service
-     * @param groups       Groups handling service
      */
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservations, RoomsService rooms,
-                                  UserService users, GroupService groups) {
+    public ReservationServiceImpl(ReservationRepository reservations,
+                                  RoomValidationService validation,
+                                  UserValidationService userValidation) {
         this.reservations = reservations;
-        this.rooms = rooms;
-        this.users = users;
-        this.groups = groups;
+        this.validation = validation;
+        this.userValidation = userValidation;
     }
 
     /**
      * Creates a new reservation on behalf of the user with the given ID.
      *
-     * @param roomId ID of the room where the reservation takes place
-     * @param userId ID of the user making the reservation
-     * @param title  Title of the reservation
-     * @param since  Starting date and time of the reservation
-     * @param until  Ending date and time of the reservation
+     * @param request ReservationRequestModel with reservation data
      * @return ID of the newly created reservation
      * @throws ApiException   Thrown when a remote API encountered an error
      * @throws EntityNotFound Thrown when the given room was not found
      * @throws InvalidData    Thrown when the given data is invalid
      */
-    public long makeReservation(long roomId, long userId,
-                                String title, ApiDateTime since, ApiDateTime until)
+    public long makeReservation(ReservationRequestModel request)
             throws ApiException, EntityNotFound, InvalidData {
 
-        // fetch room information (includes building information)
-        var roomOpt = rooms.getRoom(roomId);
-        if (roomOpt.isEmpty()) {
-            throw new EntityNotFound("Room");
-        }
-
-        var room = roomOpt.get();
-
         // must have non-empty title
-        if (title == null || title.isBlank()) {
+        if (!request.checkTitle()) {
             throw new InvalidData("Reservation must have title");
         }
 
-        validateTime(since, until);
-        validateRoom(room, since, until);
+        validation.validateTime(request);
+        validation.validateRoom(request.getRoomId(), request);
 
-        var sinceTs = Timestamp.valueOf(since.toLocal());
-        var untilTs = Timestamp.valueOf(until.toLocal());
+        userValidation.validateUserConflicts(request);
+        validation.validateRoomConflicts(request.getRoomId(), request);
 
-        validateConflicts(userId, roomId, sinceTs, untilTs);
+        Reservation reservation = Reservation.createReservation(request);
 
-        var reservation = new Reservation(roomId, userId, title, sinceTs, untilTs);
         return reservations.save(reservation).getId();
     }
 
-    private void validateTime(ApiDateTime since, ApiDateTime until) throws InvalidData {
-        var now = LocalDateTime.now();
-        var sinceJava = since.toLocal();
-        var untilJava = until.toLocal();
-
-        // check if since comes before until
-        if (sinceJava.compareTo(untilJava) >= 0) {
-            throw new InvalidData("Reservation ends before it starts");
-        }
-
-        // check if the reservation is not in the past
-        if (sinceJava.compareTo(now) < 0) {
-            throw new InvalidData("Reservation is in the past");
-        }
-
-        // check if the reservation is not too far in the future
-        int maxDaysInFuture = 14;
-        if (now.until(sinceJava, ChronoUnit.DAYS) >= maxDaysInFuture) {
-            throw new InvalidData("Reservation is more than two weeks away");
-        }
-
-        // check if the reservation spans multiple days
-        if (!since.getDate().equals(until.getDate())) {
-            throw new InvalidData("Reservation spans multiple days");
-        }
-    }
-
-    private void validateRoom(RoomModel room, ApiDateTime since, ApiDateTime until)
-            throws InvalidData {
-        if (room == null) {
-            throw new InvalidData("No room specified");
-        }
-        // check if in business hours
-        if (room.getBuilding().getOpen().compareTo(since.getTime()) > 0
-                || room.getBuilding().getClose().compareTo(until.getTime()) < 0) {
-            throw new InvalidData("Reservation not between room opening hours");
-        }
-
-        // room should also NOT be under maintenance
-        var closure = room.getClosure();
-        if (closure == null) {
-            return; // not under closure
-        }
-
-        // check if closure is still ongoing
-        if (closure.getUntil() == null || closure.getUntil().compareTo(since.getDate()) >= 0) {
-            if (closure.getUntil() != null) {
-                throw new InvalidData(
-                        "Room is under maintenance (until " + closure.getUntil() + ")");
-            }
-
-            throw new InvalidData("Room is under maintenance");
-        }
-
-        // closure has already ended
-    }
-
-    private void validateConflicts(long userId, long roomId, Timestamp since, Timestamp until)
-            throws InvalidData {
-        // check if it doesn't conflict with user's other reservations
-        if (reservations.hasUserConflict(userId, since, until)) {
-            throw new InvalidData("Reservation conflicts with user's existing reservations");
-        }
-
-        // check if it doesn't conflict with room's other reservations
-        if (reservations.hasRoomConflict(roomId, since, until)) {
-            throw new InvalidData("Reservation conflicts with room's existing reservations");
-        }
-    }
-
-    private void validateRoomConflicts(long roomId, Timestamp since, Timestamp until)
-            throws InvalidData {
-        if (reservations.hasRoomConflict(roomId, since, until)) {
-            throw new InvalidData("Reservation conflicts with room's existing reservations");
-        }
-    }
-
     @Override
-    public long makeOwnReservation(long roomId, String title,
-                                   ApiDateTime since, ApiDateTime until)
+    public long makeOwnReservation(ReservationRequestModel request)
             throws ApiException, EntityNotFound, InvalidData {
-        return makeReservation(roomId, users.currentUser().getId(), title, since, until);
+        request.setForUser(userValidation.currentUserId());
+        return makeReservation(request);
     }
 
     @Override
-    public long makeUserReservation(long roomId, Long getForUser,
-                                    String title, ApiDateTime since, ApiDateTime until)
+    public long makeUserReservation(ReservationRequestModel request)
             throws ApiException, InvalidGroupCredentialsException, InvalidData,
             EntityNotFound {
-        if (verifySecretary(getForUser) || users.currentUser().inRole(Roles.Admin)) {
-            return makeReservation(roomId, getForUser, title, since, until);
+        if (userValidation.verifySecretary(request.getForUser())
+                || userValidation.currentUserIsAdmin()) {
+            return makeReservation(request);
         }
         throw new InvalidGroupCredentialsException("You are not a secretary of the provided user");
     }
 
-    /**
-     * Verifies whether the current user is allowed to make a reservation for the provided user.
-     *
-     * @param getForUser Id of the user for whom the reservation will be made
-     * @return a boolean value whether the current user has the correct rights
-     * @throws ApiException Thrown when a remote API encountered an error
-     */
-    private boolean verifySecretary(Long getForUser) throws ApiException {
-        UserModel user = users.currentUser();
-        List<GroupModel> groupList =
-                groups.getGroupsOfSecretary(user.getId());
-        for (GroupModel groupModel : groupList) {
-            if (groupModel.getGroupMembers().contains(getForUser)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
-    public PageData<ReservationModel> inspectOwnReservation(PageIndex page) throws ApiException {
+    public PageData<ReservationModel> inspectOwnReservation(PageIndex page)
+            throws ApiException {
         var data =
-                reservations.findByUserId(users.currentUser().getId(), page.getPage(Sort.by("id")));
+                reservations.findByUserId(userValidation.currentUserId(),
+                        page.getPage(Sort.by("id")));
         return new PageData<>(data.map(Reservation::toModel));
     }
 
     @Override
-    public void editReservation(long reservationId, String title, ApiDateTime since,
-                                ApiDateTime until)
+    public void editReservation(long reservationId, ReservationRequestModel request)
             throws ApiException, EntityNotFound, InvalidData {
-        var reservationOpt = reservations.findById(reservationId);
 
-        if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound(serviceName);
-        }
-        var reservation = reservationOpt.get();
+        Reservation reservation = checkReservationExists(reservationId);
+        userValidation.userCanModifyReservation(reservation);
 
-        if (since == null) {
-            since = ApiDateTime.from(reservation.getSince());
-        }
+        reservation.fillOutTime(request);
 
-        if (until == null) {
-            until = ApiDateTime.from(reservation.getUntil());
-        }
+        validation.validateTime(request);
+        validation.validateRoom(reservation.getRoomId(), request);
 
-        var user = users.currentUser();
-        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)
-                && !verifySecretary(reservation.getUserId())) {
-            throw new ApiException(serviceName,
-                "User not authorized to change given reservation.");
-        }
+        userValidation.validateUserConflicts(request);
+        validation.validateRoomConflicts(reservation.getRoomId(), request);
 
-        var roomOpt = rooms.getRoom(reservation.getRoomId());
-        if (roomOpt.isEmpty()) {
-            throw new EntityNotFound("Room");
-        }
-        var room = roomOpt.get();
 
-        validateTime(since, until);
-        validateRoom(room, since, until);
-
-        var sinceTs = Timestamp.valueOf(since.toLocal());
-        var untilTs = Timestamp.valueOf(until.toLocal());
-
-        validateConflicts(user.getId(), reservation.getRoomId(), sinceTs, untilTs);
-
-        if (title != null) {
-            if (title.isBlank()) {
+        if (request.getTitle() != null) {
+            if (request.getTitle().isBlank()) {
                 throw new InvalidData("Reservation must have a title");
             }
-            reservation.setTitle(title);
+            reservation.setTitle(request.getTitle());
         }
 
-        reservation.setSince(sinceTs);
-        reservation.setUntil(untilTs);
+        reservation.setTime(request);
 
         reservations.save(reservation);
     }
@@ -284,20 +132,8 @@ public class ReservationServiceImpl implements ReservationService {
      */
     @Override
     public void deleteReservation(long reservationId) throws EntityNotFound, ApiException {
-        var reservationOpt = reservations.findById(reservationId);
-
-        if (reservationOpt.isEmpty()) {
-            throw new EntityNotFound(serviceName);
-        }
-        var reservation = reservationOpt.get();
-
-        var user = users.currentUser();
-        if (!Objects.equals(user.getId(), reservation.getUserId()) && !user.inRole(Roles.Admin)
-                && !verifySecretary(reservation.getUserId())) {
-            throw new ApiException(serviceName,
-                    "User not authorized to change given reservation.");
-        }
-
+        Reservation reservation = checkReservationExists(reservationId);
+        userValidation.userCanModifyReservation(reservation);
         reservations.delete(reservation);
     }
 
@@ -307,21 +143,24 @@ public class ReservationServiceImpl implements ReservationService {
             return false;
         }
         try {
-            Optional<RoomModel> roomModelOptional = rooms.getRoom(roomModelId);
 
-            if (roomModelOptional.isPresent()) {
-                validateTime(requestModel.getSince(), requestModel.getUntil());
-                validateRoom(roomModelOptional.get(), requestModel.getSince(),
-                        requestModel.getUntil());
-                validateRoomConflicts(roomModelId,
-                        Timestamp.valueOf(requestModel.getSince().toLocal()),
-                        Timestamp.valueOf(requestModel.getUntil().toLocal()));
-                return true;
-            }
+            validation.validateRoomConflicts(roomModelId, requestModel);
+            validation.validateTime(requestModel);
+            validation.validateRoom(roomModelId, requestModel);
+            return true;
 
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }
-        return false;
+    }
+
+    private Reservation checkReservationExists(Long reservationId)
+            throws EntityNotFound {
+        var reservationOpt = reservations.findById(reservationId);
+        if (reservationOpt.isEmpty()) {
+            throw new EntityNotFound("Reservation");
+        }
+
+        return reservationOpt.get();
     }
 }

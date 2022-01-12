@@ -8,7 +8,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 
 @Entity
 public class Reservation {
@@ -34,6 +36,18 @@ public class Reservation {
 
     @Column(name = "cancel")
     private String cancelReason;
+
+    /**
+     * Creates reservation object out of ReservationRequestModel.
+     * @param request the request to be converted into Reservation.
+     * @return Reservation object.
+     */
+    public static Reservation createReservation(ReservationRequestModel request) {
+        return new Reservation(request.getRoomId(),
+                request.getForUser(), request.getTitle(),
+                Timestamp.valueOf(request.getSince().toLocal()),
+                Timestamp.valueOf(request.getUntil().toLocal()));
+    }
 
     public long getId() {
         return id;
@@ -192,5 +206,27 @@ public class Reservation {
 
     public void setUntil(Timestamp until) {
         this.until = until;
+    }
+
+    /**
+     * Sets time of this reservation to be the same as request time.
+     * @param request the request with time.
+     */
+    public void setTime(ReservationRequestModel request) {
+        this.since = Timestamp.valueOf(request.getSince().toLocal());
+        this.until = Timestamp.valueOf(request.getUntil().toLocal());
+    }
+
+    /**
+     * Fills out the time of provided request if the filed are empty.
+     * @param request ReservationRequestModel to be filled out.
+     */
+    public void fillOutTime(ReservationRequestModel request) {
+        if (request.getSince() == null) {
+            request.setTimestampSince(since);
+        }
+        if (request.getUntil() == null) {
+            request.setTimestampUntil(until);
+        }
     }
 }

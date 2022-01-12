@@ -15,6 +15,7 @@ import java.util.Optional;
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.reservation.services.ReservationServiceImpl;
 import nl.tudelft.sem11b.services.RoomsService;
 import nl.tudelft.sem11b.services.UserService;
@@ -47,20 +48,23 @@ class ReservationServiceImplDatabaseTest {
         when(users.currentUser()).thenReturn(USER_A);
 
         // one reservation between 13:30 and 14:00
-        service.makeOwnReservation(ROOM_A.getId(), "Reservation # 1",
-            ApiDate.tomorrow().at(13, 30), ApiDate.tomorrow().at(14, 0));
+        service.makeOwnReservation(new ReservationRequestModel(ROOM_A.getId(), "Reservation # 1",
+            ApiDate.tomorrow().at(13, 30), ApiDate.tomorrow().at(14, 0), null));
 
         // another between 14:00 and 15:00, no conflict
-        service.makeOwnReservation(ROOM_B.getId(), "Reservation # 2",
-            ApiDate.tomorrow().at(14, 0), ApiDate.tomorrow().at(15, 0));
+        service.makeOwnReservation(new ReservationRequestModel(ROOM_B.getId(), "Reservation # 2",
+            ApiDate.tomorrow().at(14, 0), ApiDate.tomorrow().at(15, 0), null));
 
         // another between 14:59 and 15:15, this one conflicts with reservation #2
-        assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_B.getId(),
-            "Conflict", ApiDate.tomorrow().at(14, 59), ApiDate.tomorrow().at(15, 15)));
+        assertThrows(InvalidData.class, () -> service.makeOwnReservation(
+                new ReservationRequestModel(ROOM_B.getId(),
+            "Conflict", ApiDate.tomorrow().at(14, 59), ApiDate.tomorrow().at(15, 15), null)));
 
         // between 14:00 and 15:00, should conflict with #2 again
-        assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_A.getId(),
-            "Conflict", ApiDate.tomorrow().at(14, 0), ApiDate.tomorrow().at(15, 0)));
+        assertThrows(InvalidData.class, () -> service.makeOwnReservation(
+                new ReservationRequestModel(ROOM_A.getId(),
+            "Conflict", ApiDate.tomorrow().at(14, 0),
+                ApiDate.tomorrow().at(15, 0), null)));
     }
 
     @Test
@@ -70,22 +74,26 @@ class ReservationServiceImplDatabaseTest {
 
         // arrange
         when(users.currentUser()).thenReturn(USER_A);
-        service.makeOwnReservation(ROOM_A.getId(), "Reservation # 1",
-            ApiDate.tomorrow().at(13, 0), ApiDate.tomorrow().at(15, 0));
+        service.makeOwnReservation(new ReservationRequestModel(ROOM_A.getId(), "Reservation # 1",
+            ApiDate.tomorrow().at(13, 0), ApiDate.tomorrow().at(15, 0), null));
 
         when(users.currentUser()).thenReturn(USER_B);
-        service.makeOwnReservation(ROOM_B.getId(), "Reservation # 2",
-            ApiDate.tomorrow().at(14, 0), ApiDate.tomorrow().at(16, 0));
+        service.makeOwnReservation(new ReservationRequestModel(ROOM_B.getId(), "Reservation # 2",
+            ApiDate.tomorrow().at(14, 0), ApiDate.tomorrow().at(16, 0), null));
 
 
         // action + assert
         when(users.currentUser()).thenReturn(USER_A);
-        assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_B.getId(),
-            "Conflict B # 1", ApiDate.tomorrow().at(15, 0), ApiDate.tomorrow().at(16, 0)));
+        assertThrows(InvalidData.class, () -> service.makeOwnReservation(
+                new ReservationRequestModel(ROOM_B.getId(), "Conflict B # 1",
+                ApiDate.tomorrow().at(15, 0),
+                ApiDate.tomorrow().at(16, 0), null)));
 
         when(users.currentUser()).thenReturn(USER_B);
-        assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_A.getId(),
-            "Conflict B # 1", ApiDate.tomorrow().at(13, 30), ApiDate.tomorrow().at(14, 30)));
+        assertThrows(InvalidData.class, () -> service.makeOwnReservation(
+                new ReservationRequestModel(ROOM_A.getId(),
+            "Conflict B # 1", ApiDate.tomorrow().at(13, 30),
+                ApiDate.tomorrow().at(14, 30), null)));
     }
 
 }
