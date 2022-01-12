@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
@@ -67,16 +68,16 @@ import org.springframework.web.server.ResponseStatusException;
 class ReservationServiceImplTest {
     private final ReservationModel reservationModel = new ReservationModel(
             ROOM_A.getId(),
-            ApiDate.tomorrow().at(new ApiTime(14, 0)),
-            ApiDate.tomorrow().at(new ApiTime(18, 0)),
+            ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0),
+            ApiDateUtils.at(ApiDateUtils.tomorrow(), 18, 0),
             "Meeting"
     );
 
     private final ReservationRequestModel requestModel = new ReservationRequestModel(
             ROOM_A.getId(),
             "Meeting2",
-            ApiDate.tomorrow().at(new ApiTime(13, 30)),
-            ApiDate.tomorrow().at(new ApiTime(15, 30)),
+            ApiDateUtils.at(ApiDateUtils.tomorrow(), 13, 30),
+            ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 30),
             USER_A.getId()
     );
 
@@ -165,8 +166,8 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                ApiDate.yesterday().at(reservationModel.getSince().getTime()),
-                ApiDate.yesterday().at(reservationModel.getUntil().getTime())));
+                new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getSince().getTime()),
+                new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getUntil().getTime())));
     }
 
     @Test
@@ -178,8 +179,8 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                ApiDate.tomorrow().after(14).at(reservationModel.getSince().getTime()),
-                ApiDate.tomorrow().after(14).at(reservationModel.getUntil().getTime())));
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14), reservationModel.getSince().getTime()),
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14), reservationModel.getUntil().getTime())));
     }
 
     @Test
@@ -191,8 +192,8 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                ApiDate.tomorrow().at(reservationModel.getSince().getTime()),
-                ApiDate.tomorrow().after().at(reservationModel.getUntil().getTime())));
+                new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getSince().getTime()),
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.yesterday()), reservationModel.getSince().getTime())));
     }
 
     @Test
@@ -204,18 +205,18 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                reservationModel.getSince().getDate().at(ApiTime.MINIMUM),
-                reservationModel.getUntil().getDate().at(ApiTime.MAXIMUM)));
+                new ApiDateTime(reservationModel.getSince().getDate(), ApiTime.MINIMUM),
+                new ApiDateTime(reservationModel.getUntil().getDate(), ApiTime.MAXIMUM)));
 
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                reservationModel.getSince().getDate().at(ApiTime.MINIMUM),
-                reservationModel.getUntil().getDate().at(ROOM_A.getBuilding().getOpen())));
+                new ApiDateTime(reservationModel.getSince().getDate(), ApiTime.MINIMUM),
+                new ApiDateTime(reservationModel.getUntil().getDate(), ROOM_A.getBuilding().getOpen())));
 
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                reservationModel.getSince().getDate().at(ROOM_A.getBuilding().getClose()),
-                reservationModel.getUntil().getDate().at(ApiTime.MAXIMUM)));
+                new ApiDateTime(reservationModel.getSince().getDate(), ROOM_A.getBuilding().getClose()),
+                new ApiDateTime(reservationModel.getUntil().getDate(), ApiTime.MAXIMUM)));
     }
 
     @Test
@@ -224,7 +225,7 @@ class ReservationServiceImplTest {
                 new RoomModel(ROOM_A.getId(), ROOM_A.getSuffix(), ROOM_A.getName(),
                         ROOM_A.getCapacity(), ROOM_A.getBuilding(),
                         ROOM_A.getEquipment().toArray(EquipmentModel[]::new),
-                        new ClosureModel("Maintenance", ApiDate.yesterday(),
+                        new ClosureModel("Maintenance", ApiDateUtils.yesterday(),
                                 reservationModel.getSince().getDate()));
 
         // arrange
@@ -614,8 +615,8 @@ class ReservationServiceImplTest {
         when(users.currentUser()).thenReturn(USER_A);
         assertThrows(ResponseStatusException.class, () -> service.checkAvailability(ROOM_A.getId(),
                 new ReservationRequestModel(requestModel.getRoomId(), requestModel.getTitle(),
-                        ApiDate.yesterday().at(requestModel.getSince().getTime()),
-                        ApiDate.yesterday().at(requestModel.getUntil().getTime()),
+                        new ApiDateTime(ApiDateUtils.yesterday(), requestModel.getSince().getTime()),
+                        new ApiDateTime(ApiDateUtils.yesterday(), requestModel.getUntil().getTime()),
                         requestModel.getForUser()
                 )));
     }

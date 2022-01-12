@@ -106,7 +106,7 @@ public class RoomTest {
 
     @Test
     void equalsClosureNotEqualTest() {
-        room3.setClosure(new Closure("different reason", new ApiDate(2022, 1)));
+        room3.setClosure(new Closure("different reason", new ApiDate(2022, 1, 1)));
 
         assertFalse(room2.equals(room3));
     }

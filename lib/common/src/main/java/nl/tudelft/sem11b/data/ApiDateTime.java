@@ -109,7 +109,7 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
         }
 
         return new ApiDateTime(
-            ApiDate.parse(str.substring(0, idx).stripLeading()),
+            ApiDateUtils.parse(str.substring(0, idx).stripLeading()),
             ApiTime.parse(str.substring(idx + 1).stripTrailing())
         );
     }
@@ -131,7 +131,7 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
 
     @Override
     public int compareTo(ApiDateTime other) {
-        var cmp = date.compareTo(other.date);
+        var cmp = new ApiDateUtils().compare(date, other.date);
         if (cmp != 0) {
             return cmp;
         }

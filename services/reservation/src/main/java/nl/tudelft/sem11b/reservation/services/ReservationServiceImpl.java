@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
@@ -144,7 +145,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // check if closure is still ongoing
-        if (closure.getUntil() == null || closure.getUntil().compareTo(since.getDate()) >= 0) {
+        if (closure.getUntil() == null || new ApiDateUtils().compare(closure.getUntil(), since.getDate()) >= 0) {
             if (closure.getUntil() != null) {
                 throw new InvalidData(
                         "Room is under maintenance (until " + closure.getUntil() + ")");
