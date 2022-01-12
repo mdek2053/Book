@@ -82,28 +82,6 @@ public class GroupServiceImpl implements GroupService {
     }
 
     /**
-     * Retrieves a list of groups of which the current user is part of as member or secretary.
-     *
-     * @param id of the user of whom we want to know which group he/she is part of
-     * @return a list of groups of which the provided user is a member or secretary
-     * @throws InvalidData when no groups were found in the system or
-     *                     the user is not part of a group
-     */
-    public List<GroupModel> getGroupsOfCurrentUser(Long id) throws InvalidData {
-        if (id == null) {
-            throw new InvalidData("Invalid user");
-        }
-        List<GroupModel> groupList = new ArrayList<>();
-        groupList.addAll(getGroupsOfUser(id));
-        groupList.addAll(getGroupsOfSecretary(id));
-        if (groupList.isEmpty()) {
-            throw new InvalidData("No groups found in the system or "
-                    + "the user is not part of any group");
-        }
-        return groupList;
-    }
-
-    /**
      * Adds a new group to the system after checking the validity of the input.
      *
      * @param name         of type String, which contains the name of the group.
@@ -155,7 +133,6 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
-
     /**
      * Gets the info of a specific group.
      *
@@ -190,12 +167,18 @@ public class GroupServiceImpl implements GroupService {
      * Tries to add new members to an existing group.
      *
      * @param users of type List containing new members.
-     * @param group of type GroupModel containing the group where we want to add the new members to.
+     * @param groupId of type Long containing the groupId of the group
+     *                where we want to add the new members to.
      * @throws InvalidData when at least one provided user
      *                     is not specified in the system.
      */
-    public void addGroupMembers(List<Long> users, GroupModel group)
+    public void addGroupMembers(List<Long> users, Long groupId)
             throws InvalidData {
+        Optional<Group> optGroup = groupRepository.findGroupByGroupId(groupId);
+        if (optGroup.isEmpty()) {
+            throw new InvalidData("No group found with this id");
+        }
+        GroupModel group = optGroup.get().createGroupModel();
         verifyUsers(users);
         group.addToGroupMembers(users);
     }

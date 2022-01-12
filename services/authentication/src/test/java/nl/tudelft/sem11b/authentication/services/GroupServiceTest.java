@@ -14,7 +14,6 @@ import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
-import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.GroupModel;
@@ -155,14 +154,5 @@ class GroupServiceTest {
         when(groupRepository.findGroupsBySecretary(user1.getId())).thenReturn(Optional.of(groups));
 
         assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1.getId()));
-    }
-
-    @Test
-    void getGroupsOfUserAndSecretary() throws ApiException, InvalidData {
-        when(userService.currentUser()).thenReturn(userModel2);
-        when(groupRepository.findAll()).thenReturn(groups2);
-        when(userRepository.findUserById(user2.getId())).thenReturn(Optional.of(user2));
-        when(groupRepository.findGroupsBySecretary(user2.getId())).thenReturn(Optional.of(groups2));
-        assertEquals(groupModels2, groupService.getGroupsOfCurrentUser(userModel2.getId()));
     }
 }

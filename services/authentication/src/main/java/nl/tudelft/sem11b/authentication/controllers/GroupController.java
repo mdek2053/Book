@@ -49,12 +49,6 @@ public class GroupController {
         }
     }
 
-    @GetMapping(value = "/mine")
-    public List<GroupModel> getGroupsOfCurrentUser()
-            throws InvalidData, ApiException {
-        return groupService.getGroupsOfCurrentUser(userService.currentUser().getId());
-    }
-
     @GetMapping(value = "/user/{id}")
     public List<GroupModel> getGroupsOfUser(@PathVariable Long id) {
         return groupService.getGroupsOfUser(id);
@@ -75,13 +69,14 @@ public class GroupController {
      * Tries to add new groupMembers to a group.
      *
      * @param users of type List which contains the new groupMembers.
-     * @param group of type Group containing the group which the users need to be added to.
+     * @param groupId of type Long containing the groupId of the group
+     *                which the users need to be added to.
      * @throws InvalidData when the group or one of the new group members is not valid.
      */
     @PreAuthorize("hasRole('Admin')")
-    @PostMapping(value = "/members")
-    public void addGroupMember(@RequestBody List<Long> users, @RequestBody GroupModel group)
+    @PostMapping(value = "/members/{groupId}")
+    public void addGroupMember(@RequestBody List<Long> users, @PathVariable Long groupId)
             throws InvalidData {
-        groupService.addGroupMembers(users, group);
+        groupService.addGroupMembers(users, groupId);
     }
 }
