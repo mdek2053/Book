@@ -49,19 +49,23 @@ class ReservationServiceImplDatabaseTest {
 
         // one reservation between 13:30 and 14:00
         service.makeOwnReservation(ROOM_A.getId(), "Reservation # 1",
-                ApiDateUtils.at(ApiDateUtils.tomorrow(), 13, 30), ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0));
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 13, 30),
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0));
 
         // another between 14:00 and 15:00, no conflict
         service.makeOwnReservation(ROOM_B.getId(), "Reservation # 2",
-                ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0), ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 0));
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0),
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 0));
 
         // another between 14:59 and 15:15, this one conflicts with reservation #2
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_B.getId(),
-            "Conflict", ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 59), ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 15)));
+            "Conflict", ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 59),
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 15)));
 
         // between 14:00 and 15:00, should conflict with #2 again
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_A.getId(),
-            "Conflict", ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0), ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 0)));
+            "Conflict", ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0),
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 0)));
     }
 
     @Test
@@ -72,21 +76,25 @@ class ReservationServiceImplDatabaseTest {
         // arrange
         when(users.currentUser()).thenReturn(USER_A);
         service.makeOwnReservation(ROOM_A.getId(), "Reservation # 1",
-                ApiDateUtils.at(ApiDateUtils.tomorrow(), 13, 0), ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 0));
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 13, 0),
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 0));
 
         when(users.currentUser()).thenReturn(USER_B);
         service.makeOwnReservation(ROOM_B.getId(), "Reservation # 2",
-                ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0), ApiDateUtils.at(ApiDateUtils.tomorrow(), 16, 0));
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0),
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 16, 0));
 
 
         // action + assert
         when(users.currentUser()).thenReturn(USER_A);
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_B.getId(),
-            "Conflict B # 1",ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 0), ApiDateUtils.at(ApiDateUtils.tomorrow(), 16, 0)));
+            "Conflict B # 1",ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 0),
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 16, 0)));
 
         when(users.currentUser()).thenReturn(USER_B);
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(ROOM_A.getId(),
-            "Conflict B # 1", ApiDateUtils.at(ApiDateUtils.tomorrow(), 13, 30), ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 30)));
+            "Conflict B # 1", ApiDateUtils.at(ApiDateUtils.tomorrow(), 13, 30),
+                ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 30)));
     }
 
 }

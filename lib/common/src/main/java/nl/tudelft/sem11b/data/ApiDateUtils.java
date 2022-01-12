@@ -15,10 +15,12 @@ public class ApiDateUtils {
         int day = date.getDay();
         int month = date.getMonth();
         int year = date.getYear();
-        if(day > 1) {
+        //pmd wanted this, not me
+        int first = 1;
+        if (day > first) {
             return new ApiDate(year, month, day - 1);
         }
-        if(month > 1) {
+        if (month > first) {
             return new ApiDate(year, month - 1, date.getSchema()[month - 1]);
         }
         return new ApiDate(year - 1, 12, 31);
@@ -51,8 +53,9 @@ public class ApiDateUtils {
         int month = date.getMonth();
         int year = date.getYear();
 
+        int last = 12;
         if (day == date.getSchema()[month - 1]) {
-            if (month == 12) {
+            if (month == last) {
                 return new ApiDate(year + 1, 1, 1);
             }
             return new ApiDate(year, month + 1, 1);
@@ -77,6 +80,12 @@ public class ApiDateUtils {
         return day;
     }
 
+    /**
+     * Compares two ApiDates.
+     * @param date1 The first ApiDate
+     * @param date2 The second ApiDate
+     * @return an integer, depending on the relation between date1 and date2
+     */
     public static int compare(ApiDate date1, ApiDate date2) {
 
         if (date1.getYear() != date2.getYear()) {
@@ -135,7 +144,7 @@ public class ApiDateUtils {
     }
 
     /**
-     * Gets the date after today
+     * Gets the date after today.
      *
      * @return Tomorrow's date
      */

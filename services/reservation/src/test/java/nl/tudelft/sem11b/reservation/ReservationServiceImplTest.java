@@ -179,8 +179,10 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14), reservationModel.getSince().getTime()),
-                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14), reservationModel.getUntil().getTime())));
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14),
+                        reservationModel.getSince().getTime()),
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14),
+                        reservationModel.getUntil().getTime())));
     }
 
     @Test
@@ -192,8 +194,10 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getSince().getTime()),
-                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.yesterday()), reservationModel.getSince().getTime())));
+                new ApiDateTime(ApiDateUtils.yesterday(),
+                        reservationModel.getSince().getTime()),
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.yesterday()),
+                        reservationModel.getSince().getTime())));
     }
 
     @Test
@@ -205,18 +209,24 @@ class ReservationServiceImplTest {
         // action + assert
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                new ApiDateTime(reservationModel.getSince().getDate(), ApiTime.MINIMUM),
-                new ApiDateTime(reservationModel.getUntil().getDate(), ApiTime.MAXIMUM)));
+                new ApiDateTime(reservationModel.getSince().getDate(),
+                        ApiTime.MINIMUM),
+                new ApiDateTime(reservationModel.getUntil().getDate(),
+                        ApiTime.MAXIMUM)));
 
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                new ApiDateTime(reservationModel.getSince().getDate(), ApiTime.MINIMUM),
-                new ApiDateTime(reservationModel.getUntil().getDate(), ROOM_A.getBuilding().getOpen())));
+                new ApiDateTime(reservationModel.getSince().getDate(),
+                        ApiTime.MINIMUM),
+                new ApiDateTime(reservationModel.getUntil().getDate(),
+                        ROOM_A.getBuilding().getOpen())));
 
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                new ApiDateTime(reservationModel.getSince().getDate(), ROOM_A.getBuilding().getClose()),
-                new ApiDateTime(reservationModel.getUntil().getDate(), ApiTime.MAXIMUM)));
+                new ApiDateTime(reservationModel.getSince().getDate(),
+                        ROOM_A.getBuilding().getClose()),
+                new ApiDateTime(reservationModel.getUntil().getDate(),
+                        ApiTime.MAXIMUM)));
     }
 
     @Test
@@ -615,8 +625,10 @@ class ReservationServiceImplTest {
         when(users.currentUser()).thenReturn(USER_A);
         assertThrows(ResponseStatusException.class, () -> service.checkAvailability(ROOM_A.getId(),
                 new ReservationRequestModel(requestModel.getRoomId(), requestModel.getTitle(),
-                        new ApiDateTime(ApiDateUtils.yesterday(), requestModel.getSince().getTime()),
-                        new ApiDateTime(ApiDateUtils.yesterday(), requestModel.getUntil().getTime()),
+                        new ApiDateTime(ApiDateUtils.yesterday(),
+                                requestModel.getSince().getTime()),
+                        new ApiDateTime(ApiDateUtils.yesterday(),
+                                requestModel.getUntil().getTime()),
                         requestModel.getForUser()
                 )));
     }
