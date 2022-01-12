@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonLocation;
@@ -27,25 +28,26 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = ApiDate.Serializer.class)
 @JsonDeserialize(using = ApiDate.Deserializer.class)
 public class ApiDate {
-    private static final int[] NSCHEMA = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    private static final int[] LSCHEMA = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    @Transient
+    private final transient int[] schema = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-    private int[] schema;
 
     @Column(name = "year")
-    private int year;
+    private Integer year;
     @Column(name = "month")
-    private int month;
+    private Integer month;
     @Column(name = "day")
-    private int day;
+    private Integer day;
 
     /**
      * Sets the year of the date. Always must be done before setting the year.
      * @param year Year component of the date.
      */
     public void setYear(int year) {
-        schema = isLeap(year) ? LSCHEMA : NSCHEMA;
         this.year = year;
+        if (isLeap()) {
+            schema[1] = 29;
+        }
     }
 
     /**
@@ -123,7 +125,7 @@ public class ApiDate {
 
     @Override
     public String toString() {
-        return String.format("%04d-%02d-%02d", getYear(), getMonth(), getDay());
+        return String.format("%04d-%02d-%02d", year, month, day);
     }
 
     @Override
@@ -134,34 +136,25 @@ public class ApiDate {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        ApiDate other = (ApiDate) o;
 
-        return new ApiDateUtils().compare(this, (ApiDate) o) == 0;
+        return year.equals(other.year) && month.equals(other.month) && day.equals(other.day);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(year, day);
+        return Objects.hash(year, month, day);
     }
 
     /**
-     * Checks whether a year is a leap year according to the Gregorian calendar.
+     * Checks whether the current year is in a leap year according to the Gregorian calendar.
      *
-     * @param year Year to check
      * @return true if the year is a leap year; false otherwise
      */
-    private static boolean isLeap(int year) {
+    private boolean isLeap() {
         return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);
     }
 
-    /**
-     * Gets the number of days in the given year.
-     *
-     * @param year Year to check
-     * @return Number of days in the given year
-     */
-    private static int daysIn(int year) {
-        return isLeap(year) ? Arrays.stream(LSCHEMA).sum() : Arrays.stream(NSCHEMA).sum();
-    }
 
     /**
      * JSON serializer for {@link ApiDate}.

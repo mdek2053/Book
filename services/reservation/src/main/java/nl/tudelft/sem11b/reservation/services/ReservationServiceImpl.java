@@ -145,7 +145,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // check if closure is still ongoing
-        if (closure.getUntil() == null || new ApiDateUtils().compare(closure.getUntil(), since.getDate()) >= 0) {
+        if (closure.getUntil() == null || ApiDateUtils.compare(closure.getUntil(), since.getDate()) >= 0) {
             if (closure.getUntil() != null) {
                 throw new InvalidData(
                         "Room is under maintenance (until " + closure.getUntil() + ")");

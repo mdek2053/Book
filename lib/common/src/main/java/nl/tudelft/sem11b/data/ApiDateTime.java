@@ -131,7 +131,7 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
 
     @Override
     public int compareTo(ApiDateTime other) {
-        var cmp = new ApiDateUtils().compare(date, other.date);
+        var cmp = ApiDateUtils.compare(date, other.date);
         if (cmp != 0) {
             return cmp;
         }

@@ -2,12 +2,9 @@ package nl.tudelft.sem11b.data;
 
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.regex.Pattern;
 
-public class ApiDateUtils implements Comparator<ApiDate> {
-    private static final Pattern RGX_FORMAT =
-            Pattern.compile("(\\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])");
+public class ApiDateUtils {
 
     /**
      * Steps a single day back in time.
@@ -80,8 +77,7 @@ public class ApiDateUtils implements Comparator<ApiDate> {
         return day;
     }
 
-    @Override
-    public int compare(ApiDate date1, ApiDate date2) {
+    public static int compare(ApiDate date1, ApiDate date2) {
 
         if (date1.getYear() != date2.getYear()) {
             return Integer.compare(date1.getYear(), date2.getYear());
@@ -102,7 +98,8 @@ public class ApiDateUtils implements Comparator<ApiDate> {
      *                        their respective bounds
      */
     public static ApiDate parse(String str) throws ParseException {
-        var matches = RGX_FORMAT.matcher(str.trim());
+        Pattern format = Pattern.compile("(\\d+)-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01])");
+        var matches = format.matcher(str.trim());
         if (!matches.matches()) {
             throw new ParseException("Given string is in invalid format!", 0);
         }
