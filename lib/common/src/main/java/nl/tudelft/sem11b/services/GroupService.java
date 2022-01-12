@@ -23,11 +23,10 @@ public interface GroupService {
     List<GroupModel> getGroupsOfCurrentUser(Long id) throws InvalidData, ApiException;
 
     GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
-            throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException;
+            throws ApiException, InvalidData;
 
-    GroupModel getGroupInfo(Long groupId) throws InvalidGroupCredentialsException,
-            ApiException, InvalidCredentialsException;
+    GroupModel getGroupInfo(Long groupId) throws ApiException, InvalidData;
 
     void addGroupMembers(List<Long> users, GroupModel group)
-            throws InvalidGroupCredentialsException, ApiException;
+            throws ApiException, InvalidData;
 }

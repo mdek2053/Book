@@ -186,12 +186,12 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public long makeUserReservation(long roomId, Long getForUser,
                                     String title, ApiDateTime since, ApiDateTime until)
-            throws ApiException, InvalidGroupCredentialsException, InvalidData,
+            throws ApiException, InvalidData,
             EntityNotFound {
         if (verifySecretary(getForUser) || users.currentUser().inRole(Roles.Admin)) {
             return makeReservation(roomId, getForUser, title, since, until);
         }
-        throw new InvalidGroupCredentialsException("You are not a secretary of the provided user");
+        throw new InvalidData("You are not a secretary of the provided user");
     }
 
     /**

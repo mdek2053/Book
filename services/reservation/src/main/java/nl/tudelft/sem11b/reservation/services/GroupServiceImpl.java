@@ -41,19 +41,19 @@ public class GroupServiceImpl extends AuthenticatedServiceClient<GroupService>
 
     @Override
     public GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
-            throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException {
+            throws ApiException, InvalidData {
         return openClient().addGroup(name, secretaryId, groupMembers);
     }
 
     @Override
     public GroupModel getGroupInfo(Long groupId)
-            throws InvalidGroupCredentialsException, ApiException, InvalidCredentialsException {
+            throws ApiException, InvalidData {
         return openClient().getGroupInfo(groupId);
     }
 
     @Override
     public void addGroupMembers(List<Long> users, GroupModel group)
-            throws InvalidGroupCredentialsException, ApiException {
+            throws ApiException, InvalidData {
         openClient().addGroupMembers(users, group);
     }
 }

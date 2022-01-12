@@ -1,12 +1,9 @@
 package nl.tudelft.sem11b.authentication.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nl.tudelft.sem11b.authentication.services.GroupServiceImpl;
 import nl.tudelft.sem11b.authentication.services.UserServiceImpl;
-import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
-import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
@@ -40,13 +37,10 @@ public class GroupController {
      *
      * @param model of type List containing the groupMembers.
      * @return an object containing the new Group.
-     * @throws InvalidGroupCredentialsException when the provided credentials
-     *                                          of the group are not valid.
      */
     @PostMapping("")
     @PreAuthorize("hasRole('Admin')")
-    public GroupModel postGroup(@RequestBody GroupModel model)
-            throws InvalidGroupCredentialsException {
+    public GroupModel postGroup(@RequestBody GroupModel model) {
         try {
             return groupService
                     .addGroup(model.getName(), model.getSecretary(), model.getGroupMembers());
@@ -57,7 +51,7 @@ public class GroupController {
 
     @GetMapping(value = "/mine")
     public List<GroupModel> getGroupsOfCurrentUser()
-            throws ApiException, InvalidData {
+            throws InvalidData, ApiException {
         return groupService.getGroupsOfCurrentUser(userService.currentUser().getId());
     }
 
@@ -72,8 +66,8 @@ public class GroupController {
     }
 
     @GetMapping(value = "/{id}")
-    public GroupModel getGroupInfo(@PathVariable Long id) throws InvalidGroupCredentialsException,
-            ApiException, InvalidCredentialsException {
+    public GroupModel getGroupInfo(@PathVariable Long id) throws
+            ApiException, InvalidData {
         return groupService.getGroupInfo(id);
     }
 
@@ -82,13 +76,12 @@ public class GroupController {
      *
      * @param users of type List which contains the new groupMembers.
      * @param group of type Group containing the group which the users need to be added to.
-     * @throws InvalidGroupCredentialsException when provided credentials
-     *                                          of the group are not valid.
+     * @throws InvalidData when the group or one of the new group members is not valid.
      */
     @PreAuthorize("hasRole('Admin')")
     @PostMapping(value = "/members")
     public void addGroupMember(@RequestBody List<Long> users, @RequestBody GroupModel group)
-            throws InvalidGroupCredentialsException {
+            throws InvalidData {
         groupService.addGroupMembers(users, group);
     }
 }
