@@ -74,13 +74,13 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public long makeUserReservation(ReservationRequestModel request)
-            throws ApiException, InvalidGroupCredentialsException, InvalidData,
+            throws ApiException, InvalidData,
             EntityNotFound {
         if (userValidation.verifySecretary(request.getForUser())
                 || userValidation.currentUserIsAdmin()) {
             return makeReservation(request);
         }
-        throw new InvalidGroupCredentialsException("You are not a secretary of the provided user");
+        throw new InvalidData("You are not a secretary of the provided user");
     }
 
 
@@ -98,7 +98,7 @@ public class ReservationServiceImpl implements ReservationService {
             throws ApiException, EntityNotFound, InvalidData {
 
         Reservation reservation = checkReservationExists(reservationId);
-        userValidation.userCanModifyReservation(reservation);
+        userValidation.userCanModifyReservation(reservation.getUserId());
 
         reservation.fillOutTime(request);
 
@@ -133,7 +133,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void deleteReservation(long reservationId) throws EntityNotFound, ApiException {
         Reservation reservation = checkReservationExists(reservationId);
-        userValidation.userCanModifyReservation(reservation);
+        userValidation.userCanModifyReservation(reservation.getUserId());
         reservations.delete(reservation);
     }
 

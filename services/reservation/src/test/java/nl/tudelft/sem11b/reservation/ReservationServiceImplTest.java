@@ -310,7 +310,7 @@ class ReservationServiceImplTest {
     void invalidSecretaryReservationNoGroups() throws ApiException {
         when(users.currentUser()).thenReturn(USER_A);
         when(groups.getGroupsOfSecretary(anyLong())).thenReturn(new ArrayList<>());
-        assertThrows(InvalidGroupCredentialsException.class, () -> service.makeUserReservation(
+        assertThrows(InvalidData.class, () -> service.makeUserReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
                 reservationModel.getSince(), reservationModel.getUntil(), USER_B.getId())));
@@ -320,7 +320,7 @@ class ReservationServiceImplTest {
     void invalidSecretaryReservationForMember() throws ApiException {
         when(users.currentUser()).thenReturn(USER_B);
         when(groups.getGroupsOfSecretary(anyLong())).thenReturn(GROUPS);
-        assertThrows(InvalidGroupCredentialsException.class, () -> service.makeUserReservation(
+        assertThrows(InvalidData.class, () -> service.makeUserReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
                 reservationModel.getSince(), reservationModel.getUntil(), USER_C.getId())));

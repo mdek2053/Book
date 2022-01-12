@@ -43,14 +43,14 @@ public class UserValidationService {
 
     /**
      * Checks if current user has permissions to modify given reservation.
-     * @param reservation The reservation that should be checked.
+     * @param reservationUserId The id of the user stored in reservation that should be checked.
      * @throws EntityNotFound Thrown when user doesn't have permissions.
      * @throws ApiException Thrown when user doesn't have permissions.
      */
-    public void userCanModifyReservation(Reservation reservation)
+    public void userCanModifyReservation(Long reservationUserId)
             throws ApiException {
-        if (!Objects.equals(currentUserId(), reservation.getUserId()) && !currentUserIsAdmin()
-                && !verifySecretary(reservation.getUserId())) {
+        if (!Objects.equals(currentUserId(), reservationUserId) && !currentUserIsAdmin()
+                && !verifySecretary(reservationUserId)) {
             throw new ApiException("Reservation",
                     "User not authorized to change given reservation.");
         }
