@@ -15,7 +15,6 @@ import nl.tudelft.sem11b.data.models.GroupModel;
 import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,11 +32,6 @@ public class GroupServiceImpl implements GroupService {
     @Autowired
     transient UserServiceImpl userService;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    transient List<GroupModel> groupModelList;
-
     /**
      * Retrieves all groups where the provided user is part of.
      *
@@ -46,7 +40,7 @@ public class GroupServiceImpl implements GroupService {
      */
     public List<GroupModel> getGroupsOfUser(Long id) {
         List<Group> groupList = groupRepository.findAll();
-        groupModelList = new ArrayList<>();
+        List<GroupModel> groupModelList = new ArrayList<>();
 
         if (!groupList.isEmpty()) {
             for (Group group : groupList) {
@@ -66,14 +60,14 @@ public class GroupServiceImpl implements GroupService {
      */
     public List<GroupModel> getGroupsOfSecretary(Long id) {
         Optional<User> secretary = userRepository.findUserById(id);
-        groupModelList = new ArrayList<>();
+        List<GroupModel> groupModelList = new ArrayList<>();
         if (secretary.isPresent()) {
-            Optional<List<Group>> groupList =
+            Optional<List<Group>> optGroupList =
                     groupRepository.findGroupsBySecretary(secretary.get().getId());
 
-            if (groupList.isPresent()) {
-                List<Group> temp = groupList.get();
-                for (Group group : temp) {
+            if (optGroupList.isPresent()) {
+                List<Group> groupList = optGroupList.get();
+                for (Group group : groupList) {
                     groupModelList.add(group.createGroupModel());
                 }
             }
@@ -93,27 +87,31 @@ public class GroupServiceImpl implements GroupService {
      */
     public GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
             throws ApiException, InvalidData {
-        User secretary = null;
+        User secretary;
         if (secretaryId == null) {
             UserModel secretaryModel;
             secretaryModel = userService.currentUser();
             Optional<User> optionalUser = userRepository.findUserByNetId(secretaryModel.getLogin());
             if (optionalUser.isPresent()) {
                 secretary = optionalUser.get();
+            } else {
+                throw new InvalidData("Invalid user");
             }
         } else {
             Optional<User> optionalUser = userRepository.findUserById(secretaryId);
             if (optionalUser.isPresent()) {
                 secretary = optionalUser.get();
+            } else {
+                throw new InvalidData("Invalid user");
             }
         }
 
         verifyUsers(groupMembers);
 
-        assert secretary != null;
         Group group = new Group(name, secretary.getId(), groupMembers);
         group = groupRepository.save(group);
-        return new GroupModel(group.getName(), secretary.getId(), groupMembers, group.getGroupId());
+        return new GroupModel(group.getName(), secretary.getId(),
+                groupMembers, group.getGroupId());
     }
 
     /**
