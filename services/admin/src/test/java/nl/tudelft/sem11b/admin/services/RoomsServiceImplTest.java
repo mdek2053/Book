@@ -347,7 +347,7 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsNoFromTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+        ApiDateTime until = new ApiDateTime(2022, 1, 1, 11L, 0L);
         filters.put("until", until.toString());
 
         PageIndex index = new PageIndex(0, 10);
@@ -359,7 +359,7 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsNoUntilTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        ApiDateTime from = new ApiDateTime(2022, 1, 1, 10L, 0L);
         filters.put("from", from.toString());
 
         PageIndex index = new PageIndex(0, 10);
@@ -371,7 +371,7 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsInvalidUntilTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        ApiDateTime from = new ApiDateTime(2022, 1, 1, 10L, 0L);
         filters.put("from", from.toString());
         filters.put("until", 1);
 
@@ -384,7 +384,7 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsInvalidFromTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        ApiDateTime until = new ApiDateTime(2022, 1, 1, 10L, 0L);
         filters.put("from", 1);
         filters.put("until", until.toString());
 
@@ -397,8 +397,8 @@ class RoomsServiceImplTest {
     @Test
     public void searchRoomsFromTimeAfterUntilTimeFilterTest() {
         Map<String, Object> filters = new HashMap<>();
-        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
-        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+        ApiDateTime from = new ApiDateTime(2022, 1, 1, 11L, 0L);
+        ApiDateTime until = new ApiDateTime(2022, 1, 1, 10L, 0L);
         filters.put("from", from.toString());
         filters.put("until", until.toString());
 
@@ -412,8 +412,8 @@ class RoomsServiceImplTest {
     public void searchRoomsAvailabilityFilterTest()
             throws InvalidData, ApiException, EntityNotFound, InvalidFilterException {
         Map<String, Object> filters = new HashMap<>();
-        ApiDateTime from = new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
-        ApiDateTime until = new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+        ApiDateTime from = new ApiDateTime(2022, 1, 1, 10L, 0L);
+        ApiDateTime until = new ApiDateTime(2022, 1, 1, 11L, 0L);
         filters.put("from", from.toString());
         filters.put("until", until.toString());
 

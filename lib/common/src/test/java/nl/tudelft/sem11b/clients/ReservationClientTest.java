@@ -32,9 +32,9 @@ public class ReservationClientTest {
     ReservationClient client;
 
     private final transient ApiDateTime since =
-            new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+            new ApiDateTime(2022, 1, 1, 10L, 0L);
     private final transient ApiDateTime until =
-            new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+            new ApiDateTime(2022, 1, 1, 11L, 0L);
     private final transient ReservationRequestModel model =
             new ReservationRequestModel(1L, "Meeting", since, until, null);
     private final transient ReservationRequestModel model2 =

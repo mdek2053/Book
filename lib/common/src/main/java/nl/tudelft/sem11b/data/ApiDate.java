@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonParser;
@@ -34,28 +33,28 @@ public class ApiDate implements Comparable<ApiDate> {
     private static final int[] LSCHEMA = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     @Column(name = "year")
-    private short year;
+    private int year;
     @Column(name = "day")
-    private short day;
+    private int day;
 
     /**
      * Sets the year of the date. Always must be done before setting the year.
      * @param year Year component of the date.
      */
-    public void setYear(long year) {
-        this.year = (short) year;
+    public void setYear(int year) {
+        this.year = year;
     }
 
     /**
      * Sets the day of the date. Always must be done after setting the year.
      * @param day Day of the year (indexed from 1)
      */
-    public void setDay(long day) {
+    public void setDay(int day) {
         if (day < 1 || day > daysIn(year)) {
             throw new IllegalArgumentException("Day is out of range for the given year!");
         }
 
-        this.day = (short) (day - 1);
+        this.day = (day - 1);
     }
 
     /**
@@ -64,7 +63,7 @@ public class ApiDate implements Comparable<ApiDate> {
      * @param year      Year component of the date
      * @param dayOfYear Day of the year (indexed from 1)
      */
-    public ApiDate(long year, long dayOfYear) {
+    public ApiDate(int year, int dayOfYear) {
         setYear(year);
         setDay(dayOfYear);
     }
@@ -76,19 +75,19 @@ public class ApiDate implements Comparable<ApiDate> {
      * @param month Month component of the date
      * @param day   Day component of the date
      */
-    public ApiDate(long year, long month, long day) {
+    public ApiDate(int year, int month, int day) {
         if (month < 1 || month > 12) {
             throw new IllegalArgumentException(
                 "Month must be an integer between 1 and 12 (inclusive)!");
         }
 
         var schema = isLeap(year) ? LSCHEMA : NSCHEMA;
-        if (day < 1 || day > schema[(int) month - 1]) {
+        if (day < 1 || day > schema[month - 1]) {
             throw new IllegalArgumentException("Day is out of range for the given month and year!");
         }
 
-        this.year = (short) year;
-        this.day = (short) (Arrays.stream(schema).limit(month - 1).sum() + day - 1);
+        this.year = year;
+        this.day = (Arrays.stream(schema).limit(month - 1).sum() + day - 1);
     }
 
     private ApiDate() {
@@ -238,9 +237,9 @@ public class ApiDate implements Comparable<ApiDate> {
     @Override
     public int compareTo(ApiDate other) {
         if (year != other.year) {
-            return Short.compare(year, other.year);
+            return Integer.compare(year, other.year);
         }
-        return Short.compare(day, other.day);
+        return Integer.compare(day, other.day);
     }
 
     @Override
@@ -325,7 +324,7 @@ public class ApiDate implements Comparable<ApiDate> {
      * @param year Year to check
      * @return true if the year is a leap year; false otherwise
      */
-    private static boolean isLeap(long year) {
+    private static boolean isLeap(int year) {
         return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);
     }
 
@@ -335,7 +334,7 @@ public class ApiDate implements Comparable<ApiDate> {
      * @param year Year to check
      * @return Number of days in the given year
      */
-    private static int daysIn(long year) {
+    private static int daysIn(int year) {
         return isLeap(year) ? Arrays.stream(LSCHEMA).sum() : Arrays.stream(NSCHEMA).sum();
     }
 

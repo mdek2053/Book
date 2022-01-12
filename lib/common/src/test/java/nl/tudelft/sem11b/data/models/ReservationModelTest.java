@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 public class ReservationModelTest {
 
     private final transient ApiDateTime since =
-            new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+            new ApiDateTime(2022, 1, 1, 10L, 0L);
     private final transient ApiDateTime until =
-            new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+            new ApiDateTime(2022, 1, 1, 11L, 0L);
     private final transient ReservationModel model =
             new ReservationModel(1L, since, until, "Meeting");
     private final transient ReservationModel model2 =

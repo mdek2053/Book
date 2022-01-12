@@ -56,7 +56,7 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
      * @param hour   Hour component of the time (0 - 23)
      * @param minute Minute component of the time (0 - 59)
      */
-    public ApiDateTime(long year, long month, long day, long hour, long minute) {
+    public ApiDateTime(int year, int month, int day, long hour, long minute) {
         this(new ApiDate(year, month, day), new ApiTime(hour, minute));
     }
 
