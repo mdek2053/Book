@@ -10,7 +10,6 @@ import java.util.Set;
 import nl.tudelft.sem11b.admin.data.Closure;
 import nl.tudelft.sem11b.admin.data.entities.Building;
 import nl.tudelft.sem11b.admin.data.entities.Equipment;
-import nl.tudelft.sem11b.admin.data.entities.Fault;
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.admin.data.filters.AvailabilityFilter;
 import nl.tudelft.sem11b.admin.data.filters.BaseFilter;
@@ -19,7 +18,6 @@ import nl.tudelft.sem11b.admin.data.filters.CapacityFilter;
 import nl.tudelft.sem11b.admin.data.filters.EquipmentFilter;
 import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.EquipmentRepository;
-import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.Roles;
@@ -29,9 +27,6 @@ import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.models.BuildingModel;
 import nl.tudelft.sem11b.data.models.ClosureModel;
 import nl.tudelft.sem11b.data.models.EquipmentModel;
-import nl.tudelft.sem11b.data.models.FaultModel;
-import nl.tudelft.sem11b.data.models.FaultRequestModel;
-import nl.tudelft.sem11b.data.models.FaultStudModel;
 import nl.tudelft.sem11b.data.models.PageData;
 import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.RoomModel;
@@ -50,7 +45,6 @@ public class RoomsServiceImpl implements RoomsService {
 
     private final transient BuildingRepository buildings;
     private final transient RoomRepository rooms;
-    private final transient FaultRepository faults;
     private final transient EquipmentRepository equipmentRepo;
     private final transient UserService users;
     private final transient ReservationService reservations;
@@ -65,11 +59,10 @@ public class RoomsServiceImpl implements RoomsService {
      * @param users     Users handling service
      */
     public RoomsServiceImpl(BuildingRepository buildings, RoomRepository rooms,
-                            FaultRepository faults, EquipmentRepository equipmentRepo,
-                            UserService users, ReservationService reservations) {
+                            EquipmentRepository equipmentRepo, UserService users,
+                            ReservationService reservations) {
         this.buildings = buildings;
         this.rooms = rooms;
-        this.faults = faults;
         this.equipmentRepo = equipmentRepo;
         this.users = users;
         this.reservations = reservations;
@@ -273,60 +266,5 @@ public class RoomsServiceImpl implements RoomsService {
         var room = rooms.getById(id);
         room.setClosure(null);
         rooms.save(room);
-    }
-
-    @Override
-    public void addFault(long roomId, FaultRequestModel faultRequest)
-            throws ApiException, EntityNotFound {
-        if (!rooms.existsById(roomId)) {
-            throw new EntityNotFound(missingEntityName);
-        }
-
-        var room = rooms.getById(roomId);
-
-        var user = users.currentUser();
-        var fault = new Fault(user.getId(),
-                faultRequest.getDescription(),
-                room);
-        faults.save(fault);
-    }
-
-    @Override
-    public PageData<FaultStudModel> listFaults(PageIndex page, long roomId)
-            throws EntityNotFound {
-
-        if (!rooms.existsById(roomId)) {
-            throw new EntityNotFound(missingEntityName);
-        }
-
-        return new PageData<>(faults.findAllByRoomId(roomId, page.getPage(Sort.by("id")))
-                .map(Fault::toStudModel));
-    }
-
-    @Override
-    public PageData<FaultModel> listFaults(PageIndex page) {
-        return new PageData<>(faults.findAll(page.getPage(Sort.by("id")))
-                .map(Fault::toModel));
-    }
-
-    @Override
-    public Optional<FaultModel> getFault(long id) {
-        return faults.findById(id).map(Fault::toModel);
-    }
-
-    @Override
-    public void resolveFault(long id) throws EntityNotFound, ApiException {
-        var user = users.currentUser();
-        if (!user.inRole(Roles.Admin)) {
-            throw new ApiException("Faults",
-                    "User not authorized to resolve faults.");
-        }
-
-        if (!faults.existsById(id)) {
-            throw new EntityNotFound("Fault");
-        }
-
-        var fault = faults.getById(id);
-        faults.delete(fault);
     }
 }

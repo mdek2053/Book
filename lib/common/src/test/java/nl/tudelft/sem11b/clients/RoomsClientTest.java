@@ -28,7 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class RoomsClientTest {
-
     @Mock
     ApiClient<Authenticated> api;
 
@@ -70,42 +69,6 @@ public class RoomsClientTest {
     }
 
     @Test
-    void listFaultsSpecificRoomEmptyDataTest() {
-        when(api.get(eq("/rooms/1/faults?page=" + pageIndex0.getPage()
-                + "&limit=" + pageIndex0.getLimit()), any(TypeReference.class)))
-                .thenReturn(new ApiResponse<>("rooms", null));
-
-        assertThrows(EntityNotFound.class, () -> client.listFaults(pageIndex0, 1));
-    }
-
-    @Test
-    void listFaultsSpecificRoomTest() throws EntityNotFound, ApiException {
-        when(api.get(eq("/rooms/1/faults?page=" + pageIndex1.getPage()
-                + "&limit=" + pageIndex1.getLimit()), any(TypeReference.class)))
-                .thenReturn(new ApiResponse<>("rooms", pageDataFaultStudModel1));
-
-        assertEquals(pageDataFaultStudModel1, client.listFaults(pageIndex1, 1));
-    }
-
-    @Test
-    void listFaultsEmptyDataTest() {
-        when(api.get(eq("/faults?page=" + pageIndex0.getPage() + "&limit="
-                + pageIndex0.getLimit()), any(TypeReference.class)))
-                .thenReturn(new ApiResponse<>("rooms", null));
-
-        assertThrows(EntityNotFound.class, () -> client.listFaults(pageIndex0));
-    }
-
-    @Test
-    void listFaultsTest() throws EntityNotFound, ApiException {
-        when(api.get(eq("/faults?page=" + pageIndex1.getPage() + "&limit="
-                + pageIndex1.getLimit()), any(TypeReference.class)))
-                .thenReturn(new ApiResponse<>("rooms", pageDataFaultStudModel1));
-
-        assertEquals(pageDataFaultStudModel1, client.listFaults(pageIndex1));
-    }
-
-    @Test
     void closeRoomUnsuccessfulTest() {
         when(api.post(eq("/rooms/1/closure"), eq(closure), any(TypeReference.class)))
                 .thenReturn(new ApiResponse<>("rooms", new ApiException("rooms", "Bam")));
@@ -117,20 +80,6 @@ public class RoomsClientTest {
         when(api.post(eq("/rooms/1/closure"), eq(closure), any(TypeReference.class)))
                 .thenReturn(new ApiResponse<>("rooms"));
         client.closeRoom(1, closure);
-    }
-
-    @Test
-    void addFaultUnsuccessfulTest() {
-        when(api.post(eq("/rooms/1/fault"), eq(faultRequestModel), any(TypeReference.class)))
-                .thenReturn(new ApiResponse<>("rooms", new ApiException("rooms", "Bam")));
-        assertThrows(ApiException.class, () -> client.addFault(1, faultRequestModel));
-    }
-
-    @Test
-    void addFaultSuccessfulTest() throws ApiException {
-        when(api.post(eq("/rooms/1/fault"), eq(faultRequestModel), any(TypeReference.class)))
-                .thenReturn(new ApiResponse<>("rooms"));
-        client.addFault(1, faultRequestModel);
     }
 
     @Test
@@ -146,19 +95,4 @@ public class RoomsClientTest {
                 .thenReturn(new ApiResponse<>("rooms"));
         client.reopenRoom(1);
     }
-
-    @Test
-    void resolveFaultUnsuccessfulTest() {
-        when(api.delete(eq("/faults/1")))
-                .thenReturn(new ApiResponse<>("rooms", new ApiException("rooms", "Bam")));
-        assertThrows(ApiException.class, () -> client.resolveFault(1));
-    }
-
-    @Test
-    void resolveFaultSuccessfulTest() throws ApiException {
-        when(api.delete(eq("/faults/1")))
-                .thenReturn(new ApiResponse<>("rooms"));
-        client.resolveFault(1);
-    }
-
 }
