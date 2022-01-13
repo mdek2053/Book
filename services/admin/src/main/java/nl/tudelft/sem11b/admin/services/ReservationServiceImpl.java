@@ -5,7 +5,6 @@ import java.net.URI;
 import nl.tudelft.sem11b.clients.AuthenticatedServiceClient;
 import nl.tudelft.sem11b.clients.ReservationClient;
 import nl.tudelft.sem11b.data.ApiDateTime;
-import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -33,8 +32,7 @@ public class ReservationServiceImpl extends AuthenticatedServiceClient<Reservati
     @Override
     public long makeUserReservation(long roomId, Long forUser, String title,
                                     ApiDateTime since, ApiDateTime until)
-            throws ApiException, EntityNotFound,
-            InvalidGroupCredentialsException, InvalidData {
+            throws ApiException, EntityNotFound, InvalidData {
         return 0;
     }
 

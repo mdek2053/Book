@@ -80,7 +80,7 @@ class ClosureModelTest {
     @Test
     void testNotEqualSince() {
         assertNotEquals(new ClosureModel("Room under maintenance.",
-                new ApiDate(2023, 1), until),
+                new ApiDate(2023, 1, 1), until),
                 model);
     }
 

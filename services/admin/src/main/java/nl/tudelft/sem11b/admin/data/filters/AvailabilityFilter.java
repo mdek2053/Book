@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import nl.tudelft.sem11b.admin.data.entities.Room;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -77,8 +78,8 @@ public class AvailabilityFilter extends BaseFilter {
 
         try {
             return Optional.of(new AvailabilityFilter(
-                ApiDateTime.parse((String) opt.get(NAME_FROM)),
-                ApiDateTime.parse((String) opt.get(NAME_UNTIL)), reservations));
+                ApiDateTimeUtils.parse((String) opt.get(NAME_FROM)),
+                ApiDateTimeUtils.parse((String) opt.get(NAME_UNTIL)), reservations));
         } catch (ClassCastException | ParseException e) {
             throw new InvalidFilterException("Invalid availability filter!");
         }

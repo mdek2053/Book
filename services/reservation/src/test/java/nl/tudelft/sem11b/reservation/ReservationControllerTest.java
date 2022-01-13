@@ -19,7 +19,9 @@ import java.util.Optional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -50,8 +52,8 @@ class ReservationControllerTest {
     private static final ObjectMapper mapper = new JsonMapper();
     private static final ReservationModel subject = new ReservationModel(
         1L,
-        new ApiDateTime(2022, 1, 15, 13, 0),
-        new ApiDateTime(2022, 1, 15, 17, 0),
+        new ApiDateTime(new ApiDate(2022, 1, 15), new ApiTime(13, 0)),
+        new ApiDateTime(new ApiDate(2022, 1, 15), new ApiTime(17, 0)),
         "Meeting"
     );
 

@@ -97,22 +97,6 @@ class GroupControllerIntegrationTest {
     }
 
     @Test
-    void testGetGroupsOfCurrentUser() throws Exception {
-        groupModel.setGroupId(groupService
-                .addGroup(groupModel.getName(), groupModel.getSecretary(),
-                groupModel.getGroupMembers()).getGroupId());
-
-        MvcResult mvcResult = mvc.perform(get("/groups/mine")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-        List<GroupModel> expected = Arrays.asList(groupModel);
-        List<GroupModel> actual = mapper.readValue(mvcResult.getResponse().getContentAsString(),
-                new TypeReference<List<GroupModel>>() {});
-        assertThat(actual).hasSameElementsAs(expected);
-    }
-
-    @Test
     void testGetGroupsOfUser() throws Exception {
         groupModel.setGroupId(groupService
                 .addGroup(groupModel.getName(), groupModel.getSecretary(),
