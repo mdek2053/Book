@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
+import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
@@ -143,7 +145,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // check if closure is still ongoing
-        if (closure.getUntil() == null || closure.getUntil().compareTo(since.getDate()) >= 0) {
+        if (closure.getUntil() == null
+                || ApiDateUtils.compare(closure.getUntil(), since.getDate()) >= 0) {
             if (closure.getUntil() != null) {
                 throw new InvalidData(
                         "Room is under maintenance (until " + closure.getUntil() + ")");
@@ -231,11 +234,11 @@ public class ReservationServiceImpl implements ReservationService {
         var reservation = reservationOpt.get();
 
         if (since == null) {
-            since = ApiDateTime.from(reservation.getSince());
+            since = ApiDateTimeUtils.from(reservation.getSince());
         }
 
         if (until == null) {
-            until = ApiDateTime.from(reservation.getUntil());
+            until = ApiDateTimeUtils.from(reservation.getUntil());
         }
 
         var user = users.currentUser();

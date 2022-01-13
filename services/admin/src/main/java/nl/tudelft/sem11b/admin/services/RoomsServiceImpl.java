@@ -21,7 +21,7 @@ import nl.tudelft.sem11b.admin.data.repositories.BuildingRepository;
 import nl.tudelft.sem11b.admin.data.repositories.EquipmentRepository;
 import nl.tudelft.sem11b.admin.data.repositories.FaultRepository;
 import nl.tudelft.sem11b.admin.data.repositories.RoomRepository;
-import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exception.InvalidFilterException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
@@ -141,8 +141,8 @@ public class RoomsServiceImpl implements RoomsService {
             }
             try {
                 BaseFilter filter = new AvailabilityFilter(
-                        ApiDateTime.parse((String)filterValues.get("from")),
-                        ApiDateTime.parse((String)filterValues.get("until")), reservations);
+                        ApiDateTimeUtils.parse((String)filterValues.get("from")),
+                        ApiDateTimeUtils.parse((String)filterValues.get("until")), reservations);
                 tail.setNext(filter);
                 tail = filter;
             } catch (ClassCastException | ParseException e) {
