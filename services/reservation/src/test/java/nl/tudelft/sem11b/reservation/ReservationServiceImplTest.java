@@ -23,13 +23,12 @@ import static org.mockito.Mockito.when;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
@@ -43,7 +42,6 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
-import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.reservation.services.ReservationServiceImpl;
@@ -427,8 +425,8 @@ class ReservationServiceImplTest {
 
         // action
         assertThrows(ApiException.class, () -> service.editReservation(reservation.getId(),
-                reservation.getTitle(), ApiDateTime.from(reservation.getSince()),
-                ApiDateTime.from(reservation.getUntil())));
+                reservation.getTitle(), ApiDateTimeUtils.from(reservation.getSince()),
+                ApiDateTimeUtils.from(reservation.getUntil())));
 
         // verify
         verify(reservations, never()).delete(reservation);
