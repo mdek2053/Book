@@ -68,9 +68,6 @@ class RoomsServiceImplTest {
     RoomRepository rooms;
 
     @Mock
-    FaultRepository faults;
-
-    @Mock
     EquipmentRepository equipmentRepo;
 
     @Mock
@@ -126,8 +123,7 @@ class RoomsServiceImplTest {
 
     @BeforeEach
     void initService() {
-        service = new RoomsServiceImpl(buildings, rooms,
-                faults, equipmentRepo, users, reservations);
+        service = new RoomsServiceImpl(buildings, rooms, equipmentRepo, users, reservations);
     }
 
     @Test
@@ -267,7 +263,7 @@ class RoomsServiceImplTest {
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -297,7 +293,7 @@ class RoomsServiceImplTest {
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -317,7 +313,7 @@ class RoomsServiceImplTest {
         Map<String, Object> filters = new HashMap<>();
         filters.put("equipment", Set.of(3L));
 
-        when(equipmentRepo.findById(3L)).thenReturn(Optional.empty());
+        when(equipmentRepo.findAllById(Set.of(3L))).thenReturn(List.of());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -333,14 +329,14 @@ class RoomsServiceImplTest {
 
         PageIndex index = new PageIndex(0, 10);
 
-        when(equipmentRepo.findById(1L)).thenReturn(Optional.of(beamer));
+        when(equipmentRepo.findAllById(Set.of(1L))).thenReturn(List.of(beamer));
         when(rooms.findAll(index.getPage(Sort.by("id"))))
                 .thenReturn(new PageImpl<>(List.of(room1, room2)));
 
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -450,7 +446,7 @@ class RoomsServiceImplTest {
         Map<String, Object> filters = new HashMap<>();
         filters.put("building", 3L);
 
-        when(buildings.existsById(3L)).thenReturn(false);
+        when(buildings.findById(3L)).thenReturn(Optional.empty());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -466,8 +462,7 @@ class RoomsServiceImplTest {
 
         PageIndex index = new PageIndex(0, 10);
 
-        when(buildings.existsById(1L)).thenReturn(true);
-        when(buildings.getById(1L)).thenReturn(building1);
+        when(buildings.findById(1L)).thenReturn(Optional.of(building1));
 
         when(rooms.findAll(index.getPage(Sort.by("id"))))
                 .thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
@@ -475,7 +470,7 @@ class RoomsServiceImplTest {
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -489,8 +484,7 @@ class RoomsServiceImplTest {
 
         PageIndex index = new PageIndex(0, 10);
 
-        when(buildings.existsById(1L)).thenReturn(true);
-        when(buildings.getById(1L)).thenReturn(building1);
+        when(buildings.findById(1L)).thenReturn(Optional.of(building1));
 
         when(rooms.findAll(index.getPage(Sort.by("id"))))
                 .thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
@@ -498,7 +492,7 @@ class RoomsServiceImplTest {
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -607,199 +601,6 @@ class RoomsServiceImplTest {
 
         verify(equipmentRepo, times(0)).save(beamerWithoutId);
         verify(rooms, times(1)).save(room1);
-    }
-
-
-
-    @Test
-    void addFaultTestNoRoom() {
-        // arrange
-        when(rooms.existsById(1L)).thenReturn(false);
-
-        FaultRequestModel fault = new FaultRequestModel(1,
-                "Blue ball machine broke");
-
-        // action + assert
-        EntityNotFound exception = assertThrows(EntityNotFound.class,
-                () -> service.addFault(1, fault));
-        assertEquals(exception.getEntityName(), "Room");
-    }
-
-    @Test
-    void addFaultTestSuccess() throws Exception {
-        final var captor = ArgumentCaptor.forClass(Fault.class);
-
-        // arrange
-        UserModel simplyEmployee = new UserModel(1, "jjansen", new String[]{});
-        when(users.currentUser()).thenReturn(simplyEmployee);
-
-        Room room = new Room(1L,"BOL", "Boole", 100,
-                null,
-                new Building(
-                        1L, "EWI", "EEMCS building",
-                        new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()), Set.of());
-        when(rooms.existsById(1L)).thenReturn(true);
-        when(rooms.getById(1L)).thenReturn(room);
-
-        Fault fault = new Fault(1, "Blue ball machine broke",
-                room);
-        when(faults.save(captor.capture())).thenAnswer(i -> i.getArgument(0));
-
-        // action
-        service.addFault(1, fault.toRequestModel());
-
-        // assert
-        final var entity = captor.getValue();
-        assertNotNull(entity);
-        assertEquals(entity.getRoom(), room);
-        assertEquals(entity.getReporter(), simplyEmployee.getId());
-    }
-
-    @Test
-    void listFaultsTestNoRoom() {
-        // arrange
-        PageIndex page = new PageIndex(1, 5);
-
-        when(rooms.existsById(1L)).thenReturn(false);
-
-        // action + assert
-        EntityNotFound exception = assertThrows(EntityNotFound.class,
-                () -> service.listFaults(page, 1));
-        assertEquals(exception.getEntityName(), "Room");
-    }
-
-    @Test
-    void listFaultsTestSuccess() throws Exception {
-        // arrange
-        when(rooms.existsById(1L)).thenReturn(true);
-        Room room = new Room(1L,"BOL", "Boole", 100,
-                null,
-                new Building(
-                        1L, "EWI", "EEMCS building",
-                        new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()), Set.of());
-
-        Fault faultA = new Fault(1L, "A", room);
-        Fault faultB = new Fault(2L, "B", room);
-        Page<Fault> pageObj = new PageImpl<>(List.of(faultA, faultB));
-        when(faults.findAllByRoomId(anyLong(), any())).thenReturn(pageObj);
-
-        PageIndex page = new PageIndex(1, 5);
-
-        // action
-        var faultsData = service.listFaults(page, 1L);
-
-        // assert
-        assertEquals(faultsData.getData().count(), 2);
-    }
-
-    @Test
-    void listFaultsAllTestSuccess() {
-        // arrange
-        Room room = new Room(1L,"BOL", "Boole", 100,
-                null,
-                new Building(
-                        1L, "EWI", "EEMCS building",
-                        new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()), Set.of());
-
-        Fault faultA = new Fault(1L, "A", room);
-        Fault faultB = new Fault(2L, "B", room);
-        Page<Fault> pageObj = new PageImpl<>(List.of(faultA, faultB));
-        when(faults.findAll((Pageable) any())).thenReturn(pageObj);
-
-        PageIndex page = new PageIndex(1, 5);
-
-        // action
-        var faultsData = service.listFaults(page);
-
-        // assert
-        assertEquals(faultsData.getData().count(), 2);
-    }
-
-    @Test
-    void getFaultSuccessNotExists() {
-        // arrange
-        when(faults.findById(1L)).thenReturn(Optional.empty());
-
-        // action
-        var result = service.getFault(1L);
-
-        // assert
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    void getFaultExists() {
-        // arrange
-        Room room = new Room(1L,"BOL", "Boole", 100,
-                null,
-                new Building(
-                        1L, "EWI", "EEMCS building",
-                        new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()), Set.of());
-
-        Fault fault = new Fault(1L, "Blue ball machine broke", room);
-        when(faults.findById(1L)).thenReturn(Optional.of(fault));
-
-        // action
-        var result = service.getFault(1L);
-
-        // assert
-        assertTrue(result.isPresent());
-    }
-
-    @Test
-    void resolveFaultTestNotAdmin() throws Exception {
-        // arrange
-        UserModel simplyEmployee = new UserModel(1, "jjansen", new String[]{"employee"});
-        when(users.currentUser()).thenReturn(simplyEmployee);
-
-        // action + assert
-        ApiException exception = assertThrows(ApiException.class,
-                () -> service.resolveFault(1));
-        assertEquals(exception.getService(), "Faults");
-    }
-
-    @Test
-    void resolveFaultTestNoFault() throws Exception {
-        // arrange
-        UserModel admin = new UserModel(1, "jjansen", new String[]{"admin"});
-        when(users.currentUser()).thenReturn(admin);
-
-        when(faults.existsById(1L)).thenReturn(false);
-
-        // action + assert
-        EntityNotFound exception = assertThrows(EntityNotFound.class,
-                () -> service.resolveFault(1));
-        assertEquals(exception.getEntityName(), "Fault");
-    }
-
-
-    @Test
-    void resolveFaultTestSuccess() throws Exception {
-        // arrange
-        UserModel admin = new UserModel(1, "jjansen", new String[]{"admin"});
-        when(users.currentUser()).thenReturn(admin);
-
-        Room room = new Room(1L,"BOL", "Boole", 100,
-                null,
-                new Building(
-                        1L, "EWI", "EEMCS building",
-                        new ApiTime(8, 0), new ApiTime(22, 0),
-                        Set.of()), Set.of());
-
-        Fault fault = new Fault(1L, "Blue ball machine broke", room);
-
-        when(faults.existsById(1L)).thenReturn(true);
-        when(faults.getById(1L)).thenReturn(fault);
-
-        // action
-        service.resolveFault(1);
-
-        // assert
-        verify(faults, times(1)).delete(fault);
     }
 
     @Test
