@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.data;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -104,6 +105,10 @@ public class ApiDateTime implements Comparable<ApiDateTime> {
     @Override
     public int hashCode() {
         return Objects.hash(date, time);
+    }
+
+    public Timestamp toTimestamp() {
+        return Timestamp.valueOf(this.toLocal());
     }
 
     /**

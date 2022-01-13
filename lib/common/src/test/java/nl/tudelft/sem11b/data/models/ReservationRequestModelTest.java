@@ -3,6 +3,8 @@ package nl.tudelft.sem11b.data.models;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.Timestamp;
+
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.ApiTime;
@@ -39,13 +41,13 @@ public class ReservationRequestModelTest {
 
     @Test
     void validateSinceNullTest() {
-        model.setSince(null);
+        model.setSince((ApiDateTime) null);
         assertFalse(model.validate());
     }
 
     @Test
     void validateUntilNullTest() {
-        model.setUntil(null);
+        model.setUntil((ApiDateTime) null);
         assertFalse(model.validate());
     }
 

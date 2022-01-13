@@ -50,7 +50,8 @@ public class ReservationClientTest {
                 .thenReturn(new ApiResponse<>("reservations", null));
 
         assertThrows(EntityNotFound.class, () ->
-                client.makeOwnReservation(1L, "Meeting", since, until));
+                client.makeOwnReservation(new ReservationRequestModel(
+                        1L, "Meeting", since, until, null)));
     }
 
     @Test
@@ -60,7 +61,8 @@ public class ReservationClientTest {
                 .thenReturn(new ApiResponse<>("reservations", new IdModel(1L)));
 
         assertEquals(1L,
-                client.makeOwnReservation(1L, "Meeting", since, until));
+                client.makeOwnReservation(new ReservationRequestModel(
+                        1L, "Meeting", since, until, null)));
     }
 
     @Test
@@ -70,7 +72,8 @@ public class ReservationClientTest {
                 .thenReturn(new ApiResponse<>("reservations", null));
 
         assertThrows(EntityNotFound.class, () ->
-                client.makeUserReservation(1L, 1L, "Meeting", since, until));
+                client.makeUserReservation(new ReservationRequestModel(
+                        1L, "Meeting", since, until, 1L)));
     }
 
     @Test
@@ -80,6 +83,7 @@ public class ReservationClientTest {
                 .thenReturn(new ApiResponse<>("reservations", new IdModel(1L)));
 
         assertEquals(1L,
-                client.makeUserReservation(1L, 1L, "Meeting", since, until));
+                client.makeUserReservation(new ReservationRequestModel(
+                        1L, "Meeting", since, until, 1L)));
     }
 }
