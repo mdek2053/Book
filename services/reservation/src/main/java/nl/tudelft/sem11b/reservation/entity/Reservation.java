@@ -212,7 +212,7 @@ public class Reservation {
      * Sets time of this reservation to be the same as request time.
      * @param request the request with time.
      */
-    public void setTime(ReservationRequestModel request) {
+    public void setTimeFromRequest(ReservationRequestModel request) {
         this.since = Timestamp.valueOf(request.getSince().toLocal());
         this.until = Timestamp.valueOf(request.getUntil().toLocal());
     }
