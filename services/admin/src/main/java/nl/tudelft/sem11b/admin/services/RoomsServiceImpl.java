@@ -85,7 +85,7 @@ public class RoomsServiceImpl implements RoomsService {
 
     @Override
     public PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues)
-            throws ApiException, EntityNotFound, InvalidFilterException {
+        throws ApiException, EntityNotFound, InvalidFilterException {
 
         BaseFilter chain = setupChain(filterValues);
 
@@ -101,61 +101,16 @@ public class RoomsServiceImpl implements RoomsService {
     }
 
     private BaseFilter setupChain(Map<String, Object> filterValues)
-            throws InvalidFilterException, EntityNotFound {
-        BaseFilter head = new BaseFilter();
-        BaseFilter tail = head;
+        throws InvalidFilterException, EntityNotFound {
+        var filter = new BaseFilter();
 
-        if (filterValues.containsKey("capacity")) {
-            try {
-                BaseFilter filter = new CapacityFilter((Integer)filterValues.get("capacity"));
-                tail.setNext(filter);
-                tail = filter;
-            } catch (ClassCastException e) {
-                throw new InvalidFilterException("Invalid capacity filter!");
-            }
-        }
+        filter
+            .setNext(CapacityFilter.fromOptions(filterValues))
+            .setNext(EquipmentFilter.fromOptions(filterValues, equipmentRepo))
+            .setNext(BuildingFilter.fromOptions(filterValues, buildings))
+            .setNext(AvailabilityFilter.fromOptions(filterValues, reservations));
 
-        if (filterValues.containsKey("equipment")) {
-            try {
-                BaseFilter filter = new EquipmentFilter(
-                        (Set<Long>)filterValues.get("equipment"), equipmentRepo);
-                tail.setNext(filter);
-                tail = filter;
-            } catch (ClassCastException e) {
-                throw new InvalidFilterException("Invalid equipment filter!");
-            }
-        }
-
-        if (filterValues.containsKey("from") || filterValues.containsKey("until")) {
-            // If either filter is not there, the user probably made an error,
-            // and we should let them know.
-            if (!filterValues.containsKey("from") || !filterValues.containsKey("until")) {
-                throw new InvalidFilterException("Either from or until time not provided!");
-            }
-            try {
-                BaseFilter filter = new AvailabilityFilter(
-                        ApiDateTime.parse((String)filterValues.get("from")),
-                        ApiDateTime.parse((String)filterValues.get("until")), reservations);
-                tail.setNext(filter);
-                tail = filter;
-            } catch (ClassCastException | ParseException e) {
-                e.printStackTrace();
-                throw new InvalidFilterException("Invalid availability filter!");
-            }
-        }
-
-        if (filterValues.containsKey("building")) {
-            try {
-                BaseFilter filter =
-                        new BuildingFilter((Long)filterValues.get("building"), buildings);
-                tail.setNext(filter);
-                tail = filter;
-            } catch (ClassCastException e) {
-                throw new InvalidFilterException("Invalid building filter!");
-            }
-        }
-
-        return head;
+        return filter;
     }
 
     @Override
@@ -168,7 +123,7 @@ public class RoomsServiceImpl implements RoomsService {
         UserModel user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException(serviceName,
-                    "User not authorized to add rooms");
+                "User not authorized to add rooms");
         }
         BuildingModel buildingModel = model.getBuilding();
         if (buildingModel == null) {
@@ -181,29 +136,29 @@ public class RoomsServiceImpl implements RoomsService {
         }
 
         Room newRoom = new Room(model.getSuffix(),
-                model.getName(), model.getCapacity(), null, buildingOptional.get(), Set.of());
+            model.getName(), model.getCapacity(), null, buildingOptional.get(), Set.of());
 
         Room saved = rooms.save(newRoom);
 
         //Only convert the closure to a model if it is not null
         ClosureModel savedClosure =
-                saved.getClosure() == null ? null : saved.getClosure().toModel();
+            saved.getClosure() == null ? null : saved.getClosure().toModel();
 
         RoomModel result = new RoomModel(saved.getId(), saved.getSuffix(),
-                saved.getName(), saved.getCapacity(),
-                saved.getBuilding().toModel(),
-                saved.getEquipment().toArray(EquipmentModel[]::new), savedClosure);
+            saved.getName(), saved.getCapacity(),
+            saved.getBuilding().toModel(),
+            saved.getEquipment().toArray(EquipmentModel[]::new), savedClosure);
 
         return result;
     }
 
     @Override
     public EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId)
-            throws ApiException, EntityNotFound {
+        throws ApiException, EntityNotFound {
         var user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException(serviceName,
-                    "User not authorized to add equipment.");
+                "User not authorized to add equipment.");
         }
         if (roomId.isEmpty()) {
             return addEquipmentToSystem(model).toModel();
@@ -237,7 +192,7 @@ public class RoomsServiceImpl implements RoomsService {
         var user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException(serviceName,
-                    "User not authorized to close rooms.");
+                "User not authorized to close rooms.");
         }
 
         if (!rooms.existsById(id)) {
@@ -246,8 +201,8 @@ public class RoomsServiceImpl implements RoomsService {
 
         var room = rooms.getById(id);
         room.setClosure(new Closure(closure.getReason(),
-                closure.getSince(),
-                closure.getUntil()));
+            closure.getSince(),
+            closure.getUntil()));
         rooms.save(room);
     }
 
@@ -256,7 +211,7 @@ public class RoomsServiceImpl implements RoomsService {
         var user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException(serviceName,
-                    "User not authorized to open rooms.");
+                "User not authorized to open rooms.");
         }
 
         if (!rooms.existsById(id)) {

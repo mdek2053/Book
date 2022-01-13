@@ -263,7 +263,7 @@ class RoomsServiceImplTest {
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -293,7 +293,7 @@ class RoomsServiceImplTest {
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -313,7 +313,7 @@ class RoomsServiceImplTest {
         Map<String, Object> filters = new HashMap<>();
         filters.put("equipment", Set.of(3L));
 
-        when(equipmentRepo.findById(3L)).thenReturn(Optional.empty());
+        when(equipmentRepo.findAllById(Set.of(3L))).thenReturn(List.of());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -329,14 +329,14 @@ class RoomsServiceImplTest {
 
         PageIndex index = new PageIndex(0, 10);
 
-        when(equipmentRepo.findById(1L)).thenReturn(Optional.of(beamer));
+        when(equipmentRepo.findAllById(Set.of(1L))).thenReturn(List.of(beamer));
         when(rooms.findAll(index.getPage(Sort.by("id"))))
                 .thenReturn(new PageImpl<>(List.of(room1, room2)));
 
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -446,7 +446,7 @@ class RoomsServiceImplTest {
         Map<String, Object> filters = new HashMap<>();
         filters.put("building", 3L);
 
-        when(buildings.existsById(3L)).thenReturn(false);
+        when(buildings.findById(3L)).thenReturn(Optional.empty());
 
         PageIndex index = new PageIndex(0, 10);
 
@@ -462,8 +462,7 @@ class RoomsServiceImplTest {
 
         PageIndex index = new PageIndex(0, 10);
 
-        when(buildings.existsById(1L)).thenReturn(true);
-        when(buildings.getById(1L)).thenReturn(building1);
+        when(buildings.findById(1L)).thenReturn(Optional.of(building1));
 
         when(rooms.findAll(index.getPage(Sort.by("id"))))
                 .thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
@@ -471,7 +470,7 @@ class RoomsServiceImplTest {
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -485,8 +484,7 @@ class RoomsServiceImplTest {
 
         PageIndex index = new PageIndex(0, 10);
 
-        when(buildings.existsById(1L)).thenReturn(true);
-        when(buildings.getById(1L)).thenReturn(building1);
+        when(buildings.findById(1L)).thenReturn(Optional.of(building1));
 
         when(rooms.findAll(index.getPage(Sort.by("id"))))
                 .thenReturn(new PageImpl<>(List.of(room1, room2, room3)));
@@ -494,7 +492,7 @@ class RoomsServiceImplTest {
         try {
             assertEquals(expected, service.searchRooms(index, filters));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
