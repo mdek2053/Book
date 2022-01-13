@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 
 /**
@@ -113,7 +114,7 @@ public class ClosureModel {
      * @throws InvalidData when closure is still ongoing.
      */
     public void verify(ApiDateTime since) throws InvalidData {
-        if (until == null || until.compareTo(since.getDate()) >= 0) {
+        if (until == null || ApiDateUtils.compare(until, since.getDate()) >= 0) {
             if (until != null) {
                 throw new InvalidData(
                         "Room is under maintenance (until " + until + ")");

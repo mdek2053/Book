@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
 
 /**
  * Model used to create and update reservations.
@@ -146,11 +147,11 @@ public class ReservationRequestModel {
     }
 
     public void setTimestampSince(Timestamp since) {
-        this.since = ApiDateTime.from(since);
+        this.since = ApiDateTimeUtils.from(since);
     }
 
     public void setTimestampUntil(Timestamp until) {
-        this.until = ApiDateTime.from(until);
+        this.until = ApiDateTimeUtils.from(until);
     }
 
     public boolean checkTitle() {

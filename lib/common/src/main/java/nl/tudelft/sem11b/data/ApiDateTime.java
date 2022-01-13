@@ -1,6 +1,7 @@
 package nl.tudelft.sem11b.data;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Objects;

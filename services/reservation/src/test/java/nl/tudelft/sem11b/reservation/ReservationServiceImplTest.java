@@ -170,10 +170,9 @@ class ReservationServiceImplTest {
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                ApiDate.yesterday().at(reservationModel.getSince().getTime()),
-                ApiDate.yesterday().at(reservationModel.getUntil().getTime()), null)));
                 new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getSince().getTime()),
-                new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getUntil().getTime())));
+                new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getUntil().getTime()),
+                        null)));
     }
 
     @Test
@@ -189,9 +188,7 @@ class ReservationServiceImplTest {
                 new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14),
                         reservationModel.getSince().getTime()),
                 new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14),
-                        reservationModel.getUntil().getTime())));
-                ApiDate.tomorrow().after(14).at(reservationModel.getSince().getTime()),
-                ApiDate.tomorrow().after(14).at(reservationModel.getUntil().getTime()), null)));
+                        reservationModel.getUntil().getTime()), null)));
     }
 
     @Test
@@ -322,9 +319,7 @@ class ReservationServiceImplTest {
     void invalidSecretaryReservationNoGroups() throws ApiException {
         when(users.currentUser()).thenReturn(USER_A);
         when(groups.getGroupsOfSecretary(anyLong())).thenReturn(new ArrayList<>());
-        assertThrows(InvalidData.class, () -> service.makeUserReservation(
-                reservationModel.getRoomId(), USER_B.getId(), reservationModel.getTitle(),
-                reservationModel.getSince(), reservationModel.getUntil()));
+
         assertThrows(InvalidData.class, () -> service.makeUserReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
@@ -339,9 +334,7 @@ class ReservationServiceImplTest {
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
                 reservationModel.getSince(), reservationModel.getUntil(), USER_C.getId())));
-        assertThrows(InvalidData.class, () -> service.makeUserReservation(
-                reservationModel.getRoomId(), USER_C.getId(), reservationModel.getTitle(),
-                reservationModel.getSince(), reservationModel.getUntil()));
+
         verify(reservations, never()).save(new Reservation(reservationModel.getRoomId(),
                 USER_C.getId(), reservationModel.getTitle(),
                 Timestamp.valueOf(reservationModel.getSince().toLocal()),
