@@ -5,15 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 
+import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiTime;
 import org.junit.jupiter.api.Test;
 
 public class ReservationRequestModelTest {
 
     private final transient ApiDateTime since =
-            new ApiDateTime(2022L, 1L, 1L, 10L, 0L);
+            new ApiDateTime(new ApiDate(2022, 1, 1), new ApiTime(10L, 0L));
     private final transient ApiDateTime until =
-            new ApiDateTime(2022L, 1L, 1L, 11L, 0L);
+            new ApiDateTime(new ApiDate(2022, 1, 1), new ApiTime(11L, 0L));
     private final transient ReservationRequestModel model =
             new ReservationRequestModel(1L, "Meeting", since, until, 1L);
     private final transient ReservationRequestModel model2 =

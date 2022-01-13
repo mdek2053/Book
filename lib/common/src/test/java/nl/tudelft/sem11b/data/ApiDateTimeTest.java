@@ -18,12 +18,12 @@ public class ApiDateTimeTest {
 
     @Test
     void parseInvalidFormatTest() {
-        assertThrows(ParseException.class, () -> ApiDateTime.parse("yeet"));
+        assertThrows(ParseException.class, () -> ApiDateTimeUtils.parse("yeet"));
     }
 
     @Test
     void parseSuccessfulTest() throws ParseException {
-        assertEquals(christmasTen, ApiDateTime.parse("2022-12-25T10:00"));
+        assertEquals(christmasTen, ApiDateTimeUtils.parse("2022-12-25T10:00"));
     }
 
     @Test

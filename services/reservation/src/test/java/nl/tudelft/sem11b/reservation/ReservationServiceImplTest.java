@@ -23,15 +23,14 @@ import static org.mockito.Mockito.when;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import nl.tudelft.sem11b.data.ApiDate;
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
+import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.ApiTime;
-import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -42,7 +41,6 @@ import nl.tudelft.sem11b.data.models.PageIndex;
 import nl.tudelft.sem11b.data.models.ReservationModel;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import nl.tudelft.sem11b.data.models.RoomModel;
-import nl.tudelft.sem11b.data.models.UserModel;
 import nl.tudelft.sem11b.reservation.entity.Reservation;
 import nl.tudelft.sem11b.reservation.repository.ReservationRepository;
 import nl.tudelft.sem11b.reservation.services.ReservationServiceImpl;
@@ -67,16 +65,16 @@ import org.springframework.web.server.ResponseStatusException;
 class ReservationServiceImplTest {
     private final ReservationModel reservationModel = new ReservationModel(
             ROOM_A.getId(),
-            ApiDate.tomorrow().at(new ApiTime(14, 0)),
-            ApiDate.tomorrow().at(new ApiTime(18, 0)),
+            ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0),
+            ApiDateUtils.at(ApiDateUtils.tomorrow(), 18, 0),
             "Meeting"
     );
 
     private final ReservationRequestModel requestModel = new ReservationRequestModel(
             ROOM_A.getId(),
             "Meeting2",
-            ApiDate.tomorrow().at(new ApiTime(13, 30)),
-            ApiDate.tomorrow().at(new ApiTime(15, 30)),
+            ApiDateUtils.at(ApiDateUtils.tomorrow(), 13, 30),
+            ApiDateUtils.at(ApiDateUtils.tomorrow(), 15, 30),
             USER_A.getId()
     );
 
@@ -174,6 +172,8 @@ class ReservationServiceImplTest {
                 reservationModel.getRoomId(), reservationModel.getTitle(),
                 ApiDate.yesterday().at(reservationModel.getSince().getTime()),
                 ApiDate.yesterday().at(reservationModel.getUntil().getTime()), null)));
+                new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getSince().getTime()),
+                new ApiDateTime(ApiDateUtils.yesterday(), reservationModel.getUntil().getTime())));
     }
 
     @Test
@@ -186,6 +186,10 @@ class ReservationServiceImplTest {
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14),
+                        reservationModel.getSince().getTime()),
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.tomorrow(), 14),
+                        reservationModel.getUntil().getTime())));
                 ApiDate.tomorrow().after(14).at(reservationModel.getSince().getTime()),
                 ApiDate.tomorrow().after(14).at(reservationModel.getUntil().getTime()), null)));
     }
@@ -200,8 +204,10 @@ class ReservationServiceImplTest {
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                ApiDate.tomorrow().at(reservationModel.getSince().getTime()),
-                ApiDate.tomorrow().after().at(reservationModel.getUntil().getTime()), null)));
+                new ApiDateTime(ApiDateUtils.yesterday(),
+                        reservationModel.getSince().getTime()),
+                new ApiDateTime(ApiDateUtils.after(ApiDateUtils.yesterday()),
+                        reservationModel.getSince().getTime()), null)));
     }
 
     @Test
@@ -214,20 +220,26 @@ class ReservationServiceImplTest {
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                reservationModel.getSince().getDate().at(ApiTime.MINIMUM),
-                reservationModel.getUntil().getDate().at(ApiTime.MAXIMUM), null)));
+                new ApiDateTime(reservationModel.getSince().getDate(),
+                        ApiTime.MINIMUM),
+                new ApiDateTime(reservationModel.getUntil().getDate(),
+                        ApiTime.MAXIMUM), null)));
 
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                reservationModel.getSince().getDate().at(ApiTime.MINIMUM),
-                reservationModel.getUntil().getDate().at(ROOM_A.getBuilding().getOpen()), null)));
+                new ApiDateTime(reservationModel.getSince().getDate(),
+                        ApiTime.MINIMUM),
+                new ApiDateTime(reservationModel.getUntil().getDate(),
+                        ROOM_A.getBuilding().getOpen()), null)));
 
         assertThrows(InvalidData.class, () -> service.makeOwnReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
-                reservationModel.getSince().getDate().at(ROOM_A.getBuilding().getClose()),
-                reservationModel.getUntil().getDate().at(ApiTime.MAXIMUM), null)));
+                new ApiDateTime(reservationModel.getSince().getDate(),
+                        ROOM_A.getBuilding().getClose()),
+                new ApiDateTime(reservationModel.getUntil().getDate(),
+                        ApiTime.MAXIMUM), null)));
     }
 
     @Test
@@ -236,7 +248,7 @@ class ReservationServiceImplTest {
                 new RoomModel(ROOM_A.getId(), ROOM_A.getSuffix(), ROOM_A.getName(),
                         ROOM_A.getCapacity(), ROOM_A.getBuilding(),
                         ROOM_A.getEquipment().toArray(EquipmentModel[]::new),
-                        new ClosureModel("Maintenance", ApiDate.yesterday(),
+                        new ClosureModel("Maintenance", ApiDateUtils.yesterday(),
                                 reservationModel.getSince().getDate()));
 
         // arrange
@@ -252,7 +264,7 @@ class ReservationServiceImplTest {
 
     @Test
     void secretaryReservation()
-            throws ApiException, InvalidData, EntityNotFound, InvalidGroupCredentialsException {
+            throws ApiException, InvalidData, EntityNotFound {
         final var captor = ArgumentCaptor.forClass(Reservation.class);
 
         // arrange
@@ -280,7 +292,7 @@ class ReservationServiceImplTest {
 
     @Test
     void adminReservation() throws InvalidData, ApiException,
-            EntityNotFound, InvalidGroupCredentialsException {
+            EntityNotFound {
         final var captor = ArgumentCaptor.forClass(Reservation.class);
 
         // arrange
@@ -311,6 +323,9 @@ class ReservationServiceImplTest {
         when(users.currentUser()).thenReturn(USER_A);
         when(groups.getGroupsOfSecretary(anyLong())).thenReturn(new ArrayList<>());
         assertThrows(InvalidData.class, () -> service.makeUserReservation(
+                reservationModel.getRoomId(), USER_B.getId(), reservationModel.getTitle(),
+                reservationModel.getSince(), reservationModel.getUntil()));
+        assertThrows(InvalidData.class, () -> service.makeUserReservation(
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
                 reservationModel.getSince(), reservationModel.getUntil(), USER_B.getId())));
@@ -324,6 +339,9 @@ class ReservationServiceImplTest {
                 new ReservationRequestModel(
                 reservationModel.getRoomId(), reservationModel.getTitle(),
                 reservationModel.getSince(), reservationModel.getUntil(), USER_C.getId())));
+        assertThrows(InvalidData.class, () -> service.makeUserReservation(
+                reservationModel.getRoomId(), USER_C.getId(), reservationModel.getTitle(),
+                reservationModel.getSince(), reservationModel.getUntil()));
         verify(reservations, never()).save(new Reservation(reservationModel.getRoomId(),
                 USER_C.getId(), reservationModel.getTitle(),
                 Timestamp.valueOf(reservationModel.getSince().toLocal()),
@@ -439,8 +457,8 @@ class ReservationServiceImplTest {
         // action
         assertThrows(ApiException.class, () -> service.editReservation(reservation.getId(),
                 new ReservationRequestModel(
-                        null, reservation.getTitle(), ApiDateTime.from(reservation.getSince()),
-                        ApiDateTime.from(reservation.getUntil()), null)));
+                        null, reservation.getTitle(), ApiDateTimeUtils.from(reservation.getSince()),
+                        ApiDateTimeUtils.from(reservation.getUntil()), null)));
 
         // verify
         verify(reservations, never()).delete(reservation);
@@ -638,8 +656,10 @@ class ReservationServiceImplTest {
         when(users.currentUser()).thenReturn(USER_A);
         assertThrows(ResponseStatusException.class, () -> service.checkAvailability(ROOM_A.getId(),
                 new ReservationRequestModel(requestModel.getRoomId(), requestModel.getTitle(),
-                        ApiDate.yesterday().at(requestModel.getSince().getTime()),
-                        ApiDate.yesterday().at(requestModel.getUntil().getTime()),
+                        new ApiDateTime(ApiDateUtils.yesterday(),
+                                requestModel.getSince().getTime()),
+                        new ApiDateTime(ApiDateUtils.yesterday(),
+                                requestModel.getUntil().getTime()),
                         requestModel.getForUser()
                 )));
     }

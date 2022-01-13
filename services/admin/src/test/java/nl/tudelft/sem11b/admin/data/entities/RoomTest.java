@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 public class RoomTest {
 
     private final transient Room room = new Room();
-    private final transient Closure closure = new Closure("reason", new ApiDate(2022L, 1L, 1L));
+    private final transient Closure closure = new Closure("reason", new ApiDate(2022, 1, 1));
     private final transient Building building = new Building();
     private final transient Room room2 = new Room(0L,
             "suffix", "name", 10, closure, building, new HashSet<>());
@@ -106,7 +106,7 @@ public class RoomTest {
 
     @Test
     void equalsClosureNotEqualTest() {
-        room3.setClosure(new Closure("different reason", new ApiDate(2022L, 1L)));
+        room3.setClosure(new Closure("different reason", new ApiDate(2022, 1, 1)));
 
         assertFalse(room2.equals(room3));
     }

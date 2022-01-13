@@ -69,30 +69,4 @@ public class RoomServiceImpl extends AuthenticatedServiceClient<RoomsClient>
     public void reopenRoom(long id) throws ApiException {
         openClient().reopenRoom(id);
     }
-
-    @Override
-    public void addFault(long roomId, FaultRequestModel faultRequest) throws ApiException {
-        openClient().addFault(roomId, faultRequest);
-    }
-
-    @Override
-    public PageData<FaultStudModel> listFaults(PageIndex page, long roomId)
-            throws ApiException, EntityNotFound {
-        return openClient().listFaults(page, roomId);
-    }
-
-    @Override
-    public PageData<FaultModel> listFaults(PageIndex page) throws EntityNotFound, ApiException {
-        return openClient().listFaults(page);
-    }
-
-    @Override
-    public Optional<FaultModel> getFault(long id) throws ApiException {
-        return openClient().getFault(id);
-    }
-
-    @Override
-    public void resolveFault(long id) throws ApiException {
-        openClient().resolveFault(id);
-    }
 }
