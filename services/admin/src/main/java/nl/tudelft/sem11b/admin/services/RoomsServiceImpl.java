@@ -120,38 +120,36 @@ public class RoomsServiceImpl implements RoomsService {
 
     @Override
     public RoomModel addRoom(RoomModel model) throws ApiException, EntityNotFound {
-        UserModel user = users.currentUser();
-        verifyAdmin(user);
+        verifyAdmin();
+
+        Building building = getBuilding(model);
+
+        Room newRoom = Room.fromModel(model, building);
+
+        Room saved = rooms.save(newRoom);
+
+        return saved.toModel();
+    }
+
+    private Building getBuilding(RoomModel model) throws EntityNotFound {
         BuildingModel buildingModel = model.getBuilding();
         if (buildingModel == null) {
             throw new EntityNotFound("Building");
         }
+
         Optional<Building> buildingOptional = buildings.findById(buildingModel.getId());
 
         if (buildingOptional.isEmpty()) {
             throw new EntityNotFound("Building");
         }
 
-        Room newRoom = new Room(model.getSuffix(),
-            model.getName(), model.getCapacity(), null, buildingOptional.get(), Set.of());
-
-        Room saved = rooms.save(newRoom);
-
-        //Only convert the closure to a model if it is not null
-        ClosureModel savedClosure =
-            saved.getClosure() == null ? null : saved.getClosure().toModel();
-
-        return new RoomModel(saved.getId(), saved.getSuffix(),
-            saved.getName(), saved.getCapacity(),
-            saved.getBuilding().toModel(),
-            saved.getEquipment().toArray(EquipmentModel[]::new), savedClosure);
+        return buildingOptional.get();
     }
 
     @Override
     public EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId)
         throws ApiException, EntityNotFound {
-        var user = users.currentUser();
-        verifyAdmin(user);
+        verifyAdmin();
         if (roomId.isEmpty()) {
             return addEquipmentToSystem(model, false, null);
         }
@@ -165,7 +163,8 @@ public class RoomsServiceImpl implements RoomsService {
         return equipment;
     }
 
-    private void verifyAdmin(UserModel user) throws ApiException {
+    private void verifyAdmin() throws ApiException {
+        UserModel user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException(serviceName,
                     "User not authorized to perform this action.");
