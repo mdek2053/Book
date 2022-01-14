@@ -225,7 +225,8 @@ public class Room {
     }
 
     public static Room fromModel(RoomModel model, Building building) {
-        return new Room(model.getSuffix(), model.getName(), model.getCapacity(), null, building, Set.of());
+        return new Room(model.getSuffix(), model.getName(),
+                model.getCapacity(), null, building, Set.of());
     }
 
     @Override
