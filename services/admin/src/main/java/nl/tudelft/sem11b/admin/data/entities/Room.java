@@ -224,6 +224,11 @@ public class Room {
             building.toModel(), equipmentModels, closure == null ? null : closure.toModel());
     }
 
+    public static Room fromModel(RoomModel model, Building building) {
+        return new Room(model.getSuffix(), model.getName(),
+                model.getCapacity(), null, building, Set.of());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

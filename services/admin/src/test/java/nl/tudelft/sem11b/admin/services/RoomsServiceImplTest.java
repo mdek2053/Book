@@ -546,13 +546,11 @@ class RoomsServiceImplTest {
     }
 
     @Test
-    public void addEquipmentAlreadyExistsTest() throws ApiException {
+    public void addEquipmentAlreadyExistsTest() throws ApiException, EntityNotFound {
         when(users.currentUser()).thenReturn(admin);
         when(equipmentRepo.findByName(beamerModel.getName())).thenReturn(Optional.of(beamer));
 
-        assertThrows(ApiException.class, () -> {
-            service.addEquipment(beamerModelWithoutId, Optional.empty());
-        });
+        assertEquals(beamerModel, service.addEquipment(beamerModelWithoutId, Optional.empty()));
     }
 
     @Test
@@ -567,7 +565,7 @@ class RoomsServiceImplTest {
     }
 
     @Test
-    public void addEquipmentRoomDoesntExistTest() throws ApiException, EntityNotFound {
+    public void addEquipmentRoomDoesntExistTest() throws ApiException {
         when(users.currentUser()).thenReturn(admin);
         when(rooms.existsById(1L)).thenReturn(false);
 
@@ -605,10 +603,9 @@ class RoomsServiceImplTest {
 
     @Test
     public void getRoomTest() {
-        RoomModel expected = roomModel1;
 
         when(rooms.findById(1L)).thenReturn(Optional.of(room1));
 
-        assertEquals(Optional.of(expected), service.getRoom(1L));
+        assertEquals(Optional.of(roomModel1), service.getRoom(1L));
     }
 }

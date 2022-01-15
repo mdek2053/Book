@@ -85,12 +85,12 @@ public class RoomsServiceImpl implements RoomsService {
 
     @Override
     public PageData<RoomStudModel> searchRooms(PageIndex page, Map<String, Object> filterValues)
-        throws ApiException, EntityNotFound, InvalidFilterException {
+        throws EntityNotFound, InvalidFilterException {
 
         BaseFilter chain = setupChain(filterValues);
 
         Page<Room> roomPage = rooms.findAll(page.getPage(Sort.by("id")));
-        List<RoomStudModel> filteredRooms = new ArrayList<RoomStudModel>();
+        List<RoomStudModel> filteredRooms = new ArrayList<>();
         for (Room room : roomPage) {
             if (chain.handle(room)) {
                 filteredRooms.add(room.toStudModel());
@@ -120,71 +120,79 @@ public class RoomsServiceImpl implements RoomsService {
 
     @Override
     public RoomModel addRoom(RoomModel model) throws ApiException, EntityNotFound {
-        UserModel user = users.currentUser();
-        if (!user.inRole(Roles.Admin)) {
-            throw new ApiException(serviceName,
-                "User not authorized to add rooms");
-        }
+        verifyAdmin();
+
+        Building building = getBuilding(model);
+
+        Room newRoom = Room.fromModel(model, building);
+
+        Room saved = rooms.save(newRoom);
+
+        return saved.toModel();
+    }
+
+    private Building getBuilding(RoomModel model) throws EntityNotFound {
         BuildingModel buildingModel = model.getBuilding();
         if (buildingModel == null) {
             throw new EntityNotFound("Building");
         }
+
         Optional<Building> buildingOptional = buildings.findById(buildingModel.getId());
 
         if (buildingOptional.isEmpty()) {
             throw new EntityNotFound("Building");
         }
 
-        Room newRoom = new Room(model.getSuffix(),
-            model.getName(), model.getCapacity(), null, buildingOptional.get(), Set.of());
-
-        Room saved = rooms.save(newRoom);
-
-        //Only convert the closure to a model if it is not null
-        ClosureModel savedClosure =
-            saved.getClosure() == null ? null : saved.getClosure().toModel();
-
-        RoomModel result = new RoomModel(saved.getId(), saved.getSuffix(),
-            saved.getName(), saved.getCapacity(),
-            saved.getBuilding().toModel(),
-            saved.getEquipment().toArray(EquipmentModel[]::new), savedClosure);
-
-        return result;
+        return buildingOptional.get();
     }
 
     @Override
     public EquipmentModel addEquipment(EquipmentModel model, Optional<Long> roomId)
         throws ApiException, EntityNotFound {
-        var user = users.currentUser();
+        verifyAdmin();
+        if (roomId.isEmpty()) {
+            return addEquipmentToSystem(model, false, null);
+        }
+        Long id = roomId.get();
+        if (!rooms.existsById(id)) {
+            throw new EntityNotFound("Room id does not exist");
+        }
+        EquipmentModel equipment;
+        equipment = addEquipmentToSystem(model, true, id);
+
+        return equipment;
+    }
+
+    private void verifyAdmin() throws ApiException {
+        UserModel user = users.currentUser();
         if (!user.inRole(Roles.Admin)) {
             throw new ApiException(serviceName,
-                "User not authorized to add equipment.");
-        }
-        if (roomId.isEmpty()) {
-            return addEquipmentToSystem(model).toModel();
-        } else {
-            if (!rooms.existsById(roomId.get())) {
-                throw new EntityNotFound("Room id does not exist");
-            }
-            Equipment equipment;
-            try {
-                equipment = addEquipmentToSystem(model);
-            } catch (ApiException e) {
-                equipment = equipmentRepo.findByName(model.getName()).get();
-            }
-            Room room = rooms.getById(roomId.get());
-            room.addEquipment(equipment);
-            rooms.save(room);
-            return equipment.toModel();
+                    "User not authorized to perform this action.");
         }
     }
 
-    private Equipment addEquipmentToSystem(EquipmentModel model) throws ApiException {
-        if (equipmentRepo.findByName(model.getName()).isPresent()) {
-            throw new ApiException(serviceName, "Equipment already exists!");
+    private EquipmentModel addEquipmentToSystem(EquipmentModel model, boolean roomPresent,
+                                           Long roomId) {
+        Equipment equipment;
+        Optional<Equipment> optEquipment = equipmentRepo.findByName(model.getName());
+        if (optEquipment.isPresent()) {
+            equipment = optEquipment.get();
+            if (roomPresent) {
+                addEquipmentToRoom(equipment, roomId);
+            }
+            return equipment.toModel();
         }
-        Equipment equipment = new Equipment(model.getName());
-        return equipmentRepo.save(equipment);
+        equipment = new Equipment(model.getName());
+        if (roomPresent) {
+            addEquipmentToRoom(equipment, roomId);
+        }
+        return equipmentRepo.save(equipment).toModel();
+    }
+
+    private void addEquipmentToRoom(Equipment equipment, Long roomId) {
+        Room room = rooms.getById(roomId);
+        room.addEquipment(equipment);
+        rooms.save(room);
     }
 
     @Override
