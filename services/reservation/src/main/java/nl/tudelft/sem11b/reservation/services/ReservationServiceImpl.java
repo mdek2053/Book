@@ -1,16 +1,5 @@
 package nl.tudelft.sem11b.reservation.services;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import nl.tudelft.sem11b.data.ApiDateTime;
-import nl.tudelft.sem11b.data.ApiDateTimeUtils;
-import nl.tudelft.sem11b.data.ApiDateUtils;
-import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -112,23 +101,28 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservation.fillOutTime(request);
 
-        validation.validateTime(request);
-        validation.validateRoom(reservation.getRoomId(), request);
+        validateRequest(reservation.getRoomId(), request);
 
-        userValidation.validateUserConflicts(request);
-        validation.validateRoomConflicts(reservation.getRoomId(), request);
-
-
-        if (request.getTitle() != null) {
-            if (request.getTitle().isBlank()) {
+        String title = request.getTitle();
+        if (title != null) {
+            if (title.isBlank()) {
                 throw new InvalidData("Reservation must have a title");
             }
-            reservation.setTitle(request.getTitle());
+            reservation.setTitle(title);
         }
 
-        reservation.setTime(request);
+        reservation.setTimeFromRequest(request);
 
         reservations.save(reservation);
+    }
+
+    private void validateRequest(Long roomId, ReservationRequestModel request)
+            throws InvalidData, ApiException, EntityNotFound {
+        validation.validateTime(request);
+        validation.validateRoom(roomId, request);
+        validation.validateRoomConflicts(roomId, request);
+
+        userValidation.validateUserConflicts(request);
     }
 
     /**
