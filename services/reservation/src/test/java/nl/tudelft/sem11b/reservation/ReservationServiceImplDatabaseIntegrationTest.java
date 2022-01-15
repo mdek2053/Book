@@ -7,13 +7,8 @@ import static nl.tudelft.sem11b.reservation.Constants.USER_B;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Optional;
 
-import nl.tudelft.sem11b.data.ApiDate;
-import nl.tudelft.sem11b.data.ApiDateTime;
 import nl.tudelft.sem11b.data.ApiDateUtils;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.ReservationRequestModel;
@@ -31,7 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest
-class ReservationServiceImplDatabaseTest {
+class ReservationServiceImplDatabaseIntegrationTest {
     @Autowired
     ReservationServiceImpl service;
 

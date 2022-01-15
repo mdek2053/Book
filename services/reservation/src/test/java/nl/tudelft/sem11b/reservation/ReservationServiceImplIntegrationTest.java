@@ -62,7 +62,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-class ReservationServiceImplTest {
+class ReservationServiceImplIntegrationTest {
     private final ReservationModel reservationModel = new ReservationModel(
             ROOM_A.getId(),
             ApiDateUtils.at(ApiDateUtils.tomorrow(), 14, 0),

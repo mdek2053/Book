@@ -48,7 +48,7 @@ import org.springframework.web.server.ResponseStatusException;
 @SpringBootTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @AutoConfigureMockMvc
-class ReservationControllerTest {
+class ReservationControllerIntegrationTest {
     private static final ObjectMapper mapper = new JsonMapper();
     private static final ReservationModel subject = new ReservationModel(
         1L,
