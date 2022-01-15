@@ -2,8 +2,6 @@ package nl.tudelft.sem11b.reservation;
 
 import java.util.Optional;
 
-import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
-import nl.tudelft.sem11b.data.exception.NoAssignedGroupException;
 import nl.tudelft.sem11b.data.exceptions.ServiceException;
 import nl.tudelft.sem11b.data.models.IdModel;
 import nl.tudelft.sem11b.data.models.PageData;
@@ -57,19 +55,15 @@ public class ReservationController {
 
         if (req.getForUser() != null) {
             try {
-                long reservationId = reservationService.makeUserReservation(req.getRoomId(),
-                        req.getForUser(), req.getTitle(), req.getSince(), req.getUntil());
+                long reservationId = reservationService.makeUserReservation(req);
                 return new IdModel<>(reservationId);
             } catch (ServiceException ex) {
                 throw ex.toResponseException();
-            } catch (InvalidGroupCredentialsException ex) {
-                ex.printStackTrace();
             }
         }
 
         try {
-            long reservationId = reservationService.makeOwnReservation(req.getRoomId(),
-                    req.getTitle(), req.getSince(), req.getUntil());
+            long reservationId = reservationService.makeOwnReservation(req);
             return new IdModel<>(reservationId);
         } catch (ServiceException ex) {
             throw ex.toResponseException();
@@ -129,8 +123,7 @@ public class ReservationController {
         }
 
         try {
-            reservationService.editReservation(id, req.getTitle(),
-                    req.getSince(), req.getUntil());
+            reservationService.editReservation(id, req);
         } catch (ServiceException ex) {
             throw ex.toResponseException();
         }

@@ -2,8 +2,6 @@ package nl.tudelft.sem11b.services;
 
 import java.util.List;
 
-import nl.tudelft.sem11b.data.exception.InvalidCredentialsException;
-import nl.tudelft.sem11b.data.exception.InvalidGroupCredentialsException;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.GroupModel;
@@ -20,14 +18,11 @@ public interface GroupService {
     List<GroupModel> getGroupsOfSecretary(Long id)
             throws ApiException;
 
-    List<GroupModel> getGroupsOfCurrentUser(Long id) throws InvalidData, ApiException;
-
     GroupModel addGroup(String name, Long secretaryId, List<Long> groupMembers)
-            throws InvalidGroupCredentialsException, InvalidCredentialsException, ApiException;
+            throws ApiException, InvalidData;
 
-    GroupModel getGroupInfo(Long groupId) throws InvalidGroupCredentialsException,
-            ApiException, InvalidCredentialsException;
+    GroupModel getGroupInfo(Long groupId) throws ApiException, InvalidData;
 
-    void addGroupMembers(List<Long> users, GroupModel group)
-            throws InvalidGroupCredentialsException, ApiException;
+    void addGroupMembers(List<Long> users, Long groupId)
+            throws ApiException, InvalidData;
 }
