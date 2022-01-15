@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiTime;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.EntityNotFound;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
@@ -55,6 +56,15 @@ public class RoomValidationService {
         }
     }
 
+    private void validateBusinessHours(ApiTime reservationSince, ApiTime reservationUntil,
+                                       ApiTime buildingOpen, ApiTime buildingClose)
+            throws InvalidData {
+        if (buildingOpen.compareTo(reservationSince) > 0
+                || buildingClose.compareTo(reservationUntil) < 0) {
+            throw new InvalidData("Reservation not between room opening hours");
+        }
+    }
+
     /**
      * Validates the room of reservation.
      * @param roomId the Id of the room.
@@ -68,18 +78,17 @@ public class RoomValidationService {
         ApiDateTime until = requestModel.getUntil();
 
         var room = getRoomIfExists(roomId);
+        var building = room.getBuilding();
         // check if in business hours
-        if (room.getBuilding().getOpen().compareTo(since.getTime()) > 0
-                || room.getBuilding().getClose().compareTo(until.getTime()) < 0) {
-            throw new InvalidData("Reservation not between room opening hours");
-        }
+        validateBusinessHours(since.getTime(), until.getTime(),
+                building.getOpen(), building.getClose());
 
         // room should also NOT be under maintenance
-        if (room.getClosure() == null) {
-            return;
+        var closure = room.getClosure();
+        if (closure != null) {
+            closure.verify(since);
         }
 
-        room.getClosure().verify(since);
 
         // closure has already ended
     }
