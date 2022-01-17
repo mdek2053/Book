@@ -179,7 +179,8 @@ class ReservationTest {
 
     @Test
     void testHashCode() {
-        assertEquals(1960569642, reservation.hashCode());
+        int result = Objects.hashCode(reservation);
+        assertEquals(result, reservation.hashCode());
     }
 
 
