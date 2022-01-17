@@ -10,6 +10,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 
+import nl.tudelft.sem11b.data.ApiDate;
+import nl.tudelft.sem11b.data.ApiDateTime;
+import nl.tudelft.sem11b.data.ApiDateTimeUtils;
+import nl.tudelft.sem11b.data.ApiTime;
+import nl.tudelft.sem11b.data.models.ReservationModel;
+import nl.tudelft.sem11b.data.models.ReservationRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +28,8 @@ class ReservationTest {
     Timestamp since;
     Timestamp until;
     Reservation reservation;
+    ReservationModel reservationModel;
+    ReservationRequestModel requestModel;
 
     @BeforeEach
     void setUp() throws ParseException {
@@ -29,6 +37,61 @@ class ReservationTest {
         until = new Timestamp(dateFormat.parse("24/09/2007").getTime());
         reservation = new Reservation(id, roomId, userId,
                 "Title", since, until, null);
+        reservationModel = new ReservationModel(id, ApiDateTimeUtils.from(since),
+                ApiDateTimeUtils.from(until), "Title");
+        requestModel = new ReservationRequestModel(roomId, "Title",
+                new ApiDateTime(new ApiDate(2007, 9, 23), new ApiTime(0L, 0L)),
+                new ApiDateTime(new ApiDate(2007, 9, 24), new ApiTime(0L, 0L)),
+                userId);
+    }
+
+    @Test
+    void testCreateReservationObject() {
+        Reservation r = new Reservation(requestModel.getRoomId(), requestModel.getForUser(),
+                requestModel.getTitle(), Timestamp.valueOf(requestModel.getSince().toLocal()),
+                Timestamp.valueOf(requestModel.getUntil().toLocal()));
+        assertEquals(r, Reservation.createReservation(requestModel));
+    }
+
+    @Test
+    void testGetId() {
+        assertEquals(id, reservation.getId());
+    }
+
+    @Test
+    void testGetRoomId() {
+        assertEquals(roomId, reservation.getRoomId());
+    }
+
+    @Test
+    void testGetUserId() {
+        assertEquals(userId, reservation.getUserId());
+    }
+
+    @Test
+    void testGetTitle() {
+        assertEquals("Title", reservation.getTitle());
+    }
+
+    @Test
+    void testGetSince() {
+        assertEquals(since, reservation.getSince());
+    }
+
+    @Test
+    void testGetUntil() {
+        assertEquals(until, reservation.getUntil());
+    }
+
+    @Test
+    void testGetCancelReason() {
+        reservation.setCancelReason("Room maintenance");
+        assertEquals("Room maintenance", reservation.getCancelReason());
+    }
+
+    @Test
+    void testToModel() {
+        assertEquals(reservationModel, reservation.toModel());
     }
 
     @Test
@@ -115,13 +178,62 @@ class ReservationTest {
     }
 
     @Test
-    void testHashCode1() {
-        assertEquals(Objects.hashCode(reservation), reservation.hashCode());
+    void testHashCode() {
+        assertEquals(1960569642, reservation.hashCode());
+    }
+
+
+    @Test
+    void testHashCodeLastFieldsNull() {
+        Reservation hash = new Reservation(1L, 1L, 1L, null, null, null, null);
+        assertEquals(Objects.hashCode(hash), hash.hashCode());
     }
 
     @Test
-    void testHashCode2() {
-        Reservation hash = new Reservation(1L, 1L, 1L, null, null, null, null);
+    void testHashCodeNotNullCancelReason() {
+        Reservation hash = new Reservation(3L, 2L, 4L, "Title", since, until, "Maintenance");
         assertEquals(Objects.hashCode(hash), hash.hashCode());
+    }
+
+    @Test
+    void testToString() {
+        String s = "Reservation{id=1, room_id=2, user_id=3, title='Title', "
+                + "since=" + since + ", until=" + until + ", cancel_reason='null'}";
+        assertEquals(s, reservation.toString());
+    }
+
+    @Test
+    void testSetTimeFromRequest() {
+        ApiDateTime tmpSince = new ApiDateTime(new ApiDate(2020, 12, 21), new ApiTime(12L, 0L));
+        ApiDateTime tmpUntil = new ApiDateTime(new ApiDate(2020, 12, 22), new ApiTime(9L, 0L));
+        requestModel.setSince(tmpSince);
+        requestModel.setUntil(tmpUntil);
+        reservation.setTimeFromRequest(requestModel);
+        assertEquals(tmpSince.toTimestamp(), reservation.getSince());
+        assertEquals(tmpUntil.toTimestamp(), reservation.getUntil());
+    }
+
+    @Test
+    void testFillOutTimeSinceNull() {
+        requestModel.setSince(null);
+        reservation.fillOutTime(requestModel);
+        assertEquals(since, requestModel.getSince().toTimestamp());
+    }
+
+    @Test
+    void testFillOutTimeUntilNull() {
+        requestModel.setUntil(null);
+        reservation.fillOutTime(requestModel);
+        assertEquals(until, requestModel.getUntil().toTimestamp());
+    }
+
+    @Test
+    void testFillOutTimeNoChanges() {
+
+        requestModel.setSince(new ApiDateTime(new ApiDate(2020, 12, 21), new ApiTime(12L, 0L)));
+        requestModel.setUntil(new ApiDateTime(new ApiDate(2020, 12, 22), new ApiTime(9L, 0L)));
+        reservation.fillOutTime(requestModel);
+        assertNotEquals(since, requestModel.getSince().toTimestamp());
+        assertNotEquals(until, requestModel.getUntil().toTimestamp());
     }
 }
