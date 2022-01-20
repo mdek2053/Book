@@ -14,6 +14,7 @@ import nl.tudelft.sem11b.authentication.entities.Group;
 import nl.tudelft.sem11b.authentication.entities.User;
 import nl.tudelft.sem11b.authentication.repositories.GroupRepository;
 import nl.tudelft.sem11b.authentication.repositories.UserRepository;
+import nl.tudelft.sem11b.data.Roles;
 import nl.tudelft.sem11b.data.exceptions.ApiException;
 import nl.tudelft.sem11b.data.exceptions.InvalidData;
 import nl.tudelft.sem11b.data.models.GroupModel;
@@ -45,11 +46,13 @@ class GroupServiceTest {
     transient User user2 = new User(2L, "User2", role, "abc1");
     transient User user3 = new User(3L, "User3", role, "abc2");
     transient User user4 = new User(4L, "User4", role, "abc3");
+    transient User userAdmin = new User(5L, "User5", "admin", "abc4");
 
     transient UserModel userModel1 = user1.toModel();
     transient UserModel userModel2 = user2.toModel();
     transient UserModel userModel3 = user3.toModel();
     transient UserModel userModel4 = user4.toModel();
+    transient UserModel userModelAdmin = userAdmin.toModel();
 
     transient List<Long> users1 = new ArrayList<>();
     transient List<Long> users2 = new ArrayList<>();
@@ -127,6 +130,20 @@ class GroupServiceTest {
     }
 
     @Test
+    void addGroupInvalidUsers() throws ApiException, InvalidData {
+        when(userService.currentUser()).thenReturn(userModel1);
+        when(userRepository.findUserByNetId(userModel1.getLogin())).thenReturn(Optional.of(user1));
+        when(userRepository.findUserById(anyLong())).thenReturn(Optional.empty());
+
+        when(groupRepository.save(Mockito.any(Group.class))).thenReturn(group1);
+        var thrown = assertThrows(InvalidData.class,
+                () -> groupService.addGroup(group.getName(), null, users1));
+        assertEquals("At least one of the provided users "
+                + "is not registered in the system", thrown.getReason());
+
+    }
+
+    @Test
     void verifyInvalidUsers() {
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.empty());
         assertThrows(InvalidData.class, () -> groupService
@@ -149,10 +166,49 @@ class GroupServiceTest {
     }
 
     @Test
+    void getGroupInfoAdmin() throws ApiException, InvalidData {
+        when(groupRepository.findGroupByGroupId(group1.getGroupId()))
+                .thenReturn(Optional.of(group1));
+        when(userService.currentUser()).thenReturn(userModelAdmin);
+
+        assertEquals(groupModel1, groupService.getGroupInfo(group1.getGroupId()));
+    }
+
+    @Test
+    void getGroupInfoSecretary() throws ApiException, InvalidData {
+        when(groupRepository.findGroupByGroupId(group.getGroupId()))
+                .thenReturn(Optional.of(group));
+        when(userService.currentUser()).thenReturn(userModel1);
+
+        assertEquals(groupModel, groupService.getGroupInfo(group.getGroupId()));
+    }
+
+    @Test
     void getGroupsOfSecretary() {
         when(userRepository.findUserById(user1.getId())).thenReturn(Optional.of(user1));
         when(groupRepository.findGroupsBySecretary(user1.getId())).thenReturn(Optional.of(groups));
 
         assertEquals(groupModels, groupService.getGroupsOfSecretary(userModel1.getId()));
+    }
+
+    @Test
+    void addGroupMembersEmptyGroup() {
+        when(groupRepository.findGroupByGroupId(group1.getGroupId())).thenReturn(Optional.empty());
+
+        var thrown = assertThrows(InvalidData.class,
+                () -> groupService.addGroupMembers(users1, group1.getGroupId()));
+        assertEquals("No group found with this id", thrown.getReason());
+    }
+
+    @Test
+    void addGroupMembersInvalidUsers() {
+        when(groupRepository.findGroupByGroupId(group1.getGroupId()))
+                .thenReturn(Optional.of(group1));
+        when(userRepository.findUserById(anyLong())).thenReturn(Optional.empty());
+
+        var thrown = assertThrows(InvalidData.class,
+                () -> groupService.addGroupMembers(users1, group1.getGroupId()));
+        assertEquals("At least one of the provided users "
+                + "is not registered in the system", thrown.getReason());
     }
 }

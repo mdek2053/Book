@@ -18,6 +18,7 @@ public class InvalidData extends ServiceException {
      */
     public InvalidData(String reason) {
         super(reason);
+        this.reason = reason;
     }
 
     /**
