@@ -1,3 +1,7 @@
+plugins {
+	id 'info.solidsoft.pitest' version '1.7.0' apply false
+}
+
 allprojects {
 	repositories {
 		mavenCentral()
@@ -12,6 +16,7 @@ subprojects {
 	apply plugin: 'jacoco'
 	apply plugin: 'checkstyle'
 	apply plugin: 'pmd'
+	apply plugin: 'info.solidsoft.pitest'
 
 	configurations {
 		developmentOnly
@@ -22,7 +27,7 @@ subprojects {
 		// Jackson JSON serialization/deserialization API bindings
 		implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
 
-        // JUnit5 unit testing framework
+	        // JUnit5 unit testing framework
 		testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 		testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
 	}
@@ -91,6 +96,19 @@ subprojects {
 			enabled = true
 			includes = ['nl.tudelft.*']
 			excludes = []
+		}
+	}
+
+	pitest {
+		pitestVersion = '1.7.0'
+
+		targetClasses = ['nl.tudelft.*']
+		outputFormats = ['HTML']
+		excludedTestClasses = ['**.*IntegrationTest']
+		junit5PluginVersion = '0.15'
+		
+		if (project.name in ['lib', 'services']) {
+			failWhenNoMutations = false
 		}
 	}
 }
