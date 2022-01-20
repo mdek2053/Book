@@ -202,7 +202,8 @@ class GroupServiceTest {
 
     @Test
     void addGroupMembersInvalidUsers() {
-        when(groupRepository.findGroupByGroupId(group1.getGroupId())).thenReturn(Optional.of(group1));
+        when(groupRepository.findGroupByGroupId(group1.getGroupId()))
+                .thenReturn(Optional.of(group1));
         when(userRepository.findUserById(anyLong())).thenReturn(Optional.empty());
 
         var thrown = assertThrows(InvalidData.class,
